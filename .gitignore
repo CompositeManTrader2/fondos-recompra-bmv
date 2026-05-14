@@ -19,3 +19,10 @@ graficas/
 input_pdfs*/
 pdfs_por_mes/
 temp_*
+
+# Temporales locales
+_test_*.py
+_test_*.json
+_commit_msg.txt
+_debug_*.py
+
