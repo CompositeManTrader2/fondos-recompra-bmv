@@ -164,66 +164,84 @@ with tab2:
 
 with tab3:
     st.markdown(
-        "Esta opción **descarga sola** los PDFs desde la página pública de BMV. "
-        "Tiene dos rutas:"
+        "🚀 **Auto-descarga 100% automática** vía la API REST interna de BMV "
+        "(la misma que usa la página oficial). Sin navegador, sin Playwright, "
+        "sin copy-paste."
     )
-    sub1, sub2 = st.tabs(["⚡ Modo automático (servidor)", "🔖 Modo bookmarklet (1-click navegador)"])
+    clave_auto = st.text_input(
+        "Clave de cotización (cve_emisora BMV — ej. AMX, BIMBO, WALMEX, ALFA, GFNORTE)",
+        value=(forzar_ticker or "").upper(),
+        placeholder="AMX",
+        key="clave_scraper",
+        help=(
+            "Usa la clave **sin sufijo de serie**: 'AMX' (no 'AMXL'), "
+            "'WALMEX' (no 'WALMEX*'). El sistema mapea internamente las series."
+        ),
+    ).strip().upper()
 
-    # ---------------- AUTOMÁTICO (Playwright) ----------------
-    with sub1:
-        st.markdown(
-            "El servidor abre Chromium en *headless*, escribe la clave, espera "
-            "que cargue la lista y captura todos los URLs. Funciona localmente "
-            "sin configuración. En **Streamlit Cloud** la primera ejecución "
-            "tarda ~30 s instalando el browser."
-        )
-        clave_auto = st.text_input(
-            "Clave de cotización a descargar",
-            value=(forzar_ticker or "").upper(),
-            placeholder="AMXL, GFNORTEO, ALFAA…",
-            key="clave_scraper",
-        ).strip().upper()
-        col_a, col_b = st.columns(2)
-        max_pag = col_a.number_input("Máx. páginas a recorrer", 1, 100, 20)
-        timeout_s = col_b.number_input("Timeout (segundos)", 10, 180, 60)
+    col_a, col_b, col_c = st.columns(3)
+    max_docs = col_a.number_input("Máx. PDFs a descubrir", 10, 5000, 500, step=50)
+    page_size = col_b.number_input("Tamaño de página API", 20, 200, 100, step=20)
+    descargar_todos = col_c.checkbox("Descargar y procesar PDFs", value=True)
 
-        if st.button("⚡ Ejecutar auto-descarga", type="primary", disabled=not clave_auto):
-            if not bmv_scraper.playwright_disponible():
-                st.error(
-                    "Playwright no está instalado en este entorno. Añade "
-                    "`playwright>=1.45` a requirements.txt y reinicia la app."
+    if st.button("⚡ Ejecutar auto-descarga", type="primary", disabled=not clave_auto):
+        with st.status("Consultando la API de BMV…", expanded=True) as status:
+            try:
+                progreso = st.progress(0.0, text="Buscando documentos…")
+                def _cb(actual, total):
+                    if total:
+                        progreso.progress(min(actual / total, 1.0), text=f"{actual}/{total} documentos…")
+                docs = bmv_scraper.descubrir_pdfs(
+                    clave_auto, max_documentos=int(max_docs), page_size=int(page_size),
+                    progreso_cb=_cb,
                 )
-            else:
-                with st.status("Preparando Chromium…", expanded=True) as status:
-                    ok, msg = bmv_scraper.asegurar_playwright(con_deps=False)
-                    st.write(msg)
-                    if not ok:
-                        status.update(label="No fue posible inicializar Chromium", state="error")
-                        st.stop()
-                    status.update(label="Buscando documentos en BMV…")
-                    try:
-                        urls = bmv_scraper.descubrir_pdfs(
-                            clave_auto, max_paginas=int(max_pag), timeout_ms=int(timeout_s) * 1000
-                        )
-                    except Exception as e:
-                        status.update(label="Error en el scraping", state="error")
-                        st.error(str(e))
-                        st.stop()
-                    status.update(label=f"Encontrados {len(urls)} PDFs. Descargando…")
-                    st.write(f"Encontrados **{len(urls)}** PDFs únicos.")
-                    if not urls:
-                        st.warning("No se encontraron PDFs. Revisa la clave o usa el modo bookmarklet.")
-                        st.stop()
-                    archivos = bmv_downloader.descargar(urls)
-                    status.update(label="Procesando PDFs…")
-                _procesar_archivos(archivos)
+                progreso.empty()
+            except Exception as e:
+                status.update(label="Error consultando BMV", state="error")
+                st.error(str(e))
+                st.stop()
 
-    # ---------------- BOOKMARKLET ----------------
-    with sub2:
+            if not docs:
+                status.update(label="Sin resultados", state="error")
+                st.warning(
+                    f"No se encontraron PDFs de recompra para **{clave_auto}**. "
+                    "Verifica que la clave exista en BMV (`cve_emisora`)."
+                )
+                st.stop()
+
+            status.update(label=f"✅ {len(docs)} PDFs de recompra encontrados.")
+            st.dataframe(
+                docs[:50],
+                use_container_width=True, hide_index=True,
+                column_config={
+                    "url": st.column_config.LinkColumn("PDF"),
+                    "fecha": "Fecha publicación",
+                    "id_documento": "ID BMV",
+                    "cve_empresa": "Emisora",
+                    "descripcion": "Descripción",
+                },
+            )
+            if len(docs) > 50:
+                st.caption(f"Mostrando 50 de {len(docs)}.")
+
+            if not descargar_todos:
+                status.update(label="Solo descubrimiento — no se procesaron PDFs.")
+                st.stop()
+
+            status.update(label="Descargando PDFs…")
+            barra = st.progress(0.0, text="Descargando…")
+            def _cb_dl(i, total, nombre):
+                barra.progress(i / total, text=f"{i}/{total} — {nombre}")
+            archivos = bmv_scraper.descargar_pdfs(docs, progreso_cb=_cb_dl)
+            barra.empty()
+            ok = sum(1 for _, c in archivos if c)
+            status.update(label=f"Descargados {ok}/{len(archivos)} PDFs. Procesando…")
+        _procesar_archivos(archivos)
+
+    with st.expander("🔖 Fallback: bookmarklet (sólo si el endpoint de BMV cambia)"):
         st.markdown(
-            "Si el modo automático no funciona (anti-bot, captcha) este "
-            "fallback **siempre funciona** porque corre en *tu* navegador, "
-            "que ya está autenticado para ver la página. Pasos:"
+            "Si en el futuro la API REST de BMV cambia, este bookmarklet en tu "
+            "navegador siempre funciona como respaldo:"
         )
         st.markdown(
             "1. **Arrastra** este botón a tu barra de marcadores ⬇️ — o "

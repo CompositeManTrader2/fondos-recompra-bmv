@@ -1,230 +1,312 @@
 """
-Auto-descarga de PDFs desde la página pública de BMV.
+Auto-descarga de PDFs de recompra desde la API REST interna de BMV.
 
-La página `bmv.com.mx/es/bmv/busqueda/simec_documentos_recompra_` es una SPA
-Angular: NO hay endpoint REST público, así que no podemos usar `requests`.
-Solución: lanzar un Chromium headless con Playwright.
+⚙️ Cómo se descubrió este endpoint
+----------------------------------
+La página `bmv.com.mx/.../simec_documentos_recompra_` es una SPA Nuxt.js
+que internamente llama a una API REST WSO2:
 
-Modos disponibles:
-  - playwright_disponible(): True si el navegador está listo en este host.
-  - asegurar_playwright(): hace `playwright install chromium` lazy en el
-    primer arranque (útil en Streamlit Cloud).
-  - descubrir_pdfs(clave, max_paginas): devuelve la lista de URLs únicas.
-  - generar_bookmarklet(): cadena `javascript:` lista para fallback manual.
+  POST  https://www.bmv.com.mx/api/searchservice/v1
+  GET   https://www.bmv.com.mx/rest/tokenservice/token?grant_type=client_credentials
+
+Las credenciales OAuth2 (consumer key/secret) están **embebidas en el
+bundle público del frontend** (`/_nuxt/22137e5.modern.js`), por lo que
+son perfectamente legítimas para uso por el cliente.
+
+El componente que renderiza la lista de documentos (`BusquedaDocumentos`)
+usa **ag-grid en modo Server-Side**: cada vez que se hace scroll, manda
+una request con `searchType=busquedaDocumentosPorInstrumentos` y un
+campo `requestJson` (string serializado de la request de ag-grid: rango
+de filas, filtros y ordenamiento).
+
+La respuesta trae documentos de TODOS los tipos (prospectos, eventos
+relevantes, recompras, etc.). Filtramos por `cve_tipo_documento=="recompra"`
+y por `cve_empresa==<clave>` para quedarnos sólo con lo que importa.
+
+Esta implementación NO requiere Playwright/Chromium → funciona en
+Streamlit Cloud sin configuración extra.
 """
 from __future__ import annotations
 
-import shutil
-import subprocess
-import sys
-from pathlib import Path
+import base64
+import json
+import re
+import time
 from typing import Iterable, Optional
 
-URL_BUSQUEDA = "https://www.bmv.com.mx/es/bmv/busqueda/simec_documentos_recompra_?tab=1"
+import requests
+
+# Constantes (extraídas del bundle público de BMV el 14-may-2026)
+TOKEN_URL = "https://www.bmv.com.mx/rest/tokenservice/token"
+SEARCH_URL = "https://www.bmv.com.mx/api/searchservice/v1"
+CONSUMER_KEY = "4EvENfi6au5ZFV9AcPsqLW7SiNUa"
+CONSUMER_SECRET = "_jkf9KE2rRvhY6a4GUtyV4wM6OMa"
+CDN_BASE = "https://www.bmv.com.mx"
+
+UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+)
 
 
-def playwright_disponible() -> bool:
+# ---------------------------------------------------------------------------
+# Token OAuth2
+# ---------------------------------------------------------------------------
+
+_token_cache: dict = {"value": None, "expires_at": 0.0}
+
+
+def obtener_token(force: bool = False) -> str:
+    """Obtiene un access token y lo cachea ~50 minutos en memoria."""
+    if not force and _token_cache["value"] and _token_cache["expires_at"] > time.time():
+        return _token_cache["value"]
+
+    basic = base64.b64encode(f"{CONSUMER_KEY}:{CONSUMER_SECRET}".encode()).decode()
+    r = requests.get(
+        f"{TOKEN_URL}?grant_type=client_credentials",
+        headers={
+            "Authorization": f"Basic {basic}",
+            "User-Agent": UA,
+            "Accept": "application/json",
+        },
+        timeout=30,
+    )
+    r.raise_for_status()
+    data = r.json()
+    if not data.get("status"):
+        raise RuntimeError(f"Token OAuth no devuelto: {data}")
+    tok = data["response"]["access_token"]
+    # WSO2 marca expiración enorme; cacheamos 50 min por prudencia
+    _token_cache["value"] = tok
+    _token_cache["expires_at"] = time.time() + 50 * 60
+    return tok
+
+
+# ---------------------------------------------------------------------------
+# Endpoint POST /api/searchservice/v1
+# ---------------------------------------------------------------------------
+
+def _ag_grid_request(start: int, end: int, filtro_descripcion: Optional[str] = None) -> str:
+    """Genera el `requestJson` que ag-grid envía al backend."""
+    req = {
+        "startRow": start,
+        "endRow": end,
+        "rowGroupCols": [],
+        "valueCols": [],
+        "pivotCols": [],
+        "pivotMode": False,
+        "groupKeys": [],
+        "filterModel": {},
+        "sortModel": [{"colId": "_source.fecha_recepcion", "sort": "desc"}],
+    }
+    if filtro_descripcion:
+        req["filterModel"]["_source.descripccion_documento"] = {
+            "filterType": "text",
+            "type": "contains",
+            "filter": filtro_descripcion,
+        }
+    return json.dumps(req, separators=(",", ":"))
+
+
+def _post_search(termino: str, request_json: str, token: str) -> dict:
+    parts = termino.strip().split(" ", 1)
+    term1 = parts[0]
+    term2 = parts[1] if len(parts) > 1 else ""
+    body = {
+        "lang": "es",
+        "payload": {
+            "term": term1,
+            "term2": term2,
+            "termT": termino.strip(),
+            "searchType": "busquedaDocumentosPorInstrumentos",
+        },
+        "requestJson": request_json,
+    }
+    r = requests.post(
+        SEARCH_URL,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+            "Accept": "*/*",
+            "User-Agent": UA,
+            "Origin": "https://www.bmv.com.mx",
+            "Referer": f"https://www.bmv.com.mx/es/bmv/busqueda/{termino.replace(' ', '_')}?tab=1",
+        },
+        data=json.dumps(body),
+        timeout=60,
+    )
+    if r.status_code == 401:
+        # Token expirado: refrescar y reintentar una vez
+        token = obtener_token(force=True)
+        r = requests.post(
+            SEARCH_URL,
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+                "Accept": "*/*",
+                "User-Agent": UA,
+            },
+            data=json.dumps(body),
+            timeout=60,
+        )
+    r.raise_for_status()
+    return r.json()
+
+
+def _extraer_hits(data: dict) -> tuple[list[dict], int]:
+    """Devuelve (hits, total)."""
     try:
-        from playwright.sync_api import sync_playwright  # noqa: F401
-        return True
-    except Exception:
+        instr = data["response"]["instrumentosEmisoras"]["instrumentos"]
+        primera_clave = next(iter(instr.keys()))
+        documentos = instr[primera_clave]["documentos"]
+        return documentos.get("hits", []), int(documentos.get("total", {}).get("value", 0))
+    except (KeyError, StopIteration):
+        return [], 0
+
+
+def _es_recompra(doc_source: dict, clave: str) -> bool:
+    cve_tipo = (doc_source.get("cve_tipo_documento") or "").lower()
+    cve_emp = (doc_source.get("cve_empresa") or "").upper()
+    if cve_tipo != "recompra":
         return False
+    if clave and cve_emp != clave.upper():
+        return False
+    url = ((doc_source.get("documento_html") or {}).get("url_documento") or "").lower()
+    return "recompra" in url and url.endswith(".pdf")
 
 
-def asegurar_playwright(con_deps: bool = False) -> tuple[bool, str]:
-    """
-    Garantiza que Chromium esté instalado. En Streamlit Cloud el binario no
-    está pre-descargado; este helper lo instala bajo demanda y cachea el
-    resultado en disco. Devuelve (ok, mensaje).
-    """
-    if not playwright_disponible():
-        return False, "El paquete `playwright` no está instalado. Añádelo a requirements.txt."
-
-    # Si ya hay un browser cacheado, salir
-    cache_dir = Path.home() / ".cache" / "ms-playwright"
-    if cache_dir.exists() and any(cache_dir.glob("chromium*")):
-        return True, "Chromium ya disponible en caché."
-
-    cmd = [sys.executable, "-m", "playwright", "install"]
-    if con_deps:
-        cmd.append("--with-deps")
-    cmd.append("chromium")
-    try:
-        subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=300)
-        return True, "Chromium instalado correctamente."
-    except subprocess.CalledProcessError as e:
-        return False, f"Error instalando Chromium: {e.stderr or e.stdout}"
-    except Exception as e:
-        return False, f"Excepción instalando Chromium: {e!s}"
-
+# ---------------------------------------------------------------------------
+# API pública del módulo
+# ---------------------------------------------------------------------------
 
 def descubrir_pdfs(
     clave: str,
-    max_paginas: int = 20,
-    timeout_ms: int = 45000,
-    headless: bool = True,
-) -> list[str]:
+    max_documentos: int = 1000,
+    page_size: int = 100,
+    progreso_cb=None,
+) -> list[dict]:
     """
-    Lanza Chromium, busca la `clave` (p.ej. AMXL, GFNORTEO), abre la pestaña
-    'Documentos' y recolecta todos los enlaces a `recompra_*.pdf` paginando
-    hasta `max_paginas`.
+    Descubre todos los PDFs de recompra de una emisora (ej. 'AMX', 'BIMBO').
 
-    Devuelve la lista única ordenada por nombre de archivo.
-    Si falla (red, anti-bot, captcha) lanza RuntimeError con detalle.
+    Devuelve una lista de dicts con:
+        - url:          URL absoluta al PDF
+        - fecha:        fecha_recepcion (string YYYY-MM-DD HH:MM)
+        - id_documento: ID interno BMV
+        - cve_empresa:  clave de la emisora
+        - descripcion:  descripcion del documento
+
+    progreso_cb(actual, total) se llama si se pasa.
     """
     if not clave or not str(clave).strip():
-        raise ValueError("Debes pasar una clave de cotización (ej. 'AMXL').")
+        raise ValueError("Debes pasar una clave de cotización (ej. 'AMX').")
     clave = str(clave).strip().upper()
 
-    from playwright.sync_api import TimeoutError as PWTimeout, sync_playwright
+    token = obtener_token()
+    documentos: list[dict] = []
+    vistos: set[str] = set()
 
-    pdfs: set[str] = set()
+    start = 0
+    intentos_vacios = 0  # corta si varias páginas seguidas no traen recompras de la clave
+    total_estimado = None
 
-    with sync_playwright() as p:
+    while start < max_documentos:
+        end = min(start + page_size, max_documentos)
+        req_json = _ag_grid_request(start, end, filtro_descripcion="Recompras")
         try:
-            browser = p.chromium.launch(headless=headless, args=["--no-sandbox"])
-        except Exception as e:
-            raise RuntimeError(
-                "No se pudo lanzar Chromium. En Streamlit Cloud llama primero "
-                "a `asegurar_playwright(con_deps=True)`. Detalle: " + str(e)
-            )
+            data = _post_search(clave, req_json, token)
+        except requests.HTTPError as e:
+            raise RuntimeError(f"Error HTTP de BMV: {e!s}") from e
 
-        ctx = browser.new_context(
-            user_agent=(
-                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-                "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-            ),
-            viewport={"width": 1440, "height": 900},
-            locale="es-MX",
-        )
-        page = ctx.new_page()
+        hits, total = _extraer_hits(data)
+        if total_estimado is None:
+            total_estimado = total
 
-        try:
-            page.goto(URL_BUSQUEDA, wait_until="domcontentloaded", timeout=timeout_ms)
+        if not hits:
+            break
 
-            # 1) Escribir la clave en el cuadro de búsqueda principal y enviar
-            #    El selector es genérico porque BMV no expone ids estables.
+        nuevos = 0
+        for h in hits:
+            src = h.get("_source", {}) or {}
+            if not _es_recompra(src, clave):
+                continue
+            url_rel = (src.get("documento_html") or {}).get("url_documento") or ""
+            if not url_rel:
+                continue
+            url_abs = url_rel if url_rel.startswith("http") else CDN_BASE + url_rel
+            if url_abs in vistos:
+                continue
+            vistos.add(url_abs)
+            documentos.append({
+                "url": url_abs,
+                "fecha": src.get("fecha_recepcion"),
+                "id_documento": src.get("id_documento"),
+                "cve_empresa": src.get("cve_empresa"),
+                "descripcion": src.get("descripccion_documento"),
+            })
+            nuevos += 1
+
+        if progreso_cb:
             try:
-                inp = page.wait_for_selector("input[type='search'], input[type='text']", timeout=10000)
-                inp.click()
-                inp.fill(f"{clave} recompra")
-                page.keyboard.press("Enter")
-            except PWTimeout:
-                pass  # algunos layouts cargan otro buscador interno
-
-            page.wait_for_timeout(1500)
-
-            # 2) Click en pestaña 'Documentos' si existe
-            try:
-                page.get_by_role("tab", name="Documentos").click(timeout=5000)
-            except Exception:
-                # fallback: buscar texto "DOCUMENTOS" cualquier elemento
-                try:
-                    page.get_by_text("DOCUMENTOS", exact=False).first.click(timeout=4000)
-                except Exception:
-                    pass
-            page.wait_for_timeout(1500)
-
-            # 3) Filtrar por "recompra" en la columna Asunto si hay input
-            try:
-                filtros = page.locator("input").all()
-                for f in filtros:
-                    ph = (f.get_attribute("placeholder") or "").lower()
-                    if "asunto" in ph:
-                        f.click(); f.fill("recompra")
-                        page.keyboard.press("Enter")
-                        break
+                progreso_cb(len(documentos), total_estimado or len(documentos))
             except Exception:
                 pass
-            page.wait_for_timeout(1200)
 
-            # 4) Recolectar PDFs visibles + paginar
-            for _ in range(max_paginas):
-                # scroll hasta el fondo del scroller interno (varios intentos)
-                for _ in range(8):
-                    pdfs_pagina = page.eval_on_selector_all(
-                        "a", "els => els.map(e => e.href).filter(h => /recompra_.*\\.pdf$/i.test(h))"
-                    )
-                    pdfs.update(pdfs_pagina)
-                    page.evaluate(
-                        "() => { const sc = document.querySelector('.cdk-virtual-scroll-viewport') || document.scrollingElement; "
-                        "if (sc) sc.scrollBy(0, 800); }"
-                    )
-                    page.wait_for_timeout(250)
+        if nuevos == 0:
+            intentos_vacios += 1
+            if intentos_vacios >= 3:
+                break
+        else:
+            intentos_vacios = 0
 
-                # intentar siguiente página
-                avanzo = False
-                for sel in [
-                    "button[aria-label*='Siguiente' i]",
-                    "a[aria-label*='Siguiente' i]",
-                    ".pagination .next",
-                    "button:has-text('Siguiente')",
-                    "button:has-text('Más')",
-                ]:
-                    try:
-                        btn = page.locator(sel).first
-                        if btn.is_visible(timeout=500) and btn.is_enabled():
-                            btn.click(timeout=3000)
-                            page.wait_for_timeout(1500)
-                            avanzo = True
-                            break
-                    except Exception:
-                        continue
-                if not avanzo:
-                    break
+        if start + page_size >= total:
+            break
+        start += page_size
 
-        finally:
-            browser.close()
+    documentos.sort(key=lambda d: d.get("fecha") or "", reverse=False)
+    return documentos
 
-    return sorted(pdfs)
 
+def descargar_pdfs(
+    docs: Iterable[dict],
+    timeout: int = 30,
+    progreso_cb=None,
+) -> list[tuple[str, bytes]]:
+    """Descarga una lista de docs (output de descubrir_pdfs)."""
+    sess = requests.Session()
+    sess.headers.update({"User-Agent": UA})
+    out: list[tuple[str, bytes]] = []
+    docs_list = list(docs)
+    for i, d in enumerate(docs_list, start=1):
+        url = d["url"] if isinstance(d, dict) else d
+        nombre = url.rstrip("/").split("/")[-1] or "documento.pdf"
+        try:
+            r = sess.get(url, timeout=timeout)
+            out.append((nombre, r.content if r.status_code == 200 else b""))
+        except Exception:
+            out.append((nombre, b""))
+        if progreso_cb:
+            try:
+                progreso_cb(i, len(docs_list), nombre)
+            except Exception:
+                pass
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Bookmarklet (mantenido como fallback opcional)
+# ---------------------------------------------------------------------------
 
 def generar_bookmarklet() -> str:
-    """
-    Devuelve un bookmarklet (`javascript:...`) que extrae todos los PDFs
-    visibles en la página de búsqueda BMV y los descarga como .txt.
-
-    El usuario puede arrastrarlo a la barra de marcadores y ejecutarlo
-    desde la propia página de BMV — funciona aunque la app esté en
-    Streamlit Cloud sin Playwright.
-    """
-    js = """
-(async () => {
-  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-  const set = new Set();
-  const collect = () => document.querySelectorAll('a').forEach(a => {
-    if (/recompra_.*\\.pdf$/i.test(a.href || '')) set.add(a.href);
-  });
-  const findScroll = () => document.querySelector('.cdk-virtual-scroll-viewport')
-    || document.scrollingElement;
-  for (let p = 0; p < 60; p++) {
-    collect();
-    const sc = findScroll();
-    if (sc) sc.scrollBy(0, 800);
-    await sleep(220);
-    const next = document.querySelector("button[aria-label*='Siguiente' i], a[aria-label*='Siguiente' i], .pagination .next");
-    if (sc && Math.abs(sc.scrollTop + sc.clientHeight - sc.scrollHeight) < 4 && next && !next.disabled) {
-      next.click(); await sleep(1200);
-    }
-  }
-  collect();
-  const arr = Array.from(set).sort();
-  const txt = arr.join('\\n');
-  const blob = new Blob([txt], { type: 'text/plain' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'bmv_pdfs.txt';
-  document.body.appendChild(a); a.click(); a.remove();
-  console.log('PDFs encontrados:', arr.length);
-  alert('Listo: ' + arr.length + ' PDFs. Se descargó bmv_pdfs.txt — súbelo a la app.');
-})();
-""".strip()
-    # Compactar a una línea apta para barra de marcadores
-    compacto = " ".join(line.strip() for line in js.splitlines() if line.strip())
-    return "javascript:" + compacto
-
-
-def descargar_lista(urls: Iterable[str], timeout: int = 30) -> list[tuple[str, bytes]]:
-    """Wrapper sobre bmv_downloader.descargar para mantener una sola API."""
-    from src.bmv_downloader import descargar
-    return descargar(list(urls), timeout=timeout)
+    js = (
+        "(async()=>{const s=ms=>new Promise(r=>setTimeout(r,ms));"
+        "const set=new Set();const c=()=>document.querySelectorAll('a').forEach("
+        "a=>{if(/recompra_.*\\.pdf$/i.test(a.href||''))set.add(a.href);});"
+        "const sc=()=>document.querySelector('.cdk-virtual-scroll-viewport')||document.scrollingElement;"
+        "for(let p=0;p<60;p++){c();const x=sc();if(x)x.scrollBy(0,800);await s(220);}"
+        "c();const arr=Array.from(set).sort();"
+        "const b=new Blob([arr.join('\\n')],{type:'text/plain'});"
+        "const a=document.createElement('a');a.href=URL.createObjectURL(b);"
+        "a.download='bmv_pdfs.txt';document.body.appendChild(a);a.click();a.remove();"
+        "alert('PDFs encontrados: '+arr.length);})();"
+    )
+    return "javascript:" + js

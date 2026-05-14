@@ -12,13 +12,12 @@ App de Streamlit para extraer, consolidar y analizar las operaciones de
 
 ## ✨ Características
 
-- **Carga flexible**: 4 formas de ingestar datos:
-  1. Subida directa de PDFs.
-  2. Pegado de URLs sucias copiadas de la consola del navegador.
-  3. **🤖 Auto-descarga (Playwright)** — escribes la clave (AMXL, GFNORTEO…)
-     y la app abre Chromium *headless*, busca y descarga todos los PDFs sola.
-  4. **🔖 Bookmarklet** — fallback de un click en tu propio navegador para
-     casos con anti-bot/captcha.
+- **Carga flexible**: 3 formas de ingestar datos:
+  1. **🤖 Auto-descarga directa** — escribes la clave (AMX, BIMBO,
+     WALMEX…) y la app baja todos los PDFs de recompra usando la API
+     REST interna de BMV. **Sin navegador, sin Playwright.**
+  2. Subida directa de PDFs.
+  3. Pegado de URLs sucias o bookmarklet de respaldo.
 - **Parser robusto** (`pdfplumber`): detecta variantes de encabezado
   (`NÚMERO DE ACCIONES`, `PRECIO UNIT.`, etc.), normaliza decimales y
   separadores de miles, deduplica por *folio + fecha + casa*.
@@ -91,25 +90,40 @@ streamlit run app.py
 6. **⚖️ Multi-Activo** → comparar varias emisoras al mismo tiempo.
 7. **⬇️ Exportar** → Excel consolidado.
 
-## 🤖 Auto-descarga desde BMV — cómo funciona
+## 🤖 Auto-descarga desde BMV — 100% automática
 
-La página de BMV es una SPA Angular sin endpoint REST público. Para
-automatizar la descarga la app usa **Playwright** (Chromium headless):
+La página `bmv.com.mx/.../simec_documentos_recompra_` es una SPA Nuxt.js,
+pero internamente usa una **API REST WSO2** que descubrí leyendo el bundle
+JS público de BMV. La app llama directamente a esa API:
 
-1. Pestaña **📥 Cargar Datos → 🤖 Auto-descarga BMV → ⚡ Modo automático**.
-2. Escribes la clave (ej. `AMXL`) y la app:
-   - Lanza Chromium en modo headless.
-   - Navega a `bmv.com.mx/.../simec_documentos_recompra_`.
-   - Escribe la clave en el buscador, abre la pestaña Documentos.
-   - Pagina y captura todos los `recompra_*.pdf`.
-   - Los descarga y los procesa con `pdf_parser`.
-3. Si Playwright falla (anti-bot, captcha, IP bloqueada), usa el
-   **🔖 modo bookmarklet**: arrastras el JS a tu barra de marcadores y con
-   un click desde la página de BMV se descarga `bmv_pdfs.txt` que subes a
-   la app. Este fallback siempre funciona porque corre en *tu* navegador.
+```
+GET   https://www.bmv.com.mx/rest/tokenservice/token?grant_type=client_credentials
+POST  https://www.bmv.com.mx/api/searchservice/v1
+       body: { lang, payload:{term, term2, termT, searchType:"busquedaDocumentosPorInstrumentos"},
+               requestJson: <ag-grid request serialized> }
+```
 
-> En Streamlit Cloud la primera ejecución del modo automático tarda ~30 s
-> instalando Chromium. Las siguientes son inmediatas.
+Las credenciales OAuth2 están **embebidas en el frontend público** (uso
+legítimo del cliente), por lo que cualquier integración cliente-side
+puede usarlas. La respuesta trae documentos de todos los tipos; filtramos
+por `cve_tipo_documento == "recompra"` y `cve_empresa == <clave>`.
+
+**Cómo se usa:**
+
+1. Pestaña **📥 Cargar Datos → 🤖 Auto-descarga BMV**.
+2. Escribes la clave (ej. `AMX`, `BIMBO`, `WALMEX`).
+3. Click en **⚡ Ejecutar auto-descarga**.
+4. La app:
+   - Pide token OAuth a `tokenservice/token`.
+   - Pagina la API REST hasta cubrir todos los PDFs de recompra.
+   - Descarga cada PDF directamente del CDN (`docs-pub/recompra/...`).
+   - Los procesa con `pdf_parser` y guarda el activo.
+
+> No requiere Playwright, Chromium, navegador o copy-paste. Funciona en
+> Streamlit Cloud sin configuración extra.
+
+Como respaldo (si BMV cambia su API), la pestaña incluye un
+**bookmarklet** que recolecta los PDFs desde tu navegador.
 
 ## 🛣️ Roadmap
 

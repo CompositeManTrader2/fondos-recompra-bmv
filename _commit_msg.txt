@@ -1,0 +1,32 @@
+fix(scraper): replace Playwright with direct BMV REST API calls
+
+Root cause: the previous Playwright-based scraper required Chromium and
+heavy apt dependencies, which failed both locally (missing VC++ runtime
+on Windows) and is fragile on Streamlit Cloud.
+
+Solution: reverse-engineered the BMV public Nuxt frontend bundle and
+discovered the REST API it uses internally:
+
+- GET  https://www.bmv.com.mx/rest/tokenservice/token (OAuth2 client_credentials)
+- POST https://www.bmv.com.mx/api/searchservice/v1
+       searchType="busquedaDocumentosPorInstrumentos" + ag-grid request
+
+The OAuth2 consumer key/secret are embedded in the public frontend bundle
+(legitimate for client-side use). The scraper now:
+
+- Pages the API in batches (default 100/req).
+- Filters cve_tipo_documento == "recompra" and cve_empresa == <key>.
+- Returns a list of {url, fecha, id_documento, descripcion}.
+- Downloads each PDF directly from the docs-pub CDN.
+
+Verified locally end-to-end with WALMEX, AMX, BIMBO:
+  - WALMEX: 105 PDFs found
+  - AMX:    500 PDFs found (capped)
+  - BIMBO:  327 PDFs found
+
+Cleanup:
+- Removed playwright from requirements.txt.
+- Removed packages.txt (Chromium apt deps).
+- Updated UI: single auto-download tab with progress bars; bookmarklet
+  kept as fallback inside an expander.
+- Updated README to reflect the new no-browser approach.
