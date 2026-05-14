@@ -1,0 +1,21 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.DS_Store
+.idea/
+.vscode/
+
+# Datos locales (los PDFs y parquets se cargan/regeneran desde la app)
+data/activos/*/raw_pdfs/*.pdf
+data/activos/*/cache/
+
+# Excels y outputs temporales
+*.xlsx
+!sample_data/*.xlsx
+*.pptx
+graficas/
+input_pdfs*/
+pdfs_por_mes/
+temp_*
