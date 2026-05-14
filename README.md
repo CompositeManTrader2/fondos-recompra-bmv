@@ -12,8 +12,13 @@ App de Streamlit para extraer, consolidar y analizar las operaciones de
 
 ## ✨ Características
 
-- **Carga flexible**: subida directa de PDFs *o* pegado de URLs sucias de la
-  consola del navegador (la app extrae los links válidos automáticamente).
+- **Carga flexible**: 4 formas de ingestar datos:
+  1. Subida directa de PDFs.
+  2. Pegado de URLs sucias copiadas de la consola del navegador.
+  3. **🤖 Auto-descarga (Playwright)** — escribes la clave (AMXL, GFNORTEO…)
+     y la app abre Chromium *headless*, busca y descarga todos los PDFs sola.
+  4. **🔖 Bookmarklet** — fallback de un click en tu propio navegador para
+     casos con anti-bot/captcha.
 - **Parser robusto** (`pdfplumber`): detecta variantes de encabezado
   (`NÚMERO DE ACCIONES`, `PRECIO UNIT.`, etc.), normaliza decimales y
   separadores de miles, deduplica por *folio + fecha + casa*.
@@ -85,6 +90,26 @@ streamlit run app.py
 5. **📈 Comparativo Mercado** → VWAP vs precio Yahoo (`AMXL.MX`, etc.).
 6. **⚖️ Multi-Activo** → comparar varias emisoras al mismo tiempo.
 7. **⬇️ Exportar** → Excel consolidado.
+
+## 🤖 Auto-descarga desde BMV — cómo funciona
+
+La página de BMV es una SPA Angular sin endpoint REST público. Para
+automatizar la descarga la app usa **Playwright** (Chromium headless):
+
+1. Pestaña **📥 Cargar Datos → 🤖 Auto-descarga BMV → ⚡ Modo automático**.
+2. Escribes la clave (ej. `AMXL`) y la app:
+   - Lanza Chromium en modo headless.
+   - Navega a `bmv.com.mx/.../simec_documentos_recompra_`.
+   - Escribe la clave en el buscador, abre la pestaña Documentos.
+   - Pagina y captura todos los `recompra_*.pdf`.
+   - Los descarga y los procesa con `pdf_parser`.
+3. Si Playwright falla (anti-bot, captcha, IP bloqueada), usa el
+   **🔖 modo bookmarklet**: arrastras el JS a tu barra de marcadores y con
+   un click desde la página de BMV se descarga `bmv_pdfs.txt` que subes a
+   la app. Este fallback siempre funciona porque corre en *tu* navegador.
+
+> En Streamlit Cloud la primera ejecución del modo automático tarda ~30 s
+> instalando Chromium. Las siguientes son inmediatas.
 
 ## 🛣️ Roadmap
 

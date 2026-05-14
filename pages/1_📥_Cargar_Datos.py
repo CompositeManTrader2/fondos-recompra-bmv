@@ -11,7 +11,7 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from src import bmv_downloader, data_processor, pdf_parser, storage
+from src import bmv_downloader, bmv_scraper, data_processor, pdf_parser, storage
 
 st.set_page_config(page_title="Cargar Datos", page_icon="📥", layout="wide")
 st.title("📥 Cargar datos")
@@ -33,7 +33,9 @@ with st.expander("⚙️ Opciones avanzadas", expanded=False):
     nombre_emisora = st.text_input("Nombre de la emisora (opcional)", value="")
     persistir_pdfs = st.checkbox("Guardar PDFs originales en disco", value=False)
 
-tab1, tab2 = st.tabs(["📄 Subir PDFs", "🔗 Pegar URLs BMV"])
+tab1, tab2, tab3 = st.tabs(
+    ["📄 Subir PDFs", "🔗 Pegar URLs BMV", "🤖 Auto-descarga BMV"]
+)
 
 
 # ---------------------------------------------------------------------------
@@ -158,6 +160,97 @@ with tab2:
             ok = sum(1 for _, c in archivos if c)
             st.write(f"Descargados correctamente: **{ok}/{len(archivos)}**")
             _procesar_archivos(archivos)
+
+
+with tab3:
+    st.markdown(
+        "Esta opción **descarga sola** los PDFs desde la página pública de BMV. "
+        "Tiene dos rutas:"
+    )
+    sub1, sub2 = st.tabs(["⚡ Modo automático (servidor)", "🔖 Modo bookmarklet (1-click navegador)"])
+
+    # ---------------- AUTOMÁTICO (Playwright) ----------------
+    with sub1:
+        st.markdown(
+            "El servidor abre Chromium en *headless*, escribe la clave, espera "
+            "que cargue la lista y captura todos los URLs. Funciona localmente "
+            "sin configuración. En **Streamlit Cloud** la primera ejecución "
+            "tarda ~30 s instalando el browser."
+        )
+        clave_auto = st.text_input(
+            "Clave de cotización a descargar",
+            value=(forzar_ticker or "").upper(),
+            placeholder="AMXL, GFNORTEO, ALFAA…",
+            key="clave_scraper",
+        ).strip().upper()
+        col_a, col_b = st.columns(2)
+        max_pag = col_a.number_input("Máx. páginas a recorrer", 1, 100, 20)
+        timeout_s = col_b.number_input("Timeout (segundos)", 10, 180, 60)
+
+        if st.button("⚡ Ejecutar auto-descarga", type="primary", disabled=not clave_auto):
+            if not bmv_scraper.playwright_disponible():
+                st.error(
+                    "Playwright no está instalado en este entorno. Añade "
+                    "`playwright>=1.45` a requirements.txt y reinicia la app."
+                )
+            else:
+                with st.status("Preparando Chromium…", expanded=True) as status:
+                    ok, msg = bmv_scraper.asegurar_playwright(con_deps=False)
+                    st.write(msg)
+                    if not ok:
+                        status.update(label="No fue posible inicializar Chromium", state="error")
+                        st.stop()
+                    status.update(label="Buscando documentos en BMV…")
+                    try:
+                        urls = bmv_scraper.descubrir_pdfs(
+                            clave_auto, max_paginas=int(max_pag), timeout_ms=int(timeout_s) * 1000
+                        )
+                    except Exception as e:
+                        status.update(label="Error en el scraping", state="error")
+                        st.error(str(e))
+                        st.stop()
+                    status.update(label=f"Encontrados {len(urls)} PDFs. Descargando…")
+                    st.write(f"Encontrados **{len(urls)}** PDFs únicos.")
+                    if not urls:
+                        st.warning("No se encontraron PDFs. Revisa la clave o usa el modo bookmarklet.")
+                        st.stop()
+                    archivos = bmv_downloader.descargar(urls)
+                    status.update(label="Procesando PDFs…")
+                _procesar_archivos(archivos)
+
+    # ---------------- BOOKMARKLET ----------------
+    with sub2:
+        st.markdown(
+            "Si el modo automático no funciona (anti-bot, captcha) este "
+            "fallback **siempre funciona** porque corre en *tu* navegador, "
+            "que ya está autenticado para ver la página. Pasos:"
+        )
+        st.markdown(
+            "1. **Arrastra** este botón a tu barra de marcadores ⬇️ — o "
+            "copia el JS y pégalo en la consola del navegador (F12).\n"
+            "2. Entra a la página de búsqueda BMV: "
+            "[`bmv.com.mx/.../simec_documentos_recompra_`]"
+            "(https://www.bmv.com.mx/es/bmv/busqueda/simec_documentos_recompra_?tab=1).\n"
+            "3. Escribe la clave en el buscador (ej. `AMXL recompra`) y abre "
+            "**Documentos**.\n"
+            "4. Click al marcador. Se descargará `bmv_pdfs.txt`.\n"
+            "5. Súbelo en la pestaña **🔗 Pegar URLs BMV** o aquí abajo."
+        )
+        bk = bmv_scraper.generar_bookmarklet()
+        st.code(bk, language="javascript")
+
+        st.markdown("##### O sube directamente el `bmv_pdfs.txt`")
+        archivo_txt = st.file_uploader("Archivo TXT con URLs", type=["txt"], key="upload_bookmarklet_txt")
+        if st.button("⬇️ Descargar y procesar URLs del TXT", disabled=not archivo_txt):
+            raw_txt = archivo_txt.read().decode("utf-8", errors="ignore")
+            urls = bmv_downloader.extraer_urls(raw_txt)
+            st.write(f"URLs detectadas: **{len(urls)}**")
+            if urls:
+                with st.spinner("Descargando PDFs desde BMV…"):
+                    archivos = bmv_downloader.descargar(urls)
+                _procesar_archivos(archivos)
+            else:
+                st.error("El TXT no contenía URLs válidas de BMV.")
 
 
 st.divider()
