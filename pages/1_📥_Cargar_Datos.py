@@ -17,32 +17,43 @@ st.set_page_config(page_title="Cargar Datos", page_icon="📥", layout="wide")
 st.title("📥 Cargar datos")
 
 st.markdown(
-    "Sube uno o varios PDFs de operación de **fondo de recompra** o pega "
-    "directamente las URLs de BMV. El sistema detecta automáticamente la "
-    "emisora desde la *Clave de cotización* del documento."
+    "Sube PDFs de **fondo de recompra** o usa la auto-descarga de BMV. "
+    "Cada emisora se guarda en su propio activo y los análisis quedan "
+    "**100 % independientes**."
 )
 
-ticker_default = st.session_state.get("ticker_activo") or ""
-
-with st.expander("⚙️ Opciones avanzadas", expanded=False):
-    forzar_ticker = st.text_input(
-        "Forzar ticker (opcional)",
-        value=ticker_default,
-        help="Si lo dejas en blanco se usará la *Clave de cotización* extraída de cada PDF.",
-    ).upper().strip()
-    nombre_emisora = st.text_input("Nombre de la emisora (opcional)", value="")
-    persistir_pdfs = st.checkbox("Guardar PDFs originales en disco", value=False)
-
 tab1, tab2, tab3 = st.tabs(
-    ["📄 Subir PDFs", "🔗 Pegar URLs BMV", "🤖 Auto-descarga BMV"]
+    ["🤖 Auto-descarga BMV", "📄 Subir PDFs", "🔗 Pegar URLs BMV"]
 )
 
 
 # ---------------------------------------------------------------------------
-def _procesar_archivos(archivos: list[tuple[str, bytes]]):
+# Procesador central — ahora con `ticker_forzar` EXPLÍCITO por canal de carga
+# ---------------------------------------------------------------------------
+
+def _procesar_archivos(
+    archivos: list[tuple[str, bytes]],
+    ticker_forzar: str | None = None,
+    nombre_emisora: str | None = None,
+    persistir_pdfs: bool = False,
+):
+    """
+    Procesa los PDFs y los guarda agrupados por emisora.
+
+    - Si `ticker_forzar` se pasa (auto-descarga, o cuando el usuario
+      explícitamente lo declara), TODAS las operaciones encontradas se
+      guardan bajo ese ticker, ignorando lo que diga la *Clave de
+      cotización* del PDF. Esto evita que un mismo activo se parta en
+      `AMX` / `AMX L` / `AMXL` etc.
+    - Si NO se pasa, se agrupa por la clave detectada en cada PDF
+      individualmente. Si la clave no se detecta para algún PDF, ese
+      archivo va a `DESCONOCIDA` (no se mezcla con los detectados).
+    """
     if not archivos:
         st.warning("No hay archivos para procesar.")
         return
+
+    ticker_forzar = (ticker_forzar or "").strip().upper() or None
 
     progreso = st.progress(0.0, text="Procesando PDFs…")
     resultados: list[pdf_parser.ResultadoPDF] = []
@@ -64,13 +75,36 @@ def _procesar_archivos(archivos: list[tuple[str, bytes]]):
         st.error("Ningún PDF se pudo procesar.")
         return
 
-    # Agrupar por emisora (o por ticker forzado)
+    # Agrupar por emisora
     por_emisora: dict[str, list[pd.DataFrame]] = {}
     metadata_remanentes: list[dict] = []
+    diagnosticos: list[dict] = []
+
     for r in resultados:
-        ticker = (forzar_ticker or r.emisora or "DESCONOCIDA").upper()
+        # Decidir el ticker destino
+        if ticker_forzar:
+            ticker = ticker_forzar
+        elif r.emisora:
+            ticker = r.emisora.upper().strip()
+        else:
+            ticker = "DESCONOCIDA"
+
+        diagnosticos.append({
+            "Archivo": r.archivo,
+            "Emisora detectada": r.emisora or "—",
+            "Ticker destino": ticker,
+            "Fecha": r.fecha_operacion,
+            "Casa": r.casa_bolsa or "—",
+            "Operaciones": len(r.operaciones),
+        })
+
         if not r.operaciones.empty:
-            por_emisora.setdefault(ticker, []).append(r.operaciones)
+            df_ops = r.operaciones.copy()
+            # FORZAR la columna EMISORA al ticker destino para que la
+            # agregación posterior nunca confunda emisoras.
+            df_ops["EMISORA"] = ticker
+            por_emisora.setdefault(ticker, []).append(df_ops)
+
         if r.fecha_operacion is not None:
             metadata_remanentes.append({
                 "EMISORA": ticker,
@@ -83,23 +117,35 @@ def _procesar_archivos(archivos: list[tuple[str, bytes]]):
 
     if not por_emisora:
         st.error("No se encontraron tablas de operaciones en los PDFs procesados.")
-        with st.expander("Detalles"):
-            for r in resultados:
-                st.write(f"**{r.archivo}** — emisora: `{r.emisora}` · fecha: `{r.fecha_operacion}` · casa: `{r.casa_bolsa}`")
-                if r.error:
-                    st.error(r.error)
+        with st.expander("🔍 Diagnóstico por archivo"):
+            st.dataframe(pd.DataFrame(diagnosticos), use_container_width=True, hide_index=True)
         return
 
+    # Avisar si se mezclaron varias emisoras detectadas
+    detecciones_unicas = {d["Emisora detectada"] for d in diagnosticos if d["Emisora detectada"] != "—"}
+    if not ticker_forzar and len(detecciones_unicas) > 1:
+        st.info(
+            f"📋 Se detectaron **{len(detecciones_unicas)} emisoras distintas** en los "
+            f"PDFs subidos: {', '.join(sorted(detecciones_unicas))}. "
+            "Cada una se guardará por separado."
+        )
+    elif "DESCONOCIDA" in por_emisora and len(por_emisora) > 1:
+        st.warning(
+            "⚠️ Algunos PDFs no tenían la *Clave de cotización* detectable y "
+            "fueron a **DESCONOCIDA**. Considera forzar el ticker para no "
+            "mezclar emisoras."
+        )
+
+    # Guardar cada emisora en su propio storage
     resumen_filas = []
     for ticker, dfs in por_emisora.items():
         df_ticker = pd.concat(dfs, ignore_index=True)
         df_ticker = data_processor.consolidar_operaciones(df_ticker)
         if df_ticker.empty:
             continue
-        if "EMISORA" not in df_ticker.columns or df_ticker["EMISORA"].isna().all():
-            df_ticker["EMISORA"] = ticker
+        df_ticker["EMISORA"] = ticker  # post-consolidación, garantiza la columna
         total = storage.guardar_operaciones(ticker, df_ticker, modo="append")
-        if nombre_emisora:
+        if nombre_emisora and len(por_emisora) == 1:
             storage.registrar_activo(ticker, nombre=nombre_emisora)
         resumen_filas.append({
             "Emisora": ticker,
@@ -116,6 +162,9 @@ def _procesar_archivos(archivos: list[tuple[str, bytes]]):
     st.success(f"✅ {len(resultados)} PDFs procesados.")
     st.dataframe(pd.DataFrame(resumen_filas), use_container_width=True, hide_index=True)
 
+    with st.expander("🔍 Diagnóstico por archivo"):
+        st.dataframe(pd.DataFrame(diagnosticos), use_container_width=True, hide_index=True)
+
     if metadata_remanentes:
         with st.expander("📑 Remanente de recursos detectado"):
             st.dataframe(pd.DataFrame(metadata_remanentes), use_container_width=True, hide_index=True)
@@ -131,51 +180,23 @@ def _procesar_archivos(archivos: list[tuple[str, bytes]]):
         st.info(f"Se seleccionó **{st.session_state['ticker_activo']}** como activo en análisis. Ve a 📊 Dashboard.")
 
 
-# ---------------------------------------------------------------------------
+# =============================================================================
+# TAB 1 · AUTO-DESCARGA BMV  ← canal principal
+# =============================================================================
 with tab1:
-    archivos_subidos = st.file_uploader(
-        "Selecciona uno o varios PDFs",
-        type=["pdf"],
-        accept_multiple_files=True,
-    )
-    if st.button("🚀 Procesar PDFs subidos", type="primary", disabled=not archivos_subidos):
-        archivos = [(f.name, f.read()) for f in archivos_subidos]
-        _procesar_archivos(archivos)
-
-
-with tab2:
-    raw = st.text_area(
-        "Pega aquí URLs de BMV (una por línea, o el output sucio de la consola del navegador)",
-        height=180,
-        placeholder="https://www.bmv.com.mx/docs-pub/recompra/...pdf",
-    )
-    if st.button("🌐 Descargar y procesar URLs", type="primary", disabled=not raw):
-        urls = bmv_downloader.extraer_urls(raw)
-        if not urls:
-            st.error("No se encontraron URLs válidas de BMV en el texto pegado.")
-        else:
-            st.write(f"Se detectaron **{len(urls)}** URLs únicas.")
-            with st.spinner("Descargando PDFs desde BMV…"):
-                archivos = bmv_downloader.descargar(urls)
-            ok = sum(1 for _, c in archivos if c)
-            st.write(f"Descargados correctamente: **{ok}/{len(archivos)}**")
-            _procesar_archivos(archivos)
-
-
-with tab3:
     st.markdown(
-        "🚀 **Auto-descarga 100% automática** vía la API REST interna de BMV "
-        "(la misma que usa la página oficial). Sin navegador, sin Playwright, "
-        "sin copy-paste."
+        "🚀 **Auto-descarga 100 % automática** vía la API REST interna de BMV. "
+        "Cada emisora se almacena de forma **independiente** bajo el ticker "
+        "que escribas — sin importar qué clave detecte el parser."
     )
     clave_auto = st.text_input(
         "Clave de cotización (cve_emisora BMV — ej. AMX, BIMBO, WALMEX, ALFA, GFNORTE)",
-        value=(forzar_ticker or "").upper(),
         placeholder="AMX",
         key="clave_scraper",
         help=(
             "Usa la clave **sin sufijo de serie**: 'AMX' (no 'AMXL'), "
-            "'WALMEX' (no 'WALMEX*'). El sistema mapea internamente las series."
+            "'WALMEX' (no 'WALMEX*'). Todos los PDFs se guardarán bajo "
+            "ese ticker para mantener el análisis consolidado."
         ),
     ).strip().upper()
 
@@ -236,7 +257,8 @@ with tab3:
             barra.empty()
             ok = sum(1 for _, c in archivos if c)
             status.update(label=f"Descargados {ok}/{len(archivos)} PDFs. Procesando…")
-        _procesar_archivos(archivos)
+        # ⬇️ AQUÍ está la garantía de aislamiento por emisora
+        _procesar_archivos(archivos, ticker_forzar=clave_auto)
 
     with st.expander("🔖 Fallback: bookmarklet (sólo si el endpoint de BMV cambia)"):
         st.markdown(
@@ -249,40 +271,136 @@ with tab3:
             "2. Entra a la página de búsqueda BMV: "
             "[`bmv.com.mx/.../simec_documentos_recompra_`]"
             "(https://www.bmv.com.mx/es/bmv/busqueda/simec_documentos_recompra_?tab=1).\n"
-            "3. Escribe la clave en el buscador (ej. `AMXL recompra`) y abre "
-            "**Documentos**.\n"
+            "3. Escribe la clave en el buscador y abre **Documentos**.\n"
             "4. Click al marcador. Se descargará `bmv_pdfs.txt`.\n"
-            "5. Súbelo en la pestaña **🔗 Pegar URLs BMV** o aquí abajo."
+            "5. Súbelo en la pestaña **🔗 Pegar URLs BMV**."
         )
-        bk = bmv_scraper.generar_bookmarklet()
-        st.code(bk, language="javascript")
-
-        st.markdown("##### O sube directamente el `bmv_pdfs.txt`")
-        archivo_txt = st.file_uploader("Archivo TXT con URLs", type=["txt"], key="upload_bookmarklet_txt")
-        if st.button("⬇️ Descargar y procesar URLs del TXT", disabled=not archivo_txt):
-            raw_txt = archivo_txt.read().decode("utf-8", errors="ignore")
-            urls = bmv_downloader.extraer_urls(raw_txt)
-            st.write(f"URLs detectadas: **{len(urls)}**")
-            if urls:
-                with st.spinner("Descargando PDFs desde BMV…"):
-                    archivos = bmv_downloader.descargar(urls)
-                _procesar_archivos(archivos)
-            else:
-                st.error("El TXT no contenía URLs válidas de BMV.")
+        st.code(bmv_scraper.generar_bookmarklet(), language="javascript")
 
 
+# =============================================================================
+# TAB 2 · SUBIR PDFs MANUALMENTE
+# =============================================================================
+with tab2:
+    st.markdown(
+        "Si tienes PDFs descargados a mano, súbelos aquí. La emisora se "
+        "detecta automáticamente PDF por PDF leyendo la *Clave de cotización*."
+    )
+    archivos_subidos = st.file_uploader(
+        "Selecciona uno o varios PDFs",
+        type=["pdf"],
+        accept_multiple_files=True,
+        key="upload_pdfs_manual",
+    )
+    col_a, col_b = st.columns([2, 1])
+    forzar_aqui = col_a.text_input(
+        "Forzar ticker para TODOS los PDFs subidos (opcional)",
+        value="",
+        help=(
+            "Si lo dejas en blanco, cada PDF se guarda bajo la clave que "
+            "detecte el parser (lo recomendado si subes mezcla de emisoras). "
+            "Sólo úsalo cuando estás seguro de que TODOS los PDFs son de "
+            "la misma emisora y el parser falla en detectarla."
+        ),
+    ).upper().strip()
+    nombre_aqui = col_b.text_input("Nombre legible (opcional)", value="")
+
+    if st.button("🚀 Procesar PDFs", type="primary", disabled=not archivos_subidos, key="btn_procesar_manual"):
+        archivos = [(f.name, f.read()) for f in archivos_subidos]
+        _procesar_archivos(
+            archivos,
+            ticker_forzar=forzar_aqui or None,
+            nombre_emisora=nombre_aqui or None,
+            persistir_pdfs=False,
+        )
+
+
+# =============================================================================
+# TAB 3 · PEGAR URLs (legacy / bookmarklet output)
+# =============================================================================
+with tab3:
+    st.markdown(
+        "Pega URLs de BMV (formato `bmv.com.mx/docs-pub/recompra/...pdf`) "
+        "o el contenido del `bmv_pdfs.txt` del bookmarklet. "
+        "Útil si la API automática falla."
+    )
+    raw = st.text_area(
+        "URLs (una por línea o output sucio)",
+        height=180,
+        placeholder="https://www.bmv.com.mx/docs-pub/recompra/...pdf",
+        key="urls_raw",
+    )
+    forzar_urls = st.text_input(
+        "Forzar ticker (opcional)",
+        value="",
+        help="Recomendado si pegaste URLs de una sola emisora.",
+        key="forzar_urls",
+    ).upper().strip()
+
+    if st.button("🌐 Descargar y procesar URLs", type="primary", disabled=not raw, key="btn_urls"):
+        urls = bmv_downloader.extraer_urls(raw)
+        if not urls:
+            st.error("No se encontraron URLs válidas de BMV en el texto pegado.")
+        else:
+            st.write(f"Se detectaron **{len(urls)}** URLs únicas.")
+            with st.spinner("Descargando PDFs desde BMV…"):
+                archivos = bmv_downloader.descargar(urls)
+            ok = sum(1 for _, c in archivos if c)
+            st.write(f"Descargados correctamente: **{ok}/{len(archivos)}**")
+            _procesar_archivos(archivos, ticker_forzar=forzar_urls or None)
+
+
+# =============================================================================
+# Activos almacenados + administración
+# =============================================================================
 st.divider()
 st.markdown("### 🗂️ Activos actualmente almacenados")
 activos = storage.listar_activos()
 if not activos:
-    st.info("Sin activos. Sube PDFs arriba para empezar.")
+    st.info("Sin activos. Empieza arriba con la auto-descarga.")
 else:
     st.dataframe(activos, use_container_width=True, hide_index=True)
 
-    with st.expander("🗑️ Eliminar un activo"):
-        a_borrar = st.selectbox("Selecciona ticker a eliminar", [a["ticker"] for a in activos])
-        confirma = st.text_input("Escribe el ticker para confirmar", value="")
-        if st.button("Eliminar permanentemente", type="secondary"):
+    with st.expander("🛠️ Mantenimiento (mover, fusionar, eliminar)"):
+        st.markdown("##### Renombrar / fusionar tickers")
+        st.caption(
+            "Útil si te quedaron datos en `DESCONOCIDA` o si tienes el mismo "
+            "activo bajo dos claves (`AMX` y `AMXL`)."
+        )
+        col1, col2, col3 = st.columns([1, 1, 1])
+        origen = col1.selectbox("De", [a["ticker"] for a in activos], key="rename_origen")
+        destino = col2.text_input("A (ticker destino)", value="", key="rename_destino").upper().strip()
+        modo_merge = col3.selectbox(
+            "Si destino ya existe",
+            ["Fusionar (append + dedupe)", "Sobrescribir destino"],
+            key="rename_modo",
+        )
+        if st.button("🔀 Mover/Fusionar", type="secondary"):
+            if not destino:
+                st.error("Especifica el ticker destino.")
+            elif destino == origen:
+                st.error("El destino debe ser distinto al origen.")
+            else:
+                df_src = storage.cargar_operaciones(origen)
+                if df_src.empty:
+                    st.error(f"`{origen}` está vacío.")
+                else:
+                    df_src = df_src.copy()
+                    df_src["EMISORA"] = destino
+                    modo = "append" if modo_merge.startswith("Fusionar") else "replace"
+                    n = storage.guardar_operaciones(destino, df_src, modo=modo)
+                    storage.eliminar_activo(origen)
+                    st.success(
+                        f"✅ Movidas {len(df_src):,} operaciones de "
+                        f"`{origen}` → `{destino}` (total ahora: {n:,}). "
+                        "Origen eliminado."
+                    )
+                    st.rerun()
+
+        st.markdown("##### Eliminar un activo")
+        a_borrar = st.selectbox("Selecciona ticker a eliminar", [a["ticker"] for a in activos], key="del_select")
+        confirma = st.text_input("Escribe el ticker para confirmar", value="", key="del_confirm")
+        if st.button("🗑️ Eliminar permanentemente", type="secondary"):
             if confirma.strip().upper() == a_borrar:
                 storage.eliminar_activo(a_borrar)
                 st.success(f"Activo {a_borrar} eliminado.")

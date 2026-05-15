@@ -90,11 +90,28 @@ def consolidar_operaciones(df: pd.DataFrame) -> pd.DataFrame:
 # ---------------------------------------------------------------------------
 
 def _vwap(df: pd.DataFrame) -> float:
-    """VWAP = Σ(precio * acciones) / Σ(acciones); si no hay acciones, fallback al promedio simple."""
-    acc = df["NUMERO_DE_ACCIONES"].fillna(0)
-    if acc.sum() and acc.sum() > 0:
-        return float((df["PRECIO_UNITARIO"] * acc).sum() / acc.sum())
-    return float(df["PRECIO_UNITARIO"].mean())
+    """
+    VWAP = Σ(precio × acciones) / Σ(acciones).
+    Si no hay datos de acciones (todo NaN/0) → fallback al promedio simple
+    de precios. Robusto frente a Int64/Float64 nullable.
+    """
+    if df is None or df.empty or "PRECIO_UNITARIO" not in df.columns:
+        return float("nan")
+    # Convertir a float64 puro para evitar bugs de pd.NA en multiplicación
+    prec = pd.to_numeric(df["PRECIO_UNITARIO"], errors="coerce").astype("float64")
+    if "NUMERO_DE_ACCIONES" in df.columns:
+        acc = pd.to_numeric(df["NUMERO_DE_ACCIONES"], errors="coerce").astype("float64").fillna(0.0)
+    else:
+        acc = pd.Series([0.0] * len(df), index=df.index)
+    mask = prec.notna()
+    prec = prec[mask]
+    acc = acc[mask]
+    denom = float(acc.sum())
+    if denom > 0:
+        return float((prec * acc).sum() / denom)
+    if not prec.empty:
+        return float(prec.mean())
+    return float("nan")
 
 
 def _agregado(df: pd.DataFrame) -> pd.Series:
