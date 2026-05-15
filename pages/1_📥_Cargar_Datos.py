@@ -186,35 +186,77 @@ def _procesar_archivos(
 with tab1:
     st.markdown(
         "🚀 **Auto-descarga 100 % automática** vía la API REST interna de BMV. "
-        "Cada emisora se almacena de forma **independiente** bajo el ticker "
-        "que escribas — sin importar qué clave detecte el parser."
+        "Escribe el ticker como lo conozcas (`AMXL`, `BIMBOA`, `WALMEX*`, "
+        "`AMX`, `BIMBO`, `WALMEX`...) — el sistema **resuelve la clave "
+        "BMV automáticamente** y descarga sólo los PDFs de recompra de esa emisora."
     )
-    clave_auto = st.text_input(
-        "Clave de cotización (cve_emisora BMV — ej. AMX, BIMBO, WALMEX, ALFA, GFNORTE)",
-        placeholder="AMX",
+    col_in, col_resol = st.columns([1, 2])
+    clave_auto = col_in.text_input(
+        "Ticker / clave",
+        placeholder="AMXL, BIMBO, WALMEX...",
         key="clave_scraper",
-        help=(
-            "Usa la clave **sin sufijo de serie**: 'AMX' (no 'AMXL'), "
-            "'WALMEX' (no 'WALMEX*'). Todos los PDFs se guardarán bajo "
-            "ese ticker para mantener el análisis consolidado."
-        ),
     ).strip().upper()
+
+    # Vista previa de la resolución (en vivo)
+    cve_resuelto = None
+    if clave_auto:
+        try:
+            resol = bmv_scraper.resolver_emisora(clave_auto)
+            if resol["estado"] == "ok":
+                cve_resuelto = resol["cve_emisora"]
+                if cve_resuelto != clave_auto:
+                    col_resol.success(
+                        f"🎯 `{clave_auto}` → **{cve_resuelto}**  ·  "
+                        f"_{resol['razon_social']}_"
+                    )
+                else:
+                    col_resol.success(
+                        f"🎯 **{cve_resuelto}**  ·  _{resol['razon_social']}_"
+                    )
+            elif resol["estado"] == "ambiguo":
+                col_resol.warning(
+                    f"⚠️ `{clave_auto}` coincide con varias emisoras. "
+                    "Selecciona abajo."
+                )
+                opciones = {
+                    f"{c['cve_emisora']} — {c['razon_social']}": c["cve_emisora"]
+                    for c in resol["candidatos"]
+                }
+                pick = col_resol.selectbox(
+                    "Emisora a usar",
+                    list(opciones.keys()),
+                    key="picker_ambiguo",
+                )
+                cve_resuelto = opciones[pick]
+            else:
+                col_resol.error(
+                    f"❌ No encontré `{clave_auto}` en BMV. "
+                    f"Variantes intentadas: {', '.join(resol['intentos'])}"
+                )
+        except Exception as e:
+            col_resol.error(f"Error consultando BMV: {e}")
 
     col_a, col_b, col_c = st.columns(3)
     max_docs = col_a.number_input("Máx. PDFs a descubrir", 10, 5000, 500, step=50)
     page_size = col_b.number_input("Tamaño de página API", 20, 200, 100, step=20)
     descargar_todos = col_c.checkbox("Descargar y procesar PDFs", value=True)
 
-    if st.button("⚡ Ejecutar auto-descarga", type="primary", disabled=not clave_auto):
-        with st.status("Consultando la API de BMV…", expanded=True) as status:
+    boton_disabled = not (clave_auto and cve_resuelto)
+    if st.button(
+        f"⚡ Auto-descargar **{cve_resuelto}**" if cve_resuelto else "⚡ Auto-descargar",
+        type="primary",
+        disabled=boton_disabled,
+    ):
+        with st.status(f"Buscando recompras de {cve_resuelto} en BMV…", expanded=True) as status:
             try:
                 progreso = st.progress(0.0, text="Buscando documentos…")
                 def _cb(actual, total):
                     if total:
                         progreso.progress(min(actual / total, 1.0), text=f"{actual}/{total} documentos…")
+                # auto_resolver=False porque ya lo resolvimos en la vista previa
                 docs = bmv_scraper.descubrir_pdfs(
-                    clave_auto, max_documentos=int(max_docs), page_size=int(page_size),
-                    progreso_cb=_cb,
+                    cve_resuelto, max_documentos=int(max_docs), page_size=int(page_size),
+                    progreso_cb=_cb, auto_resolver=False,
                 )
                 progreso.empty()
             except Exception as e:
@@ -257,8 +299,11 @@ with tab1:
             barra.empty()
             ok = sum(1 for _, c in archivos if c)
             status.update(label=f"Descargados {ok}/{len(archivos)} PDFs. Procesando…")
-        # ⬇️ AQUÍ está la garantía de aislamiento por emisora
-        _procesar_archivos(archivos, ticker_forzar=clave_auto)
+        # ⬇️ AQUÍ está la garantía de aislamiento por emisora.
+        # Usamos la cve_emisora resuelta (ej. "AMX") en lugar del input
+        # libre del usuario (ej. "AMXL") para mantener un único ticker
+        # canónico por activo.
+        _procesar_archivos(archivos, ticker_forzar=cve_resuelto or clave_auto)
 
     with st.expander("🔖 Fallback: bookmarklet (sólo si el endpoint de BMV cambia)"):
         st.markdown(

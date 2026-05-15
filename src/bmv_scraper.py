@@ -108,6 +108,157 @@ def _ag_grid_request(start: int, end: int, filtro_descripcion: Optional[str] = N
     return json.dumps(req, separators=(",", ":"))
 
 
+# ---------------------------------------------------------------------------
+# Resolutor de tickers — convierte tickers bursátiles (AMXL, BIMBOA…) en
+# la cve_emisora real de BMV (AMX, BIMBO…)
+# ---------------------------------------------------------------------------
+
+# Sufijos comunes de series accionarias mexicanas, ordenados de MÁS LARGO a
+# más corto para que probemos primero "CPO" antes de "C" sólo.
+_SUFIJOS_SERIE = ["CPO", "*", "A1", "B1", "B-1", "L", "O", "A", "B", "C", "1", "2"]
+
+
+def _generar_variantes(ticker: str) -> list[str]:
+    """Devuelve el ticker más todas sus variantes plausibles sin sufijo de serie."""
+    t = (ticker or "").strip().upper()
+    variantes = [t]
+    for sfx in _SUFIJOS_SERIE:
+        if t.endswith(sfx) and len(t) > len(sfx) + 1:
+            base = t[: -len(sfx)]
+            if base not in variantes:
+                variantes.append(base)
+    return variantes
+
+
+def _post_clave_cotizacion(termino: str, token: str) -> list[dict]:
+    """Llama a busquedaClaveCotizacion y devuelve los hits de instrumentos."""
+    body = {
+        "lang": "es",
+        "payload": {
+            "term": termino, "term2": "", "termT": termino,
+            "searchType": "busquedaClaveCotizacion",
+        },
+    }
+    r = requests.post(
+        SEARCH_URL,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+            "Accept": "*/*",
+            "User-Agent": UA,
+        },
+        json=body,
+        timeout=30,
+    )
+    if r.status_code != 200:
+        return []
+    try:
+        return r.json()["response"]["busquedaClaveCotizacion"]["instrumentos"]["hits"]
+    except (KeyError, TypeError):
+        return []
+
+
+def resolver_emisora(ticker: str) -> dict:
+    """
+    Convierte un ticker bursátil libre (AMXL, BIMBOA, WALMEX*, etc.) en una
+    cve_emisora canónica de BMV (AMX, BIMBO, WALMEX).
+
+    Estrategia:
+      1. Probar el ticker tal cual.
+      2. Si no devuelve nada, probar variantes quitando sufijos comunes.
+      3. Filtrar resultados al mercado de Capitales (acciones, no deuda).
+      4. Si hay UNA sola cve_emisora distinta → resolver automáticamente.
+      5. Si hay varias → devolver lista para que la UI haga selector.
+
+    Devuelve:
+        {
+          "estado": "ok" | "ambiguo" | "no_encontrado",
+          "ticker_input": <str>,
+          "cve_emisora": <str|None>,
+          "razon_social": <str|None>,
+          "candidatos": [{cve_emisora, razon_social, instrumento, mercado, intentado_con}, ...],
+          "intentos": [<términos probados>],
+        }
+    """
+    token = obtener_token()
+    intentos = []
+    candidatos: dict[str, dict] = {}
+
+    for variante in _generar_variantes(ticker):
+        intentos.append(variante)
+        hits = _post_clave_cotizacion(variante, token)
+        for h in hits:
+            src = h.get("_source", {}) or {}
+            cve = (src.get("cve_emisora") or "").upper()
+            if not cve:
+                continue
+            mercado = src.get("mercado") or ""
+            if cve not in candidatos:
+                candidatos[cve] = {
+                    "cve_emisora": cve,
+                    "razon_social": src.get("razon_social"),
+                    "instrumento": src.get("instrumento"),
+                    "serie": src.get("serie"),
+                    "mercado": mercado,
+                    "id_empresa": src.get("id_empresa"),
+                    "intentado_con": variante,
+                }
+        # Si en esta variante encontramos algo, dejamos de probar siguientes
+        if candidatos:
+            break
+
+    if not candidatos:
+        return {
+            "estado": "no_encontrado",
+            "ticker_input": ticker,
+            "cve_emisora": None,
+            "razon_social": None,
+            "candidatos": [],
+            "intentos": intentos,
+        }
+
+    # Filtrar a Capitales (preferimos acciones)
+    capitales = [c for c in candidatos.values() if (c.get("mercado") or "").lower() == "capitales"]
+    pool = capitales if capitales else list(candidatos.values())
+
+    # Match exacto: si alguna variante intentada coincide EXACTAMENTE con
+    # cve_emisora de un candidato, ese gana sobre todos los demás.
+    intentos_upper = {i.upper() for i in intentos}
+    exacto = [c for c in pool if c["cve_emisora"] in intentos_upper]
+    if len(exacto) == 1:
+        elegido = exacto[0]
+        return {
+            "estado": "ok",
+            "ticker_input": ticker,
+            "cve_emisora": elegido["cve_emisora"],
+            "razon_social": elegido["razon_social"],
+            "candidatos": pool,
+            "intentos": intentos,
+        }
+
+    # Una sola cve_emisora distinta → resolución única
+    cves_unicas = {c["cve_emisora"] for c in pool}
+    if len(cves_unicas) == 1:
+        elegido = pool[0]
+        return {
+            "estado": "ok",
+            "ticker_input": ticker,
+            "cve_emisora": elegido["cve_emisora"],
+            "razon_social": elegido["razon_social"],
+            "candidatos": pool,
+            "intentos": intentos,
+        }
+
+    return {
+        "estado": "ambiguo",
+        "ticker_input": ticker,
+        "cve_emisora": None,
+        "razon_social": None,
+        "candidatos": pool,
+        "intentos": intentos,
+    }
+
+
 def _post_search(termino: str, request_json: str, token: str) -> dict:
     parts = termino.strip().split(" ", 1)
     term1 = parts[0]
@@ -184,22 +335,44 @@ def descubrir_pdfs(
     max_documentos: int = 1000,
     page_size: int = 100,
     progreso_cb=None,
+    auto_resolver: bool = True,
 ) -> list[dict]:
     """
-    Descubre todos los PDFs de recompra de una emisora (ej. 'AMX', 'BIMBO').
+    Descubre todos los PDFs de recompra de una emisora.
 
-    Devuelve una lista de dicts con:
-        - url:          URL absoluta al PDF
-        - fecha:        fecha_recepcion (string YYYY-MM-DD HH:MM)
-        - id_documento: ID interno BMV
-        - cve_empresa:  clave de la emisora
-        - descripcion:  descripcion del documento
+    Acepta tickers en cualquier forma común:
+      - cve_emisora pura: 'AMX', 'BIMBO', 'WALMEX'
+      - ticker bursátil con sufijo de serie: 'AMXL', 'BIMBOA', 'GFNORTEO',
+        'WALMEX*', 'CEMEXCPO' — el resolutor las normaliza automáticamente.
 
-    progreso_cb(actual, total) se llama si se pasa.
+    Devuelve lista de dicts:
+        {url, fecha, id_documento, cve_empresa, descripcion}
+
+    Si `auto_resolver=False` se asume que `clave` ya es la cve_emisora exacta
+    y se omite la resolución (más rápido, no recomendado para inputs libres).
     """
     if not clave or not str(clave).strip():
         raise ValueError("Debes pasar una clave de cotización (ej. 'AMX').")
-    clave = str(clave).strip().upper()
+    clave_input = str(clave).strip().upper()
+
+    # ---- Resolver al cve_emisora canónico ----
+    if auto_resolver:
+        resol = resolver_emisora(clave_input)
+        if resol["estado"] == "no_encontrado":
+            raise RuntimeError(
+                f"No se encontró ninguna emisora en BMV para '{clave_input}'. "
+                f"Variantes intentadas: {', '.join(resol['intentos'])}. "
+                "Usa la cve_emisora exacta (ej. 'AMX' en lugar de 'AMXL')."
+            )
+        if resol["estado"] == "ambiguo":
+            opciones = ", ".join(f"{c['cve_emisora']} ({c['razon_social']})" for c in resol["candidatos"])
+            raise RuntimeError(
+                f"'{clave_input}' coincide con múltiples emisoras en BMV. "
+                f"Especifica una: {opciones}"
+            )
+        clave = resol["cve_emisora"]
+    else:
+        clave = clave_input
 
     token = obtener_token()
     documentos: list[dict] = []
