@@ -73,11 +73,63 @@ streamlit run app.py
 2. Entra a <https://share.streamlit.io> → **New app**.
 3. Selecciona el repo, rama `main` y archivo `app.py`.
 4. *Advanced settings* → Python 3.11 (recomendado).
-5. Deploy. Listo.
+5. **Configura los secrets para persistencia** (ver siguiente sección).
+6. Deploy.
 
-> El parquet de `data/activos/` es **efímero** en Streamlit Cloud (se
-> reinicia cuando la app duerme). Para persistencia real ver el roadmap
-> abajo.
+## 💾 Persistencia con GitHub auto-commit
+
+Streamlit Cloud reinicia el filesystem cuando la app duerme. Para que
+los datos sobrevivan, la app commitea automáticamente los parquets al
+mismo repo de GitHub.
+
+### Setup (5 minutos, una sola vez)
+
+**1. Crear un Personal Access Token** en GitHub:
+
+   - Ve a <https://github.com/settings/tokens?type=beta> (Fine-grained token).
+   - **Repository access** → *Only select repositories* → tu repo
+     `fondos-recompra-bmv`.
+   - **Repository permissions** → `Contents: Read and write`.
+   - Expiration: 1 año.
+   - Click **Generate token** y **copia el token** (empieza con
+     `github_pat_...`).
+
+**2. Configurar el secret en Streamlit Cloud:**
+
+   - Entra a tu app en <https://share.streamlit.io>.
+   - **⋮ → Settings → Secrets**.
+   - Pega:
+
+```toml
+[github]
+token = "github_pat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+repo  = "TU_USUARIO/fondos-recompra-bmv"
+branch = "main"
+base_path = "data/activos"
+author_name = "App Recompras"
+author_email = "noreply@example.com"
+```
+
+   - Click **Save** → la app reinicia sola.
+
+**3. Verifica:** abre la app, en el sidebar debe decir
+**💾 Persistencia: GitHub**. Si dice "Local (efímera)" revisa que el
+secret esté bien escrito.
+
+### ¿Cómo funciona?
+
+- Cada vez que cargas/procesas PDFs nuevos, el `parquet` consolidado se
+  empuja vía la GitHub Contents API a `data/activos/{TICKER}/operations.parquet`.
+- Cada cambio = un commit con mensaje
+  `data(TICKER): N ops`.
+- El índice de activos vive en `data/activos/_index.json`.
+- Cuando la app reinicia, lee primero de GitHub y reconstruye el estado.
+
+### Modo local (sin secret)
+
+Si no configuras el secret, la app cae automáticamente al filesystem
+local (`data/activos/`). Útil para desarrollo. Verás un warning amarillo
+en el sidebar.
 
 ## 🔁 Flujo típico de uso
 

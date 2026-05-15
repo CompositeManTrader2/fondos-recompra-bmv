@@ -21,6 +21,23 @@ st.set_page_config(
 )
 
 
+def _sidebar_backend_status():
+    info = storage.info_backend()
+    if info["backend"] == "github":
+        st.sidebar.success(
+            f"💾 Persistencia: **GitHub**\n\n"
+            f"`{info.get('repo')}@{info.get('branch')}`\n"
+            f"`{info.get('base_path')}`"
+        )
+    else:
+        st.sidebar.warning(
+            "💾 Persistencia: **Local (efímera)**\n\n"
+            "En Streamlit Cloud los datos se borrarán al reiniciar.\n"
+            "Configura `[github]` en *Secrets* para persistencia real "
+            "(ver README)."
+        )
+
+
 def _sidebar_selector_activo():
     """Selector global de activo. Se persiste en st.session_state."""
     activos = storage.listar_activos()
@@ -58,6 +75,7 @@ def main():
         "Tracker multi-activo de operaciones de fondo de recompra publicadas en la BMV."
     )
 
+    _sidebar_backend_status()
     _sidebar_selector_activo()
 
     col1, col2, col3 = st.columns(3)

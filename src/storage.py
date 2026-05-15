@@ -1,17 +1,20 @@
 """
-Capa de persistencia local (parquet por activo).
+Capa de persistencia con dos backends:
+  - **github**:  parquets se commitean al mismo repo de GitHub (persistente).
+  - **local**:   filesystem local (efímero en Streamlit Cloud).
 
-Estructura en disco:
-    data/activos/{TICKER}/operations.parquet   ← histórico consolidado
-    data/activos/{TICKER}/raw_pdfs/*.pdf       ← (opcional) PDFs originales
-    data/activos/_index.json                   ← lista maestra de activos
+Selección automática:
+  - Si `st.secrets["github"]` (o env vars `GITHUB_TOKEN` + `GITHUB_REPO`)
+    existen → backend GitHub.
+  - Si no → backend local en `data/activos/`.
 
-Streamlit Cloud: el filesystem es efímero entre reinicios. Esto sirve durante
-la sesión y como cache local. Para algo permanente conviene un bucket S3 /
-GCS / Supabase (ver README → Roadmap).
+Estructura lógica idéntica en ambos:
+    {base}/{TICKER}/operations.parquet
+    {base}/_index.json
 """
 from __future__ import annotations
 
+import io
 import json
 import re
 from datetime import datetime
@@ -20,9 +23,27 @@ from typing import Optional
 
 import pandas as pd
 
+from src import github_storage
+
 DATA_ROOT = Path(__file__).resolve().parent.parent / "data" / "activos"
 DATA_ROOT.mkdir(parents=True, exist_ok=True)
 INDEX_FILE = DATA_ROOT / "_index.json"
+
+
+# ---------------------------------------------------------------------------
+# Selección de backend
+# ---------------------------------------------------------------------------
+
+def backend_actual() -> str:
+    return "github" if github_storage.is_enabled() else "local"
+
+
+def info_backend() -> dict:
+    if github_storage.is_enabled():
+        info = github_storage.config_info()
+        info["backend"] = "github"
+        return info
+    return {"backend": "local", "path": str(DATA_ROOT)}
 
 
 # ---------------------------------------------------------------------------
@@ -35,22 +56,23 @@ def _normalizar_ticker(ticker: str) -> str:
     return t or "DESCONOCIDA"
 
 
-def _carpeta_ticker(ticker: str) -> Path:
-    p = DATA_ROOT / _normalizar_ticker(ticker)
-    p.mkdir(parents=True, exist_ok=True)
-    (p / "raw_pdfs").mkdir(parents=True, exist_ok=True)
-    return p
-
-
-def _parquet_path(ticker: str) -> Path:
-    return _carpeta_ticker(ticker) / "operations.parquet"
+def _parquet_relpath(ticker: str) -> str:
+    return f"{_normalizar_ticker(ticker)}/operations.parquet"
 
 
 # ---------------------------------------------------------------------------
-# Índice maestro
+# Lectura/escritura del índice
 # ---------------------------------------------------------------------------
 
 def _leer_indice() -> dict:
+    if backend_actual() == "github":
+        try:
+            data = github_storage.read_bytes("_index.json")
+            if data:
+                return json.loads(data.decode("utf-8"))
+            return {}
+        except Exception:
+            return {}
     if INDEX_FILE.exists():
         try:
             return json.loads(INDEX_FILE.read_text(encoding="utf-8"))
@@ -60,25 +82,32 @@ def _leer_indice() -> dict:
 
 
 def _guardar_indice(idx: dict) -> None:
-    INDEX_FILE.write_text(json.dumps(idx, indent=2, ensure_ascii=False), encoding="utf-8")
+    payload = json.dumps(idx, indent=2, ensure_ascii=False).encode("utf-8")
+    if backend_actual() == "github":
+        github_storage.write_bytes("_index.json", payload, mensaje="chore(data): update index")
+        return
+    INDEX_FILE.parent.mkdir(parents=True, exist_ok=True)
+    INDEX_FILE.write_bytes(payload)
 
+
+# ---------------------------------------------------------------------------
+# Listar / registrar / eliminar activos
+# ---------------------------------------------------------------------------
 
 def listar_activos() -> list[dict]:
-    """Devuelve lista de dicts con info por activo (ticker, nombre, n_ops, etc.)."""
     idx = _leer_indice()
     out = []
     for ticker, meta in idx.items():
-        path = _parquet_path(ticker)
         n_ops = 0
         ult = None
-        if path.exists():
-            try:
-                df = pd.read_parquet(path)
+        try:
+            df = cargar_operaciones(ticker)
+            if not df.empty:
                 n_ops = len(df)
-                if "FECHA_OPERACION" in df.columns and not df.empty:
+                if "FECHA_OPERACION" in df.columns:
                     ult = pd.to_datetime(df["FECHA_OPERACION"]).max()
-            except Exception:
-                pass
+        except Exception:
+            pass
         out.append({
             "ticker": ticker,
             "nombre": meta.get("nombre", ticker),
@@ -91,7 +120,6 @@ def listar_activos() -> list[dict]:
 
 
 def registrar_activo(ticker: str, nombre: Optional[str] = None) -> str:
-    """Crea/actualiza la entrada del activo en el índice."""
     ticker = _normalizar_ticker(ticker)
     idx = _leer_indice()
     ahora = datetime.now().isoformat(timespec="seconds")
@@ -115,6 +143,12 @@ def eliminar_activo(ticker: str) -> None:
     if ticker in idx:
         del idx[ticker]
         _guardar_indice(idx)
+    if backend_actual() == "github":
+        try:
+            github_storage.delete_path(_parquet_relpath(ticker), mensaje=f"chore(data): drop {ticker}")
+        except Exception:
+            pass
+        return
     carpeta = DATA_ROOT / ticker
     if carpeta.exists():
         for f in carpeta.rglob("*"):
@@ -133,7 +167,16 @@ def eliminar_activo(ticker: str) -> None:
 # ---------------------------------------------------------------------------
 
 def cargar_operaciones(ticker: str) -> pd.DataFrame:
-    path = _parquet_path(ticker)
+    ticker = _normalizar_ticker(ticker)
+    if backend_actual() == "github":
+        try:
+            data = github_storage.read_bytes(_parquet_relpath(ticker))
+            if not data:
+                return pd.DataFrame()
+            return pd.read_parquet(io.BytesIO(data))
+        except Exception:
+            return pd.DataFrame()
+    path = DATA_ROOT / ticker / "operations.parquet"
     if not path.exists():
         return pd.DataFrame()
     try:
@@ -146,7 +189,7 @@ def guardar_operaciones(ticker: str, df: pd.DataFrame, modo: str = "append") -> 
     """
     modo='append' → fusiona con lo existente y deduplica.
     modo='replace' → sobrescribe.
-    Devuelve el número total de filas tras guardar.
+    Devuelve número total de filas tras guardar.
     """
     ticker = registrar_activo(ticker)
     if df is None or df.empty:
@@ -158,18 +201,38 @@ def guardar_operaciones(ticker: str, df: pd.DataFrame, modo: str = "append") -> 
         if not existente.empty:
             df = pd.concat([existente, df], ignore_index=True)
 
-    # Dedupe por una llave razonable
     keys = [c for c in ["EMISORA", "FECHA_OPERACION", "FOLIO", "CASA_BOLSA", "PRECIO_UNITARIO"] if c in df.columns]
     if keys:
         df = df.drop_duplicates(subset=keys, keep="first")
 
-    df.to_parquet(_parquet_path(ticker), index=False)
+    # Serializar a parquet en memoria
+    buf = io.BytesIO()
+    df.to_parquet(buf, index=False, compression="snappy")
+    payload = buf.getvalue()
+
+    if backend_actual() == "github":
+        github_storage.write_bytes(
+            _parquet_relpath(ticker),
+            payload,
+            mensaje=f"data({ticker}): {len(df):,} operaciones",
+        )
+    else:
+        out = DATA_ROOT / ticker / "operations.parquet"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_bytes(payload)
+
     return len(df)
 
 
-def guardar_pdf_bytes(ticker: str, nombre: str, contenido: bytes) -> Path:
-    """Persiste el PDF original en data/activos/{TICKER}/raw_pdfs/."""
+def guardar_pdf_bytes(ticker: str, nombre: str, contenido: bytes) -> Optional[str]:
+    """
+    En modo local persiste el PDF original. En modo github lo omite (los
+    PDFs son recuperables vía la URL pública de BMV cuando se quiera).
+    """
     ticker = registrar_activo(ticker)
-    destino = _carpeta_ticker(ticker) / "raw_pdfs" / nombre
+    if backend_actual() == "github":
+        return None  # No spamear el repo con PDFs
+    destino = DATA_ROOT / ticker / "raw_pdfs" / nombre
+    destino.parent.mkdir(parents=True, exist_ok=True)
     destino.write_bytes(contenido)
-    return destino
+    return str(destino)
