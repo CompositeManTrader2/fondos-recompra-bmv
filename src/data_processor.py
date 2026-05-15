@@ -172,36 +172,62 @@ def total_global(df: pd.DataFrame) -> dict:
 def comparar_con_mercado(
     diarios: pd.DataFrame,
     df_mercado: pd.DataFrame,
-    columna_precio: str = "Close",
+    columna_precio: Optional[str] = None,
 ) -> pd.DataFrame:
     """
+    Cruza el VWAP diario del fondo contra precios de mercado.
+
     diarios: salida de estadisticos_por_periodo(df, 'FECHA')
-    df_mercado: DataFrame con índice/columna de fecha y precio de cierre.
+    df_mercado: DataFrame con columna de fecha y al menos una de
+                ['Close', 'Adj Close', 'PRECIO_MERCADO', 'CIERRE'].
+    columna_precio: si se omite, se autodetecta.
     """
     if diarios is None or diarios.empty or df_mercado is None or df_mercado.empty:
         return pd.DataFrame()
 
     m = df_mercado.copy()
-    if "Date" in m.columns:
-        m["FECHA"] = pd.to_datetime(m["Date"]).dt.normalize()
-    elif m.index.name and "date" in m.index.name.lower():
-        m = m.reset_index().rename(columns={m.index.name: "FECHA"})
-        m["FECHA"] = pd.to_datetime(m["FECHA"]).dt.normalize()
-    else:
-        m = m.reset_index()
-        m.columns = [str(c) for c in m.columns]
-        # Toma la primera columna tipo fecha
-        for col in m.columns:
-            if "fecha" in col.lower() or "date" in col.lower():
-                m["FECHA"] = pd.to_datetime(m[col]).dt.normalize()
-                break
 
-    if "FECHA" not in m.columns or columna_precio not in m.columns:
+    # 1) Localizar columna de fecha
+    if "FECHA" not in m.columns:
+        for col_candidate in ("Date", "FECHA", "fecha", "Fecha", "datetime"):
+            if col_candidate in m.columns:
+                m = m.rename(columns={col_candidate: "FECHA"})
+                break
+        else:
+            # Último recurso: si el índice es DatetimeIndex
+            if isinstance(m.index, pd.DatetimeIndex):
+                m = m.reset_index().rename(columns={m.columns[0]: "FECHA"})
+            else:
+                m = m.reset_index()
+                for col in m.columns:
+                    if "fecha" in str(col).lower() or "date" in str(col).lower():
+                        m = m.rename(columns={col: "FECHA"})
+                        break
+
+    if "FECHA" not in m.columns:
+        return pd.DataFrame()
+    m["FECHA"] = pd.to_datetime(m["FECHA"], errors="coerce").dt.tz_localize(None).dt.normalize()
+    m = m.dropna(subset=["FECHA"])
+
+    # 2) Localizar columna de precio
+    if not columna_precio or columna_precio not in m.columns:
+        for col_candidate in ("PRECIO_MERCADO", "Close", "Adj Close", "CIERRE", "Cierre", "cierre"):
+            if col_candidate in m.columns:
+                columna_precio = col_candidate
+                break
+    if not columna_precio or columna_precio not in m.columns:
         return pd.DataFrame()
 
     m = m[["FECHA", columna_precio]].rename(columns={columna_precio: "PRECIO_MERCADO"})
-    out = diarios.merge(m, how="left", left_on="FECHA", right_on="FECHA")
+    m["PRECIO_MERCADO"] = pd.to_numeric(m["PRECIO_MERCADO"], errors="coerce")
+    m = m.dropna(subset=["PRECIO_MERCADO"]).drop_duplicates(subset=["FECHA"], keep="last")
 
+    # 3) Cruzar
+    d = diarios.copy()
+    d["FECHA"] = pd.to_datetime(d["FECHA"]).dt.tz_localize(None).dt.normalize()
+    out = d.merge(m, how="left", on="FECHA")
+
+    # 4) Métricas de sobreprecio
     for c in ["VWAP", "VWAP_COMPRA", "VWAP_VENTA"]:
         if c in out.columns:
             out[f"{c}_VS_MERCADO_%"] = 100 * (out[c] - out["PRECIO_MERCADO"]) / out["PRECIO_MERCADO"]
