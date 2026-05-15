@@ -27,18 +27,17 @@ if df_raw.empty:
     st.warning(f"No hay operaciones almacenadas para **{ticker}**.")
     st.stop()
 
-# Garantizar aislamiento por emisora — defensa en profundidad
+# Garantizar aislamiento por emisora
 if "EMISORA" in df_raw.columns:
     sin_emisora = df_raw["EMISORA"].isna() | (df_raw["EMISORA"].astype(str).str.strip() == "")
     if sin_emisora.any():
         df_raw.loc[sin_emisora, "EMISORA"] = ticker
-    # Mantener SOLO operaciones de la emisora seleccionada
     df_raw = df_raw[df_raw["EMISORA"].astype(str).str.upper() == ticker.upper()].copy()
 
 if df_raw.empty:
     st.error(
         f"⚠️ Las operaciones almacenadas no pertenecen a `{ticker}`. "
-        "Esto puede indicar un mezclado anterior. Ve a **📥 Cargar Datos → Mantenimiento** para reorganizar."
+        "Ve a **📥 Cargar Datos → Mantenimiento** para reorganizar."
     )
     st.stop()
 
@@ -73,7 +72,7 @@ if df_f.empty:
     st.stop()
 
 # ---------------------------------------------------------------------------
-# 🌟 VWAP DESTACADO (la métrica que el usuario quería ver más visible)
+# KPIs principales: VWAP destacado
 # ---------------------------------------------------------------------------
 total = data_processor.total_global(df_f)
 
@@ -106,14 +105,10 @@ v4.metric(
     "Spread V−C",
     f"${spread:,.4f}" if spread is not None else "—",
     delta=f"{spread_bps:+.0f} bps" if spread_bps is not None else None,
-    help="Diferencia entre VWAP de ventas y compras del periodo (en pesos y bps).",
 )
 
 st.divider()
 
-# ---------------------------------------------------------------------------
-# KPIs operativos
-# ---------------------------------------------------------------------------
 st.markdown("### 📈 Actividad")
 c1, c2, c3, c4 = st.columns(4)
 c1.metric("Operaciones", f"{int(total['OPERACIONES']):,}")
@@ -136,22 +131,26 @@ semanales = data_processor.estadisticos_por_periodo(df_f, "SEMANA_INICIO")
 mensuales = data_processor.estadisticos_por_periodo(df_f, "MES")
 
 tabs = st.tabs([
-    "💎 VWAP por periodo",
+    "💎 VWAP",
+    "📈 Acumulados",
+    "📊 Distribución",
+    "🕯️ Dispersión intradía",
+    "🔥 Calendario",
+    "🏛️ Casas (temporal)",
     "📅 Diario",
     "📆 Semanal",
     "🗓️ Mensual",
-    "🔍 Detalle de operaciones",
+    "🔍 Detalle ops",
 ])
 
-# ----- VWAP dedicado -----
+# ----- VWAP -----
 with tabs[0]:
-    st.markdown("##### VWAP día por día (con compra/venta y precio mín/máx)")
+    st.markdown("##### VWAP día por día")
     df_vwap = diarios[["FECHA", "OPERACIONES", "ACCIONES", "IMPORTE",
                        "VWAP", "VWAP_COMPRA", "VWAP_VENTA",
                        "PRECIO_MIN", "PRECIO_MAX"]].copy()
     st.dataframe(
-        df_vwap,
-        use_container_width=True, hide_index=True,
+        df_vwap, use_container_width=True, hide_index=True,
         column_config={
             "FECHA": st.column_config.DateColumn("Fecha", format="DD-MMM-YYYY"),
             "OPERACIONES": st.column_config.NumberColumn("# Ops", format="%d"),
@@ -164,26 +163,84 @@ with tabs[0]:
             "PRECIO_MAX": st.column_config.NumberColumn("Máx", format="$%.4f"),
         },
     )
+    st.markdown("##### VWAP vs medias móviles")
+    st.plotly_chart(viz.grafica_vwap_rolling(diarios), use_container_width=True)
 
-    st.markdown("##### Gráfica VWAP")
+    st.markdown("##### VWAP diario con compra/venta")
     st.plotly_chart(
         viz.grafica_actividad_diaria(diarios, metrica="ACCIONES", incluir_vwap_lados=True),
         use_container_width=True,
     )
 
-    csv_vwap = df_vwap.to_csv(index=False).encode("utf-8")
     st.download_button(
         "⬇️ Descargar VWAP diario (CSV)",
-        data=csv_vwap,
+        data=df_vwap.to_csv(index=False).encode("utf-8"),
         file_name=f"vwap_{ticker}_{f_ini.date()}_{f_fin.date()}.csv",
         mime="text/csv",
     )
 
-# ----- Diario -----
+# ----- Acumulados -----
 with tabs[1]:
+    st.markdown(
+        "Cuánto ha acumulado el fondo en el periodo: acciones netas (compra − venta) "
+        "e importe gastado total."
+    )
+    st.plotly_chart(viz.grafica_acumulado(diarios), use_container_width=True)
+
+    # Tamaño promedio de operación
+    st.markdown("##### Tamaño promedio de operación")
+    st.plotly_chart(viz.grafica_tamano_operacion(diarios), use_container_width=True)
+
+    # KPIs adicionales del acumulado
+    a, b, c = st.columns(3)
+    acc_compra_total = int(df_f[df_f["TIPO"] == "COMPRA"]["NUMERO_DE_ACCIONES"].fillna(0).sum())
+    acc_venta_total = int(df_f[df_f["TIPO"] == "VENTA"]["NUMERO_DE_ACCIONES"].fillna(0).sum())
+    a.metric("Acciones compradas", f"{acc_compra_total:,}")
+    b.metric("Acciones vendidas", f"{acc_venta_total:,}")
+    c.metric("Posición neta", f"{acc_compra_total - acc_venta_total:+,}")
+
+# ----- Distribución -----
+with tabs[2]:
+    st.markdown("Distribución de los precios ejecutados en el periodo:")
+    st.plotly_chart(viz.grafica_histograma_precios(df_f), use_container_width=True)
+
+    st.markdown("##### Compra vs Venta apilado")
+    st.plotly_chart(viz.grafica_compra_vs_venta(diarios), use_container_width=True)
+
+# ----- Dispersión intradía -----
+with tabs[3]:
+    st.markdown(
+        "Cada caja muestra el rango de precios ejecutados ese día (mediana, "
+        "cuartiles y outliers). Útil para detectar días con mucha volatilidad intradía."
+    )
+    max_dias = st.slider("Días a mostrar", 10, 120, 60, step=10)
+    st.plotly_chart(viz.grafica_dispersion_intradia(df_f, max_dias=max_dias), use_container_width=True)
+
+# ----- Calendario -----
+with tabs[4]:
+    metrica_cal = st.selectbox(
+        "Métrica del calendario",
+        ["ACCIONES", "OPERACIONES", "IMPORTE"],
+        index=0,
+    )
+    st.plotly_chart(viz.grafica_heatmap_calendario(diarios, metrica=metrica_cal),
+                    use_container_width=True)
+    st.caption("Cada celda = un día hábil. Tono más oscuro = mayor actividad ese día.")
+
+# ----- Casas (temporal) -----
+with tabs[5]:
+    st.markdown(
+        "Quién opera, cuánto y cuándo. Útil para ver rotación de casas de bolsa "
+        "a lo largo del tiempo."
+    )
+    top_n = st.slider("Top casas a mostrar individualmente", 3, 15, 8)
+    st.plotly_chart(viz.grafica_actividad_casas_temporal(df_f, top_n=top_n),
+                    use_container_width=True)
+
+# ----- Diario -----
+with tabs[6]:
     metrica = st.selectbox(
-        "Métrica para barras",
-        ["OPERACIONES", "ACCIONES", "IMPORTE"],
+        "Métrica para barras", ["OPERACIONES", "ACCIONES", "IMPORTE"],
         key="metrica_diaria",
     )
     incluye = st.checkbox("Incluir VWAP de compra y venta", value=True)
@@ -194,28 +251,26 @@ with tabs[1]:
     st.dataframe(diarios, use_container_width=True, hide_index=True)
 
 # ----- Semanal -----
-with tabs[2]:
+with tabs[7]:
     st.plotly_chart(
         viz.grafica_actividad_diaria(
             semanales.rename(columns={"SEMANA_INICIO": "FECHA"}),
-            metrica="IMPORTE",
-            incluir_vwap_lados=True,
+            metrica="IMPORTE", incluir_vwap_lados=True,
         ),
         use_container_width=True,
     )
     st.dataframe(semanales, use_container_width=True, hide_index=True)
 
 # ----- Mensual -----
-with tabs[3]:
+with tabs[8]:
     st.plotly_chart(viz.grafica_actividad_mensual(mensuales), use_container_width=True)
     st.dataframe(mensuales, use_container_width=True, hide_index=True)
 
-# ----- Detalle -----
-with tabs[4]:
+# ----- Detalle ops -----
+with tabs[9]:
     st.dataframe(
         df_f.sort_values(["FECHA_OPERACION", "FOLIO"]).reset_index(drop=True),
-        use_container_width=True,
-        hide_index=True,
+        use_container_width=True, hide_index=True,
         column_config={
             "FECHA_OPERACION": st.column_config.DatetimeColumn("Fecha"),
             "PRECIO_UNITARIO": st.column_config.NumberColumn("Precio", format="$%.4f"),
