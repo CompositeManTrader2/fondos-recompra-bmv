@@ -10,10 +10,11 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from src import data_processor, storage, visualizations as viz
+from src import data_processor, storage, theme as T, visualizations as viz
 
 st.set_page_config(page_title="Casas de Bolsa", page_icon="🏛️", layout="wide")
-st.title("🏛️ Concentración por casa de bolsa")
+T.aplicar_tema()
+T.header("BRKR", "Casas de bolsa", f"Concentración por intermediario · {st.session_state.get('ticker_activo') or ''}")
 
 ticker = st.session_state.get("ticker_activo")
 if not ticker:
@@ -38,18 +39,18 @@ c3.metric("HHI (concentración)", f"{hhi:,.0f}", help="Índice Herfindahl-Hirsch
 
 col1, col2 = st.columns(2)
 with col1:
-    st.plotly_chart(viz.grafica_pastel_casas(por_casa, "IMPORTE"), use_container_width=True)
+    st.plotly_chart(viz.grafica_pastel_casas(por_casa, "IMPORTE"), width="stretch")
 with col2:
-    st.plotly_chart(viz.grafica_pastel_casas(por_casa, "OPERACIONES"), use_container_width=True)
+    st.plotly_chart(viz.grafica_pastel_casas(por_casa, "OPERACIONES"), width="stretch")
 
-st.plotly_chart(viz.grafica_monto_por_casa(por_casa, top_n=15), use_container_width=True)
+st.plotly_chart(viz.grafica_monto_por_casa(por_casa, top_n=15), width="stretch")
 
 st.dataframe(
     por_casa,
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
     column_config={
-        "IMPORTE": st.column_config.NumberColumn("Importe", format="$%d"),
+        "IMPORTE": st.column_config.NumberColumn("Importe", format="$%,.0f"),
         "PARTICIPACION_IMPORTE_%": st.column_config.NumberColumn("% importe", format="%.2f%%"),
         "PARTICIPACION_OPS_%": st.column_config.NumberColumn("% ops", format="%.2f%%"),
         "VWAP": st.column_config.NumberColumn("VWAP", format="$%.4f"),

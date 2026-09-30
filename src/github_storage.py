@@ -120,12 +120,17 @@ def _full_path(cfg: GithubConfig, relative_path: str) -> str:
 # API pública del módulo
 # ---------------------------------------------------------------------------
 
-def read_bytes(relative_path: str) -> Optional[bytes]:
-    """Lee un archivo del repo. Devuelve None si no existe."""
+def read_bytes(relative_path: str, absolute: bool = False) -> Optional[bytes]:
+    """
+    Lee un archivo del repo. Devuelve None si no existe.
+    `absolute=True` interpreta la ruta desde la raíz del repo (no desde
+    base_path) — p.ej. 'data/daily/resumen_diario.parquet'.
+    """
     cfg = _leer_config()
     if not cfg:
         return None
-    url = _url_contents(cfg, _full_path(cfg, relative_path))
+    path = relative_path.lstrip("/") if absolute else _full_path(cfg, relative_path)
+    url = _url_contents(cfg, path)
     params = {"ref": cfg.branch}
     r = requests.get(url, headers=_headers(cfg), params=params, timeout=30)
     if r.status_code == 404:

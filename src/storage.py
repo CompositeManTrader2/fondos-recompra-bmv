@@ -16,7 +16,9 @@ from __future__ import annotations
 
 import io
 import json
+import os
 import re
+import time
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -29,12 +31,35 @@ DATA_ROOT = Path(__file__).resolve().parent.parent / "data" / "activos"
 DATA_ROOT.mkdir(parents=True, exist_ok=True)
 INDEX_FILE = DATA_ROOT / "_index.json"
 
+# Caché en memoria para lecturas vía GitHub API (evita N requests por rerun).
+_CACHE_TTL_S = 120
+_cache: dict[str, tuple[float, object]] = {}
+
+
+def _cache_get(key: str):
+    hit = _cache.get(key)
+    if hit and time.time() - hit[0] < _CACHE_TTL_S:
+        return hit[1]
+    return None
+
+
+def _cache_set(key: str, value) -> None:
+    _cache[key] = (time.time(), value)
+
+
+def _cache_drop(key: str) -> None:
+    _cache.pop(key, None)
+
 
 # ---------------------------------------------------------------------------
 # Selección de backend
 # ---------------------------------------------------------------------------
 
 def backend_actual() -> str:
+    # El scanner diario (GitHub Actions) escribe directo al checkout y hace
+    # un solo commit al final: fuerza backend local con STORAGE_BACKEND=local.
+    if os.environ.get("STORAGE_BACKEND", "").lower() == "local":
+        return "local"
     return "github" if github_storage.is_enabled() else "local"
 
 
@@ -66,13 +91,16 @@ def _parquet_relpath(ticker: str) -> str:
 
 def _leer_indice() -> dict:
     if backend_actual() == "github":
+        cached = _cache_get("_index.json")
+        if cached is not None:
+            return dict(cached)
         try:
             data = github_storage.read_bytes("_index.json")
-            if data:
-                return json.loads(data.decode("utf-8"))
-            return {}
+            idx = json.loads(data.decode("utf-8")) if data else {}
         except Exception:
-            return {}
+            idx = {}
+        _cache_set("_index.json", idx)
+        return dict(idx)
     if INDEX_FILE.exists():
         try:
             return json.loads(INDEX_FILE.read_text(encoding="utf-8"))
@@ -82,9 +110,10 @@ def _leer_indice() -> dict:
 
 
 def _guardar_indice(idx: dict) -> None:
-    payload = json.dumps(idx, indent=2, ensure_ascii=False).encode("utf-8")
+    payload = json.dumps(idx, indent=2, ensure_ascii=False, sort_keys=True).encode("utf-8")
     if backend_actual() == "github":
         github_storage.write_bytes("_index.json", payload, mensaje="chore(data): update index")
+        _cache_set("_index.json", idx)
         return
     INDEX_FILE.parent.mkdir(parents=True, exist_ok=True)
     INDEX_FILE.write_bytes(payload)
@@ -95,46 +124,58 @@ def _guardar_indice(idx: dict) -> None:
 # ---------------------------------------------------------------------------
 
 def listar_activos() -> list[dict]:
+    """
+    Lista activos usando SOLO los metadatos del índice (n_operaciones,
+    ultima_fecha), sin descargar cada parquet. Con 100+ emisoras cargadas
+    por el scanner diario, leer todos los parquets en cada rerun sería
+    inviable.
+    """
     idx = _leer_indice()
     out = []
     for ticker, meta in idx.items():
-        n_ops = 0
-        ult = None
-        try:
-            df = cargar_operaciones(ticker)
-            if not df.empty:
-                n_ops = len(df)
-                if "FECHA_OPERACION" in df.columns:
-                    ult = pd.to_datetime(df["FECHA_OPERACION"]).max()
-        except Exception:
-            pass
         out.append({
             "ticker": ticker,
             "nombre": meta.get("nombre", ticker),
             "creado": meta.get("creado"),
             "actualizado": meta.get("actualizado"),
-            "n_operaciones": n_ops,
-            "ultima_fecha": ult.isoformat() if pd.notna(ult) and ult is not None else None,
+            "n_operaciones": int(meta.get("n_operaciones") or 0),
+            "ultima_fecha": meta.get("ultima_fecha"),
         })
     return sorted(out, key=lambda x: x["ticker"])
 
 
-def registrar_activo(ticker: str, nombre: Optional[str] = None) -> str:
+def _meta_desde_df(df: pd.DataFrame) -> dict:
+    meta = {"n_operaciones": int(len(df))}
+    if "FECHA_OPERACION" in df.columns and not df.empty:
+        ult = pd.to_datetime(df["FECHA_OPERACION"], errors="coerce").max()
+        if pd.notna(ult):
+            meta["ultima_fecha"] = ult.date().isoformat()
+    return meta
+
+
+def registrar_activo(ticker: str, nombre: Optional[str] = None, meta: Optional[dict] = None) -> str:
     ticker = _normalizar_ticker(ticker)
     idx = _leer_indice()
     ahora = datetime.now().isoformat(timespec="seconds")
-    if ticker not in idx:
-        idx[ticker] = {
-            "nombre": nombre or ticker,
-            "creado": ahora,
-            "actualizado": ahora,
-        }
-    else:
-        idx[ticker]["actualizado"] = ahora
-        if nombre:
-            idx[ticker]["nombre"] = nombre
+    entrada = idx.get(ticker) or {"nombre": nombre or ticker, "creado": ahora}
+    entrada["actualizado"] = ahora
+    if nombre:
+        entrada["nombre"] = nombre
+    if meta:
+        entrada.update(meta)
+    idx[ticker] = entrada
     _guardar_indice(idx)
     return ticker
+
+
+def reconstruir_metadatos_indice() -> int:
+    """Recalcula n_operaciones/ultima_fecha de todo el índice leyendo los parquets."""
+    idx = _leer_indice()
+    for ticker in list(idx.keys()):
+        df = cargar_operaciones(ticker)
+        idx[ticker].update(_meta_desde_df(df))
+    _guardar_indice(idx)
+    return len(idx)
 
 
 def eliminar_activo(ticker: str) -> None:
@@ -143,6 +184,7 @@ def eliminar_activo(ticker: str) -> None:
     if ticker in idx:
         del idx[ticker]
         _guardar_indice(idx)
+    _cache_drop(_parquet_relpath(ticker))
     if backend_actual() == "github":
         try:
             github_storage.delete_path(_parquet_relpath(ticker), mensaje=f"chore(data): drop {ticker}")
@@ -169,13 +211,17 @@ def eliminar_activo(ticker: str) -> None:
 def cargar_operaciones(ticker: str) -> pd.DataFrame:
     ticker = _normalizar_ticker(ticker)
     if backend_actual() == "github":
+        key = _parquet_relpath(ticker)
+        cached = _cache_get(key)
+        if cached is not None:
+            return cached.copy()
         try:
-            data = github_storage.read_bytes(_parquet_relpath(ticker))
-            if not data:
-                return pd.DataFrame()
-            return pd.read_parquet(io.BytesIO(data))
+            data = github_storage.read_bytes(key)
+            df = pd.read_parquet(io.BytesIO(data)) if data else pd.DataFrame()
         except Exception:
-            return pd.DataFrame()
+            df = pd.DataFrame()
+        _cache_set(key, df)
+        return df.copy()
     path = DATA_ROOT / ticker / "operations.parquet"
     if not path.exists():
         return pd.DataFrame()
@@ -191,7 +237,7 @@ def guardar_operaciones(ticker: str, df: pd.DataFrame, modo: str = "append") -> 
     modo='replace' → sobrescribe.
     Devuelve número total de filas tras guardar.
     """
-    ticker = registrar_activo(ticker)
+    ticker = _normalizar_ticker(ticker)
     if df is None or df.empty:
         return len(cargar_operaciones(ticker))
 
@@ -204,6 +250,8 @@ def guardar_operaciones(ticker: str, df: pd.DataFrame, modo: str = "append") -> 
     keys = [c for c in ["EMISORA", "FECHA_OPERACION", "FOLIO", "CASA_BOLSA", "PRECIO_UNITARIO"] if c in df.columns]
     if keys:
         df = df.drop_duplicates(subset=keys, keep="first")
+    registrar_activo(ticker, meta=_meta_desde_df(df))
+    _cache_drop(_parquet_relpath(ticker))
 
     # Serializar a parquet en memoria
     buf = io.BytesIO()

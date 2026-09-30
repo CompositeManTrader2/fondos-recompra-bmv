@@ -11,10 +11,11 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from src import data_processor, market_data, storage, visualizations as viz
+from src import data_processor, market_data, storage, theme as T, visualizations as viz
 
 st.set_page_config(page_title="Comparativo Mercado", page_icon="📈", layout="wide")
-st.title("📈 VWAP del fondo vs precio de mercado")
+T.aplicar_tema()
+T.header("HP", "VWAP vs mercado", f"Fondo de recompra vs cierre · {st.session_state.get('ticker_activo') or ''}")
 
 ticker = st.session_state.get("ticker_activo")
 if not ticker:
@@ -149,7 +150,7 @@ else:  # Subir Excel
             precios = pd.read_csv(archivo)
         precios.columns = [str(c).strip() for c in precios.columns]
         st.success(f"✅ {len(precios)} filas leídas del archivo.")
-        st.dataframe(precios.head(10), use_container_width=True, hide_index=True)
+        st.dataframe(precios.head(10), width="stretch", hide_index=True)
     except Exception as e:
         st.error(f"Error leyendo el archivo: {e}")
         st.stop()
@@ -170,7 +171,7 @@ if comp.empty:
     if not precios.empty:
         with st.expander("🔍 Columnas detectadas en la fuente de precios"):
             st.write(list(precios.columns))
-            st.dataframe(precios.head(5), use_container_width=True, hide_index=True)
+            st.dataframe(precios.head(5), width="stretch", hide_index=True)
     st.stop()
 
 # KPIs
@@ -194,7 +195,7 @@ c4.metric(
 )
 
 # Gráfica
-st.plotly_chart(viz.grafica_vwap_vs_mercado(comp), use_container_width=True)
+st.plotly_chart(viz.grafica_vwap_vs_mercado(comp), width="stretch")
 
 # Tabla
 st.markdown(f"##### Detalle (fuente: `{sym_usado}`)")
@@ -205,7 +206,7 @@ cols_show = [c for c in [
 ] if c in comp.columns]
 st.dataframe(
     comp[cols_show],
-    use_container_width=True, hide_index=True,
+    width="stretch", hide_index=True,
     column_config={
         "FECHA": st.column_config.DateColumn("Fecha", format="DD-MMM-YYYY"),
         "VWAP": st.column_config.NumberColumn("VWAP", format="$%.4f"),

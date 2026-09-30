@@ -1,512 +1,439 @@
 """
-Gráficas Plotly para el dashboard.
+Gráficas Plotly estilo terminal Bloomberg (template "bbg" de src/theme.py).
 
-Convenciones:
-  - Todas las gráficas con eje temporal eliminan fines de semana
-    (`xaxis.rangebreaks`) para que no aparezcan huecos en el eje.
-  - Devuelven un `go.Figure` listo para `st.plotly_chart(fig, use_container_width=True)`.
-  - Paleta morada coherente con el branding original.
+Reglas que se cumplen en todo el módulo:
+  - Nunca doble eje Y: dos medidas de escala distinta van en paneles
+    apilados con eje X compartido (precio arriba, volumen abajo).
+  - Ejes diarios sin fines de semana (rangebreaks sat→mon).
+  - Color por entidad con orden fijo; más de 7 entidades → "OTRAS" neutro.
+  - Compra/venta siempre con ▲/▼ además del color.
 """
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from src import theme as T
+
+MERCADO = "#C9CDD2"   # línea de referencia (precio de mercado): neutro claro
+VOLUMEN = T.CATEGORICA[1]
+NEUTRO_BAR = "#5B6572"
+
+
 # ---------------------------------------------------------------------------
-# Paleta y helpers
+# Helpers
 # ---------------------------------------------------------------------------
 
-COLOR_BARRA = "#7D3C98"
-COLOR_BARRA_LIGHT = "#BB8FCE"
-COLOR_VWAP = "#5B2C6F"
-COLOR_VWAP_5 = "#27AE60"
-COLOR_VWAP_20 = "#D35400"
-COLOR_COMPRA = "#27AE60"
-COLOR_VENTA = "#C0392B"
-COLOR_MERCADO = "#2C3E50"
-COLOR_ACUM = "#2980B9"
-PALETA = [
-    "#2E0854", "#4B0082", "#5D3A9B", "#800080", "#9370DB", "#8A2BE2",
-    "#9932CC", "#9400D3", "#A020F0", "#B03060", "#BF40BF", "#D891EF",
-    "#DA70D6", "#E6E6FA", "#EE82EE", "#FF00FF",
-]
-
-
-def _aplicar_rangebreaks(fig: go.Figure) -> go.Figure:
-    """Quita sábados y domingos del eje X (y feriados conocidos si los hubiera).
-
-    Se aplica a todos los xaxes del figure (también en subplots).
-    """
-    fig.update_xaxes(
-        rangebreaks=[
-            dict(bounds=["sat", "mon"]),
-            # Si quisieras agregar feriados puntuales:
-            # dict(values=["2025-12-25", "2026-01-01"]),
-        ]
-    )
+def _sin_fines(fig: go.Figure) -> go.Figure:
+    fig.update_xaxes(rangebreaks=[dict(bounds=["sat", "mon"])])
     return fig
 
 
-def _layout_base(fig: go.Figure, titulo: str, alto: int = 480) -> go.Figure:
-    fig.update_layout(
-        title=dict(text=f"<b>{titulo}</b>", x=0.02, xanchor="left"),
-        template="plotly_white",
-        margin=dict(l=40, r=40, t=70, b=40),
-        height=alto,
-        legend=dict(orientation="h", yanchor="bottom", y=1.05, xanchor="right", x=1),
-        hovermode="x unified",
-    )
+def _base(fig: go.Figure, titulo: str, alto: int = 440, leyenda: bool = True) -> go.Figure:
+    fig.update_layout(title=dict(text=titulo.upper()), height=alto, showlegend=leyenda, template="bbg")
     return fig
 
 
+def _vacio(msg: str = "Sin datos", alto: int = 260) -> go.Figure:
+    fig = go.Figure()
+    fig.add_annotation(text=msg, showarrow=False, font=dict(color=T.MUTED, size=12))
+    fig.update_xaxes(visible=False); fig.update_yaxes(visible=False)
+    return _base(fig, "", alto, leyenda=False)
+
+
+def _doble_panel(alturas=(0.64, 0.36)) -> go.Figure:
+    return make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.035, row_heights=list(alturas))
+
+
+def _barras_kw() -> dict:
+    # 2px de separación de superficie entre barras / segmentos apilados
+    return dict(marker_line_color=T.PANEL, marker_line_width=1)
+
+
 # ---------------------------------------------------------------------------
-# Operaciones / Acciones / Importes con VWAP overlay (mejorada)
+# Emisora individual
 # ---------------------------------------------------------------------------
 
-def grafica_actividad_diaria(
-    diarios: pd.DataFrame,
-    metrica: str = "OPERACIONES",
-    incluir_vwap_lados: bool = True,
-) -> go.Figure:
-    """metrica ∈ {'OPERACIONES', 'ACCIONES', 'IMPORTE'}."""
+def grafica_actividad_diaria(diarios: pd.DataFrame, metrica: str = "OPERACIONES",
+                             incluir_vwap_lados: bool = True) -> go.Figure:
+    """Panel superior: VWAP (+ compra/venta y banda mín–máx). Inferior: métrica de volumen."""
     if diarios is None or diarios.empty:
-        return _layout_base(go.Figure(), "Sin datos", 300)
-
+        return _vacio()
     d = diarios.sort_values("FECHA").copy()
-    fechas = pd.to_datetime(d["FECHA"])
+    x = pd.to_datetime(d["FECHA"])
+    fig = _doble_panel()
 
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
-    fig.add_trace(
-        go.Bar(
-            x=fechas, y=d[metrica],
-            name=metrica.title(),
-            marker_color=COLOR_BARRA,
-            opacity=0.85,
-            hovertemplate="%{x|%a %d-%b-%Y}<br>" + metrica.title() + ": %{y:,.0f}<extra></extra>",
-        ),
-        secondary_y=False,
-    )
-
-    if "VWAP" in d.columns:
-        fig.add_trace(
-            go.Scatter(
-                x=fechas, y=d["VWAP"], name="VWAP",
-                mode="lines+markers",
-                line=dict(color=COLOR_VWAP, width=2.5),
-                marker=dict(size=7),
-                hovertemplate="VWAP: $%{y:,.4f}<extra></extra>",
-            ),
-            secondary_y=True,
-        )
+    if {"PRECIO_MIN", "PRECIO_MAX"} <= set(d.columns):
+        fig.add_trace(go.Scatter(x=x, y=d["PRECIO_MAX"], mode="lines", line=dict(width=0),
+                                 hoverinfo="skip", showlegend=False), 1, 1)
+        fig.add_trace(go.Scatter(x=x, y=d["PRECIO_MIN"], mode="lines", line=dict(width=0),
+                                 fill="tonexty", fillcolor=T.RANGO_FILL, name="Rango mín–máx",
+                                 hovertemplate="Mín $%{y:,.4f}<extra></extra>"), 1, 1)
+    fig.add_trace(go.Scatter(x=x, y=d["VWAP"], name="VWAP", mode="lines+markers",
+                             line=dict(color=T.SERIE_1, width=2), marker=dict(size=5),
+                             hovertemplate="VWAP $%{y:,.4f}<extra></extra>"), 1, 1)
     if incluir_vwap_lados:
-        if "VWAP_COMPRA" in d.columns and d["VWAP_COMPRA"].notna().any():
-            fig.add_trace(
-                go.Scatter(
-                    x=fechas, y=d["VWAP_COMPRA"], name="VWAP Compra",
-                    mode="lines+markers", line=dict(color=COLOR_COMPRA, dash="dot", width=1.5),
-                    marker=dict(symbol="triangle-up", size=8),
-                    hovertemplate="VWAP Compra: $%{y:,.4f}<extra></extra>",
-                ),
-                secondary_y=True,
-            )
-        if "VWAP_VENTA" in d.columns and d["VWAP_VENTA"].notna().any():
-            fig.add_trace(
-                go.Scatter(
-                    x=fechas, y=d["VWAP_VENTA"], name="VWAP Venta",
-                    mode="lines+markers", line=dict(color=COLOR_VENTA, dash="dot", width=1.5),
-                    marker=dict(symbol="triangle-down", size=8),
-                    hovertemplate="VWAP Venta: $%{y:,.4f}<extra></extra>",
-                ),
-                secondary_y=True,
-            )
+        if "VWAP_COMPRA" in d and d["VWAP_COMPRA"].notna().any():
+            fig.add_trace(go.Scatter(x=x, y=d["VWAP_COMPRA"], name="▲ VWAP compra", mode="markers",
+                                     marker=dict(symbol="triangle-up", size=8, color=T.COMPRA),
+                                     hovertemplate="▲ Compra $%{y:,.4f}<extra></extra>"), 1, 1)
+        if "VWAP_VENTA" in d and d["VWAP_VENTA"].notna().any():
+            fig.add_trace(go.Scatter(x=x, y=d["VWAP_VENTA"], name="▼ VWAP venta", mode="markers",
+                                     marker=dict(symbol="triangle-down", size=8, color=T.VENTA),
+                                     hovertemplate="▼ Venta $%{y:,.4f}<extra></extra>"), 1, 1)
 
-    eje_y_format = {"OPERACIONES": ",d", "ACCIONES": ",d", "IMPORTE": "$,.0f"}.get(metrica, ",.0f")
-    fig.update_yaxes(title_text=metrica.title(), tickformat=eje_y_format, secondary_y=False)
-    fig.update_yaxes(title_text="VWAP (MXN)", tickprefix="$", tickformat=",.4f", secondary_y=True)
-    fig.update_xaxes(title_text="Fecha")
-
-    titulo = {
-        "OPERACIONES": "Ejecuciones diarias y VWAP",
-        "ACCIONES": "Acciones operadas y VWAP",
-        "IMPORTE": "Importe operado y VWAP",
-    }.get(metrica, metrica)
-    return _aplicar_rangebreaks(_layout_base(fig, titulo))
+    fmt = {"IMPORTE": "$,.0f"}.get(metrica, ",.0f")
+    fig.add_trace(go.Bar(x=x, y=d[metrica], name=metrica.title(), marker_color=VOLUMEN, **_barras_kw(),
+                         hovertemplate=metrica.title() + " %{y:" + fmt + "}<extra></extra>"), 2, 1)
+    fig.update_yaxes(title_text="PRECIO", tickprefix="$", row=1, col=1)
+    fig.update_yaxes(title_text=metrica, tickformat="~s", row=2, col=1)
+    titulo = {"OPERACIONES": "VWAP y ejecuciones diarias", "ACCIONES": "VWAP y acciones recompradas",
+              "IMPORTE": "VWAP e importe diario"}.get(metrica, metrica)
+    return _sin_fines(_base(fig, titulo, 520))
 
 
 def grafica_actividad_mensual(mensuales: pd.DataFrame) -> go.Figure:
     if mensuales is None or mensuales.empty:
-        return _layout_base(go.Figure(), "Sin datos", 300)
-    m = mensuales.sort_values("MES").copy()
-    fechas = pd.to_datetime(m["MES"])
+        return _vacio()
+    m = mensuales.sort_values("MES")
+    x = pd.to_datetime(m["MES"]).dt.strftime("%b-%y").str.upper()   # categórico: sin huecos
+    fig = _doble_panel((0.5, 0.5))
+    fig.add_trace(go.Scatter(x=x, y=m["VWAP"], name="VWAP", mode="lines+markers",
+                             line=dict(color=T.SERIE_1, width=2), marker=dict(size=8),
+                             hovertemplate="VWAP $%{y:,.4f}<extra></extra>"), 1, 1)
+    fig.add_trace(go.Bar(x=x, y=m["IMPORTE"], name="Importe", marker_color=VOLUMEN, **_barras_kw(),
+                         hovertemplate="Importe $%{y:,.0f}<extra></extra>"), 2, 1)
+    fig.update_yaxes(title_text="VWAP", tickprefix="$", row=1, col=1)
+    fig.update_yaxes(title_text="IMPORTE", tickprefix="$", tickformat="~s", row=2, col=1)
+    return _base(fig, "VWAP e importe mensual", 460)
 
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
-    fig.add_trace(go.Bar(
-        x=fechas, y=m["IMPORTE"], name="Importe",
-        marker_color=COLOR_BARRA, opacity=0.85,
-        hovertemplate="%{x|%b-%Y}<br>Importe: $%{y:,.0f}<extra></extra>",
-    ), secondary_y=False)
-    fig.add_trace(go.Scatter(
-        x=fechas, y=m["VWAP"], name="VWAP",
-        mode="lines+markers", line=dict(color=COLOR_VWAP, width=2.5),
-        hovertemplate="VWAP: $%{y:,.4f}<extra></extra>",
-    ), secondary_y=True)
-    fig.update_yaxes(title_text="Importe (MXN)", tickprefix="$", tickformat=",.0f", secondary_y=False)
-    fig.update_yaxes(title_text="VWAP (MXN)", tickprefix="$", tickformat=",.4f", secondary_y=True)
-    return _layout_base(fig, "Importe operado y VWAP por mes")
-
-
-# ---------------------------------------------------------------------------
-# 🆕 Acumulados (acciones recompradas e importe gastado)
-# ---------------------------------------------------------------------------
 
 def grafica_acumulado(diarios: pd.DataFrame) -> go.Figure:
-    """Muestra el acumulado (running sum) de acciones e importe a lo largo del tiempo."""
     if diarios is None or diarios.empty:
-        return _layout_base(go.Figure(), "Sin datos", 300)
-
+        return _vacio()
     d = diarios.sort_values("FECHA").copy()
-    d["ACC_ACCIONES_NETO"] = (
-        d.get("ACCIONES_COMPRA", d["ACCIONES"]).fillna(0)
-        - d.get("ACCIONES_VENTA", pd.Series(0, index=d.index)).fillna(0)
-    ).cumsum()
-    d["ACC_IMPORTE"] = d["IMPORTE"].fillna(0).cumsum()
+    netas = d.get("ACCIONES_COMPRA", d["ACCIONES"]).fillna(0) - d.get("ACCIONES_VENTA", 0 * d["ACCIONES"]).fillna(0)
+    x = pd.to_datetime(d["FECHA"])
+    fig = _doble_panel((0.5, 0.5))
+    fig.add_trace(go.Scatter(x=x, y=netas.cumsum(), name="Acciones netas acumuladas", mode="lines",
+                             line=dict(color=T.SERIE_1, width=2), fill="tozeroy",
+                             fillcolor="rgba(211,126,1,0.18)",
+                             hovertemplate="Netas %{y:,.0f}<extra></extra>"), 1, 1)
+    fig.add_trace(go.Scatter(x=x, y=d["IMPORTE"].fillna(0).cumsum(), name="Importe acumulado", mode="lines",
+                             line=dict(color=T.SERIE_2, width=2),
+                             hovertemplate="Importe $%{y:,.0f}<extra></extra>"), 2, 1)
+    fig.update_yaxes(title_text="ACCIONES", tickformat="~s", row=1, col=1)
+    fig.update_yaxes(title_text="MXN", tickprefix="$", tickformat="~s", row=2, col=1)
+    return _sin_fines(_base(fig, "Posición acumulada del fondo", 480))
 
-    fechas = pd.to_datetime(d["FECHA"])
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
-    fig.add_trace(go.Scatter(
-        x=fechas, y=d["ACC_ACCIONES_NETO"], name="Acciones netas (acumuladas)",
-        mode="lines", fill="tozeroy",
-        line=dict(color=COLOR_ACUM, width=2),
-        fillcolor="rgba(41, 128, 185, 0.2)",
-        hovertemplate="%{x|%a %d-%b-%Y}<br>Netas: %{y:,.0f}<extra></extra>",
-    ), secondary_y=False)
-    fig.add_trace(go.Scatter(
-        x=fechas, y=d["ACC_IMPORTE"], name="Importe gastado (acumulado)",
-        mode="lines", line=dict(color=COLOR_BARRA, width=2.5, dash="dash"),
-        hovertemplate="%{x|%a %d-%b-%Y}<br>Importe: $%{y:,.0f}<extra></extra>",
-    ), secondary_y=True)
-    fig.update_yaxes(title_text="Acciones netas acumuladas", tickformat=",d", secondary_y=False)
-    fig.update_yaxes(title_text="Importe acumulado (MXN)", tickprefix="$", tickformat=",.0f", secondary_y=True)
-    return _aplicar_rangebreaks(_layout_base(fig, "Posición acumulada del fondo de recompra"))
-
-
-# ---------------------------------------------------------------------------
-# 🆕 VWAP rolling
-# ---------------------------------------------------------------------------
 
 def grafica_vwap_rolling(diarios: pd.DataFrame, ventanas: tuple[int, ...] = (5, 10, 20)) -> go.Figure:
-    """VWAP diario con medias móviles ponderadas por acciones."""
-    if diarios is None or diarios.empty or "VWAP" not in diarios.columns:
-        return _layout_base(go.Figure(), "Sin datos", 300)
-    d = diarios.sort_values("FECHA").copy()
-    fechas = pd.to_datetime(d["FECHA"])
-
-    # VWAP rolling = Σ(precio * acciones) / Σ(acciones) en ventana móvil
-    pv = (d["VWAP"] * d["ACCIONES"].fillna(0))
-    acc = d["ACCIONES"].fillna(0)
-
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=fechas, y=d["VWAP"], name="VWAP diario",
-        mode="lines+markers", line=dict(color=COLOR_VWAP, width=1.8),
-        marker=dict(size=5),
-        hovertemplate="%{x|%a %d-%b-%Y}<br>VWAP: $%{y:,.4f}<extra></extra>",
-    ))
-    colors_rolling = [COLOR_VWAP_5, COLOR_BARRA_LIGHT, COLOR_VWAP_20]
+    if diarios is None or diarios.empty or "VWAP" not in diarios:
+        return _vacio()
+    d = diarios.sort_values("FECHA")
+    x = pd.to_datetime(d["FECHA"])
+    pv, acc = d["VWAP"] * d["ACCIONES"].fillna(0), d["ACCIONES"].fillna(0)
+    fig = go.Figure(go.Scatter(x=x, y=d["VWAP"], name="VWAP diario", mode="lines",
+                               line=dict(color=T.TEXT_2, width=1), opacity=0.7,
+                               hovertemplate="VWAP $%{y:,.4f}<extra></extra>"))
     for i, w in enumerate(ventanas):
         if len(d) >= w:
-            roll = (pv.rolling(w).sum() / acc.rolling(w).sum().replace(0, np.nan))
-            fig.add_trace(go.Scatter(
-                x=fechas, y=roll, name=f"VWAP móvil {w}d",
-                mode="lines", line=dict(color=colors_rolling[i % len(colors_rolling)], width=2.2),
-                hovertemplate=f"VWAP {w}d: $%{{y:,.4f}}<extra></extra>",
-            ))
-    fig.update_yaxes(title_text="Precio (MXN)", tickprefix="$", tickformat=",.4f")
-    return _aplicar_rangebreaks(_layout_base(fig, "VWAP diario y medias móviles"))
+            roll = pv.rolling(w).sum() / acc.rolling(w).sum().replace(0, np.nan)
+            fig.add_trace(go.Scatter(x=x, y=roll, name=f"VWAP {w}D", mode="lines",
+                                     line=dict(color=T.CATEGORICA[i], width=2),
+                                     hovertemplate=f"VWAP {w}D $%{{y:,.4f}}<extra></extra>"))
+    fig.update_yaxes(tickprefix="$")
+    return _sin_fines(_base(fig, "VWAP diario y medias móviles ponderadas", 420))
 
-
-# ---------------------------------------------------------------------------
-# 🆕 Box plot diario / dispersión intradía
-# ---------------------------------------------------------------------------
 
 def grafica_dispersion_intradia(df_ops: pd.DataFrame, max_dias: int = 60) -> go.Figure:
-    """Box plot de precios por día — muestra rango y mediana intradía."""
     if df_ops is None or df_ops.empty:
-        return _layout_base(go.Figure(), "Sin datos", 300)
-    d = df_ops.sort_values("FECHA_OPERACION").copy()
+        return _vacio()
+    d = df_ops.copy()
     d["FECHA"] = pd.to_datetime(d["FECHA_OPERACION"]).dt.normalize()
-    # Limitar a últimos N días para no saturar
-    fechas_unicas = sorted(d["FECHA"].unique())
-    if len(fechas_unicas) > max_dias:
-        ultimas = fechas_unicas[-max_dias:]
-        d = d[d["FECHA"].isin(ultimas)]
+    dias = sorted(d["FECHA"].unique())[-max_dias:]
+    d = d[d["FECHA"].isin(dias)]
+    fig = go.Figure(go.Box(x=d["FECHA"], y=d["PRECIO_UNITARIO"], name="Precio", boxpoints="outliers",
+                           marker=dict(color=T.SERIE_1, size=4), line=dict(color=T.SERIE_1, width=1),
+                           fillcolor="rgba(211,126,1,0.25)",
+                           hovertemplate="$%{y:,.4f}<extra></extra>"))
+    fig.update_yaxes(tickprefix="$")
+    return _sin_fines(_base(fig, f"Dispersión intradía · últimos {len(dias)} días", 420, leyenda=False))
 
-    fig = go.Figure()
-    fig.add_trace(go.Box(
-        x=d["FECHA"], y=d["PRECIO_UNITARIO"],
-        name="Precio", marker_color=COLOR_BARRA,
-        boxpoints="outliers", line=dict(width=1.4),
-        hovertemplate="%{x|%a %d-%b-%Y}<br>Precio: $%{y:,.4f}<extra></extra>",
-    ))
-    fig.update_yaxes(title_text="Precio ejecutado (MXN)", tickprefix="$", tickformat=",.4f")
-    fig.update_xaxes(title_text="Fecha")
-    return _aplicar_rangebreaks(_layout_base(fig, f"Dispersión intradía de precios (últimos {min(max_dias, len(fechas_unicas))} días con operaciones)"))
-
-
-# ---------------------------------------------------------------------------
-# 🆕 Compra vs Venta apilado por día
-# ---------------------------------------------------------------------------
 
 def grafica_compra_vs_venta(diarios: pd.DataFrame) -> go.Figure:
-    """Barras apiladas mostrando acciones compradas vs vendidas por día."""
     if diarios is None or diarios.empty:
-        return _layout_base(go.Figure(), "Sin datos", 300)
-    d = diarios.sort_values("FECHA").copy()
-    fechas = pd.to_datetime(d["FECHA"])
+        return _vacio()
+    d = diarios.sort_values("FECHA")
+    x = pd.to_datetime(d["FECHA"])
     fig = go.Figure()
-    if "ACCIONES_COMPRA" in d.columns:
-        fig.add_trace(go.Bar(
-            x=fechas, y=d["ACCIONES_COMPRA"].fillna(0),
-            name="Compra", marker_color=COLOR_COMPRA,
-            hovertemplate="%{x|%a %d-%b-%Y}<br>Compra: %{y:,.0f}<extra></extra>",
-        ))
-    if "ACCIONES_VENTA" in d.columns:
-        # Las ventas se grafican como negativas para visualizarlas debajo del eje
-        fig.add_trace(go.Bar(
-            x=fechas, y=-d["ACCIONES_VENTA"].fillna(0),
-            name="Venta", marker_color=COLOR_VENTA,
-            hovertemplate="%{x|%a %d-%b-%Y}<br>Venta: %{customdata:,.0f}<extra></extra>",
-            customdata=d["ACCIONES_VENTA"].fillna(0),
-        ))
+    if "ACCIONES_COMPRA" in d:
+        fig.add_trace(go.Bar(x=x, y=d["ACCIONES_COMPRA"].fillna(0), name="▲ Compra",
+                             marker_color=T.COMPRA, **_barras_kw(),
+                             hovertemplate="▲ Compra %{y:,.0f}<extra></extra>"))
+    if "ACCIONES_VENTA" in d:
+        v = d["ACCIONES_VENTA"].fillna(0)
+        fig.add_trace(go.Bar(x=x, y=-v, name="▼ Venta", marker_color=T.VENTA, customdata=v, **_barras_kw(),
+                             hovertemplate="▼ Venta %{customdata:,.0f}<extra></extra>"))
     fig.update_layout(barmode="relative")
-    fig.update_yaxes(title_text="Acciones (compra ↑ / venta ↓)", tickformat=",d")
-    fig.update_xaxes(title_text="Fecha")
-    return _aplicar_rangebreaks(_layout_base(fig, "Compra vs Venta de acciones por día"))
+    fig.update_yaxes(title_text="ACCIONES  ▲ compra / ▼ venta", tickformat="~s")
+    return _sin_fines(_base(fig, "Compra vs venta por día", 400))
 
-
-# ---------------------------------------------------------------------------
-# 🆕 Heatmap calendario tipo GitHub
-# ---------------------------------------------------------------------------
 
 def grafica_heatmap_calendario(diarios: pd.DataFrame, metrica: str = "ACCIONES") -> go.Figure:
-    """Heatmap día-de-semana × semana con la métrica indicada (estilo GitHub)."""
     if diarios is None or diarios.empty:
-        return _layout_base(go.Figure(), "Sin datos", 300)
-
-    d = diarios.copy()
+        return _vacio()
+    d = diarios[["FECHA", metrica]].copy()
     d["FECHA"] = pd.to_datetime(d["FECHA"])
-    fechas_full = pd.date_range(d["FECHA"].min(), d["FECHA"].max(), freq="D")
-    base = pd.DataFrame({"FECHA": fechas_full})
-    base = base.merge(d[["FECHA", metrica]], on="FECHA", how="left").fillna(0)
-    # Sólo días hábiles (lun-vie)
-    base = base[base["FECHA"].dt.weekday < 5].copy()
-    base["dow"] = base["FECHA"].dt.day_name(locale=None).str[:3]
-    base["semana"] = base["FECHA"].dt.strftime("%Y-W%U")
-
-    # Map para ordenar días
-    dias_orden = ["Mon", "Tue", "Wed", "Thu", "Fri"]
-    base["dow"] = base["dow"].astype("category").cat.set_categories(dias_orden, ordered=True)
-
-    pivot = base.pivot_table(index="dow", columns="semana", values=metrica, aggfunc="sum", observed=True).fillna(0)
-    pivot = pivot.reindex(dias_orden)
-
+    base = pd.DataFrame({"FECHA": pd.bdate_range(d["FECHA"].min(), d["FECHA"].max())})
+    base = base.merge(d, on="FECHA", how="left").fillna({metrica: 0})
+    base["DOW"] = base["FECHA"].dt.weekday
+    base["SEMANA"] = (base["FECHA"] - pd.to_timedelta(base["DOW"], unit="D")).dt.strftime("%d-%b-%y")
+    orden_sem = list(dict.fromkeys(base.sort_values("FECHA")["SEMANA"]))
+    piv = base.pivot_table(index="DOW", columns="SEMANA", values=metrica, aggfunc="sum").reindex(columns=orden_sem)
+    piv = piv.reindex(range(5))
     fig = go.Figure(go.Heatmap(
-        z=pivot.values,
-        x=pivot.columns,
-        y=pivot.index,
-        colorscale="Purples",
-        hovertemplate="Semana: %{x}<br>%{y}<br>" + metrica.title() + ": %{z:,.0f}<extra></extra>",
-        colorbar=dict(title=metrica.title()),
+        z=piv.values, x=piv.columns, y=["LUN", "MAR", "MIÉ", "JUE", "VIE"], colorscale=T.SECUENCIAL,
+        xgap=2, ygap=2, colorbar=dict(title=dict(text=metrica, font=dict(size=10)), tickformat="~s"),
+        hovertemplate="Semana %{x} · %{y}<br>" + metrica.title() + " %{z:,.0f}<extra></extra>",
     ))
-    fig.update_layout(template="plotly_white", height=320,
-                      margin=dict(l=40, r=40, t=60, b=40),
-                      title=dict(text=f"<b>Calendario de {metrica.lower()} por día</b>", x=0.02))
-    fig.update_xaxes(title_text="Semana ISO", tickangle=-45)
-    fig.update_yaxes(title_text="")
-    return fig
+    fig.update_xaxes(showspikes=False, tickangle=-45, gridcolor=T.PANEL)
+    fig.update_yaxes(showspikes=False, gridcolor=T.PANEL, autorange="reversed")
+    fig.update_layout(hovermode="closest")
+    return _base(fig, f"Calendario de {metrica.lower()}", 300, leyenda=False)
 
-
-# ---------------------------------------------------------------------------
-# 🆕 Histograma de precios ejecutados
-# ---------------------------------------------------------------------------
 
 def grafica_histograma_precios(df_ops: pd.DataFrame, bins: int = 40) -> go.Figure:
-    """Distribución de los precios ejecutados (con líneas de min/max/VWAP)."""
     if df_ops is None or df_ops.empty:
-        return _layout_base(go.Figure(), "Sin datos", 300)
-    precios = pd.to_numeric(df_ops["PRECIO_UNITARIO"], errors="coerce").dropna()
-    acc = pd.to_numeric(df_ops["NUMERO_DE_ACCIONES"], errors="coerce").fillna(0)
-    vwap = (precios * acc).sum() / acc.sum() if acc.sum() else precios.mean()
+        return _vacio()
+    p = pd.to_numeric(df_ops["PRECIO_UNITARIO"], errors="coerce")
+    a = pd.to_numeric(df_ops["NUMERO_DE_ACCIONES"], errors="coerce").fillna(0)
+    ok = p.notna()
+    p, a = p[ok], a[ok]
+    vwap = float((p * a).sum() / a.sum()) if a.sum() else float(p.mean())
+    fig = go.Figure(go.Histogram(x=p, y=a, histfunc="sum", nbinsx=bins, marker_color=T.SERIE_1,
+                                 **_barras_kw(), name="Acciones",
+                                 hovertemplate="$%{x}<br>Acciones %{y:,.0f}<extra></extra>"))
+    fig.add_vline(x=vwap, line=dict(color=T.TEXT, width=1.5, dash="dash"),
+                  annotation=dict(text=f"VWAP ${vwap:,.4f}", font=dict(color=T.TEXT, size=10)),
+                  annotation_position="top right")
+    fig.update_xaxes(tickprefix="$")
+    fig.update_yaxes(title_text="ACCIONES", tickformat="~s")
+    fig.update_layout(hovermode="closest")
+    return _base(fig, "Perfil de volumen por precio", 400, leyenda=False)
 
-    fig = go.Figure()
-    fig.add_trace(go.Histogram(
-        x=precios, nbinsx=bins, marker_color=COLOR_BARRA, opacity=0.85,
-        hovertemplate="Precio ~ $%{x:,.4f}<br># operaciones: %{y}<extra></extra>",
-        name="Operaciones",
-    ))
-    fig.add_vline(x=vwap, line=dict(color=COLOR_VWAP, width=2, dash="dash"),
-                  annotation_text=f"VWAP ${vwap:,.4f}", annotation_position="top right")
-    fig.add_vline(x=precios.min(), line=dict(color="#888", width=1, dash="dot"),
-                  annotation_text=f"Mín ${precios.min():,.4f}", annotation_position="top left")
-    fig.add_vline(x=precios.max(), line=dict(color="#888", width=1, dash="dot"),
-                  annotation_text=f"Máx ${precios.max():,.4f}", annotation_position="top right")
-    fig.update_xaxes(title_text="Precio (MXN)", tickprefix="$", tickformat=",.4f")
-    fig.update_yaxes(title_text="# operaciones")
-    return _layout_base(fig, "Distribución de precios ejecutados")
-
-
-# ---------------------------------------------------------------------------
-# 🆕 Tamaño promedio de operación por día
-# ---------------------------------------------------------------------------
 
 def grafica_tamano_operacion(diarios: pd.DataFrame) -> go.Figure:
     if diarios is None or diarios.empty:
-        return _layout_base(go.Figure(), "Sin datos", 300)
-    d = diarios.sort_values("FECHA").copy()
-    d["TAMANO_PROM_ACC"] = d["ACCIONES"] / d["OPERACIONES"].replace(0, np.nan)
-    d["TAMANO_PROM_IMP"] = d["IMPORTE"] / d["OPERACIONES"].replace(0, np.nan)
-    fechas = pd.to_datetime(d["FECHA"])
-
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
-    fig.add_trace(go.Bar(
-        x=fechas, y=d["TAMANO_PROM_ACC"], name="Acciones / operación",
-        marker_color=COLOR_BARRA, opacity=0.85,
-        hovertemplate="%{x|%a %d-%b-%Y}<br>Acciones/op: %{y:,.0f}<extra></extra>",
-    ), secondary_y=False)
-    fig.add_trace(go.Scatter(
-        x=fechas, y=d["TAMANO_PROM_IMP"], name="MXN / operación",
-        mode="lines+markers", line=dict(color=COLOR_VWAP, width=2),
-        hovertemplate="%{x|%a %d-%b-%Y}<br>MXN/op: $%{y:,.0f}<extra></extra>",
-    ), secondary_y=True)
-    fig.update_yaxes(title_text="Acciones por operación", tickformat=",d", secondary_y=False)
-    fig.update_yaxes(title_text="MXN por operación", tickprefix="$", tickformat=",.0f", secondary_y=True)
-    return _aplicar_rangebreaks(_layout_base(fig, "Tamaño promedio de operación"))
+        return _vacio()
+    d = diarios.sort_values("FECHA")
+    ops = d["OPERACIONES"].replace(0, np.nan)
+    x = pd.to_datetime(d["FECHA"])
+    fig = _doble_panel((0.5, 0.5))
+    fig.add_trace(go.Bar(x=x, y=d["ACCIONES"] / ops, name="Acciones / operación", marker_color=T.SERIE_1,
+                         **_barras_kw(), hovertemplate="%{y:,.0f} acc/op<extra></extra>"), 1, 1)
+    fig.add_trace(go.Scatter(x=x, y=d["IMPORTE"] / ops, name="MXN / operación", mode="lines+markers",
+                             line=dict(color=T.SERIE_2, width=2), marker=dict(size=5),
+                             hovertemplate="$%{y:,.0f} /op<extra></extra>"), 2, 1)
+    fig.update_yaxes(title_text="ACC/OP", tickformat="~s", row=1, col=1)
+    fig.update_yaxes(title_text="MXN/OP", tickprefix="$", tickformat="~s", row=2, col=1)
+    return _sin_fines(_base(fig, "Tamaño promedio de operación", 440))
 
 
 # ---------------------------------------------------------------------------
-# Casas de bolsa (mejoradas)
+# Casas de bolsa (color por casa estable: ranking por importe)
 # ---------------------------------------------------------------------------
+
+def _mapa_casas(por_casa: pd.DataFrame) -> dict[str, str]:
+    orden = por_casa.sort_values("IMPORTE", ascending=False)["CASA_BOLSA"].tolist()
+    return T.colores_emisoras(orden)
+
 
 def grafica_monto_por_casa(por_casa: pd.DataFrame, top_n: int = 15) -> go.Figure:
     if por_casa is None or por_casa.empty:
-        return _layout_base(go.Figure(), "Sin datos", 300)
-    df = por_casa.sort_values("IMPORTE", ascending=True).tail(top_n)
-    fig = go.Figure(go.Bar(
-        x=df["IMPORTE"], y=df["CASA_BOLSA"], orientation="h",
-        marker_color=COLOR_BARRA,
-        text=[f"${v:,.0f}" for v in df["IMPORTE"]], textposition="outside",
-        hovertemplate="<b>%{y}</b><br>Importe: $%{x:,.0f}<extra></extra>",
-    ))
-    fig.update_xaxes(title="Importe operado (MXN)", tickprefix="$", tickformat=",.0f")
-    return _layout_base(fig, f"Top {top_n} casas de bolsa por importe", alto=500)
+        return _vacio()
+    df = por_casa.sort_values("IMPORTE").tail(top_n)
+    fig = go.Figure(go.Bar(x=df["IMPORTE"], y=df["CASA_BOLSA"], orientation="h", marker_color=T.SERIE_1,
+                           **_barras_kw(), text=[T.fmt_mxn(v) for v in df["IMPORTE"]], textposition="outside",
+                           textfont=dict(color=T.TEXT_2, size=10),
+                           hovertemplate="<b>%{y}</b><br>$%{x:,.0f}<extra></extra>"))
+    fig.update_xaxes(tickprefix="$", tickformat="~s")
+    fig.update_layout(hovermode="closest")
+    return _base(fig, f"Top {top_n} casas de bolsa por importe", max(320, 28 * len(df) + 80), leyenda=False)
 
 
 def grafica_pastel_casas(por_casa: pd.DataFrame, metrica: str = "IMPORTE") -> go.Figure:
     if por_casa is None or por_casa.empty:
-        return _layout_base(go.Figure(), "Sin datos", 300)
-    valores = por_casa[metrica]
-    etiquetas = por_casa["CASA_BOLSA"]
-    fig = go.Figure(go.Pie(
-        labels=etiquetas, values=valores, hole=0.45,
-        marker=dict(colors=PALETA[:len(etiquetas)], line=dict(color="white", width=1)),
-        textinfo="percent",
-        hovertemplate="<b>%{label}</b><br>" + metrica.title() + ": %{value:,.0f}<br>%{percent}<extra></extra>",
-    ))
+        return _vacio()
+    mapa = _mapa_casas(por_casa)
+    df = por_casa.copy()
+    df["GRUPO"] = df["CASA_BOLSA"].where(df["CASA_BOLSA"].isin(mapa), "OTRAS")
+    g = df.groupby("GRUPO")[metrica].sum().sort_values(ascending=False)
+    colores = [mapa.get(k, T.OTRAS) for k in g.index]
+    fig = go.Figure(go.Pie(labels=g.index, values=g.values, hole=0.55, sort=False,
+                           marker=dict(colors=colores, line=dict(color=T.PANEL, width=2)),
+                           textinfo="percent", textfont=dict(color=T.TEXT, size=10),
+                           hovertemplate="<b>%{label}</b><br>%{value:,.0f} · %{percent}<extra></extra>"))
+    fig.update_layout(legend=dict(orientation="v", x=1.02, y=0.5, yanchor="middle", xanchor="left"))
     titulo = "Participación por importe" if metrica == "IMPORTE" else "Participación por # operaciones"
-    return _layout_base(fig, titulo, alto=500)
+    return _base(fig, titulo, 420)
 
 
-# ---------------------------------------------------------------------------
-# 🆕 Casas de bolsa por día (heatmap stacked)
-# ---------------------------------------------------------------------------
-
-def grafica_actividad_casas_temporal(df_ops: pd.DataFrame, top_n: int = 8) -> go.Figure:
-    """Stacked area chart de las top N casas a lo largo del tiempo."""
+def grafica_actividad_casas_temporal(df_ops: pd.DataFrame, top_n: int = 7) -> go.Figure:
     if df_ops is None or df_ops.empty:
-        return _layout_base(go.Figure(), "Sin datos", 300)
+        return _vacio()
     d = df_ops.copy()
     d["FECHA"] = pd.to_datetime(d["FECHA_OPERACION"]).dt.normalize()
-    top = (d.groupby("CASA_BOLSA")["IMPORTE_OPERACION"].sum()
-             .sort_values(ascending=False).head(top_n).index.tolist())
-    d["CASA_GRP"] = d["CASA_BOLSA"].where(d["CASA_BOLSA"].isin(top), other="OTRAS")
-    pivot = (d.pivot_table(index="FECHA", columns="CASA_GRP",
-                           values="IMPORTE_OPERACION", aggfunc="sum")
-              .fillna(0).sort_index())
+    rank = d.groupby("CASA_BOLSA")["IMPORTE_OPERACION"].sum().sort_values(ascending=False)
+    mapa = T.colores_emisoras(rank.index.tolist(), max_colores=min(top_n, 7))
+    d["GRUPO"] = d["CASA_BOLSA"].where(d["CASA_BOLSA"].isin(mapa), "OTRAS")
+    piv = d.pivot_table(index="FECHA", columns="GRUPO", values="IMPORTE_OPERACION", aggfunc="sum").fillna(0)
     fig = go.Figure()
-    casas_orden = top + (["OTRAS"] if "OTRAS" in pivot.columns else [])
-    for i, casa in enumerate(casas_orden):
-        if casa in pivot.columns:
-            fig.add_trace(go.Scatter(
-                x=pivot.index, y=pivot[casa], name=casa,
-                mode="lines", stackgroup="one",
-                line=dict(width=0.5, color=PALETA[i % len(PALETA)]),
-                hovertemplate=f"<b>{casa}</b><br>%{{x|%a %d-%b-%Y}}<br>$%{{y:,.0f}}<extra></extra>",
-            ))
-    fig.update_yaxes(title_text="Importe (MXN)", tickprefix="$", tickformat=",.0f")
-    return _aplicar_rangebreaks(_layout_base(fig, f"Actividad por casa de bolsa (top {top_n})"))
+    for casa in list(mapa) + (["OTRAS"] if "OTRAS" in piv else []):
+        if casa in piv:
+            fig.add_trace(go.Bar(x=piv.index, y=piv[casa], name=casa, marker_color=mapa.get(casa, T.OTRAS),
+                                 **_barras_kw(), hovertemplate=f"{casa} $%{{y:,.0f}}<extra></extra>"))
+    fig.update_layout(barmode="stack")
+    fig.update_yaxes(tickprefix="$", tickformat="~s")
+    return _sin_fines(_base(fig, "Importe diario por casa de bolsa", 440))
 
 
 # ---------------------------------------------------------------------------
-# Comparativo VWAP vs Mercado (mejorado)
+# VWAP vs mercado
 # ---------------------------------------------------------------------------
 
 def grafica_vwap_vs_mercado(comparativo: pd.DataFrame) -> go.Figure:
     if comparativo is None or comparativo.empty:
-        return _layout_base(go.Figure(), "Sin datos de mercado", 300)
-    df = comparativo.sort_values("FECHA").copy()
-    fechas = pd.to_datetime(df["FECHA"])
-    fig = make_subplots(specs=[[{"secondary_y": True}]])
-
-    fig.add_trace(go.Scatter(
-        x=fechas, y=df["VWAP"], name="VWAP fondo",
-        mode="lines+markers", line=dict(color=COLOR_VWAP, width=2.5),
-        hovertemplate="VWAP: $%{y:,.4f}<extra></extra>",
-    ), secondary_y=False)
-    if "PRECIO_MERCADO" in df.columns:
-        fig.add_trace(go.Scatter(
-            x=fechas, y=df["PRECIO_MERCADO"], name="Precio mercado",
-            mode="lines", line=dict(color=COLOR_MERCADO, width=2),
-            hovertemplate="Mercado: $%{y:,.4f}<extra></extra>",
-        ), secondary_y=False)
-
-    if "VWAP_VS_MERCADO_%" in df.columns:
-        colors = ["#27AE60" if v <= 0 else "#C0392B" for v in df["VWAP_VS_MERCADO_%"].fillna(0)]
-        fig.add_trace(go.Bar(
-            x=fechas, y=df["VWAP_VS_MERCADO_%"],
-            name="Sobreprecio (%)", marker_color=colors, opacity=0.45,
-            hovertemplate="Sobreprecio: %{y:.2f}%<extra></extra>",
-        ), secondary_y=True)
-
-    fig.update_yaxes(title="Precio (MXN)", tickprefix="$", tickformat=",.4f", secondary_y=False)
-    fig.update_yaxes(title="Sobreprecio (%)", ticksuffix="%", secondary_y=True)
-    return _aplicar_rangebreaks(_layout_base(fig, "VWAP del fondo vs precio de mercado"))
+        return _vacio("Sin datos de mercado")
+    df = comparativo.sort_values("FECHA")
+    x = pd.to_datetime(df["FECHA"])
+    fig = _doble_panel((0.62, 0.38))
+    fig.add_trace(go.Scatter(x=x, y=df["VWAP"], name="VWAP fondo", mode="lines+markers",
+                             line=dict(color=T.SERIE_1, width=2), marker=dict(size=5),
+                             hovertemplate="VWAP $%{y:,.4f}<extra></extra>"), 1, 1)
+    if "PRECIO_MERCADO" in df:
+        fig.add_trace(go.Scatter(x=x, y=df["PRECIO_MERCADO"], name="Cierre mercado", mode="lines",
+                                 line=dict(color=MERCADO, width=1.5, dash="dot"),
+                                 hovertemplate="Cierre $%{y:,.4f}<extra></extra>"), 1, 1)
+    if "VWAP_VS_MERCADO_%" in df:
+        v = df["VWAP_VS_MERCADO_%"]
+        fig.add_trace(go.Bar(x=x, y=v, name="Δ vs cierre (%)", showlegend=False, **_barras_kw(),
+                             marker_color=[T.DIV_POS if (val or 0) > 0 else T.DIV_NEG for val in v.fillna(0)],
+                             hovertemplate="Δ %{y:+.2f}%<extra></extra>"), 2, 1)
+    fig.update_yaxes(title_text="PRECIO", tickprefix="$", row=1, col=1)
+    fig.update_yaxes(title_text="Δ % (óxido = arriba)", ticksuffix="%", row=2, col=1)
+    return _sin_fines(_base(fig, "VWAP del fondo vs cierre de mercado", 500))
 
 
 # ---------------------------------------------------------------------------
-# Comparativa Multi-Activo (mejorada)
+# Multi-activo
 # ---------------------------------------------------------------------------
 
-def grafica_multi_activo(
-    series_por_ticker: dict[str, pd.DataFrame],
-    metrica: str = "IMPORTE",
-) -> go.Figure:
-    fig = go.Figure()
+def grafica_multi_activo(series_por_ticker: dict[str, pd.DataFrame], metrica: str = "IMPORTE") -> go.Figure:
     if not series_por_ticker:
-        return _layout_base(fig, "Sin datos", 300)
-    for i, (ticker, diarios) in enumerate(series_por_ticker.items()):
-        if diarios is None or diarios.empty:
+        return _vacio()
+    fig = go.Figure()
+    for i, (tk, d) in enumerate(list(series_por_ticker.items())[:8]):
+        if d is None or d.empty:
             continue
-        d = diarios.sort_values("FECHA")
-        fig.add_trace(go.Scatter(
-            x=pd.to_datetime(d["FECHA"]), y=d[metrica],
-            name=ticker, mode="lines+markers",
-            line=dict(color=PALETA[i % len(PALETA)], width=2),
-        ))
-    fmt = {"IMPORTE": "$,.0f", "ACCIONES": ",d", "OPERACIONES": ",d", "VWAP": "$,.4f"}.get(metrica, ",.0f")
-    fig.update_yaxes(title=metrica.title(), tickformat=fmt,
-                     tickprefix="$" if metrica in ("IMPORTE", "VWAP") else "")
-    fig.update_xaxes(title="Fecha")
-    return _aplicar_rangebreaks(_layout_base(fig, f"Comparativo multi-activo · {metrica.title()} diario"))
+        d = d.sort_values("FECHA")
+        fig.add_trace(go.Scatter(x=pd.to_datetime(d["FECHA"]), y=d[metrica], name=tk, mode="lines+markers",
+                                 line=dict(color=T.CATEGORICA[i], width=2), marker=dict(size=5)))
+    fig.update_yaxes(tickprefix="$" if metrica in ("IMPORTE", "VWAP") else "", tickformat="~s")
+    return _sin_fines(_base(fig, f"Comparativo · {metrica.lower()} diario", 440))
+
+
+# ---------------------------------------------------------------------------
+# 🆕 Mercado completo (resumen_diario del scanner)
+# ---------------------------------------------------------------------------
+
+def grafica_mercado_diario(resumen: pd.DataFrame, colores: dict[str, str]) -> go.Figure:
+    """Arriba: importe diario apilado por emisora. Abajo: # emisoras recomprando."""
+    if resumen is None or resumen.empty:
+        return _vacio()
+    d = resumen.copy()
+    d["GRUPO"] = d["EMISORA"].where(d["EMISORA"].isin(colores), "OTRAS")
+    piv = d.pivot_table(index="FECHA", columns="GRUPO", values="IMPORTE", aggfunc="sum").fillna(0).sort_index()
+    activas = d.groupby("FECHA")["EMISORA"].nunique().reindex(piv.index)
+    fig = _doble_panel((0.72, 0.28))
+    for emi in list(colores) + (["OTRAS"] if "OTRAS" in piv else []):
+        if emi in piv:
+            fig.add_trace(go.Bar(x=piv.index, y=piv[emi], name=emi, marker_color=colores.get(emi, T.OTRAS),
+                                 **_barras_kw(), hovertemplate=f"{emi} $%{{y:,.0f}}<extra></extra>"), 1, 1)
+    fig.add_trace(go.Bar(x=activas.index, y=activas.values, name="# emisoras", showlegend=False,
+                         marker_color=NEUTRO_BAR, **_barras_kw(),
+                         hovertemplate="%{y} emisoras<extra></extra>"), 2, 1)
+    fig.update_layout(barmode="stack")
+    fig.update_yaxes(title_text="IMPORTE", tickprefix="$", tickformat="~s", row=1, col=1)
+    fig.update_yaxes(title_text="EMISORAS", tickformat="d", rangemode="tozero",
+                     dtick=max(1, int(np.ceil((activas.max() or 1) / 4))), row=2, col=1)
+    return _sin_fines(_base(fig, "Recompras del mercado por día", 500))
+
+
+def grafica_treemap_emisoras(res_dia: pd.DataFrame) -> go.Figure:
+    if res_dia is None or res_dia.empty:
+        return _vacio()
+    d = res_dia[res_dia["IMPORTE"] > 0].sort_values("IMPORTE", ascending=False)
+    fig = go.Figure(go.Treemap(
+        labels=d["EMISORA"], parents=[""] * len(d), values=d["IMPORTE"],
+        customdata=np.stack([[T.fmt_mxn(v) for v in d["IMPORTE"]], d["OPERACIONES"]], axis=-1),
+        marker=dict(colors=np.log10(d["IMPORTE"] + 1), colorscale=T.SECUENCIAL,
+                    line=dict(color=T.PANEL, width=2)),
+        texttemplate="<b>%{label}</b><br>%{customdata[0]}<br>%{percentRoot:.1%}",
+        textfont=dict(family=T.FONT_MONO, color=T.TEXT, size=12),
+        hovertemplate="<b>%{label}</b><br>%{customdata[0]} · %{customdata[1]} ops<br>%{percentRoot:.1%} del día<extra></extra>",
+        tiling=dict(pad=1),
+    ))
+    fig.update_layout(margin=dict(l=4, r=4, t=40, b=4))
+    return _base(fig, "Mapa del día · importe por emisora", 440, leyenda=False)
+
+
+def grafica_heatmap_emisoras(resumen: pd.DataFrame, top: int = 25, dias: int = 30) -> go.Figure:
+    if resumen is None or resumen.empty:
+        return _vacio()
+    fechas = sorted(resumen["FECHA"].unique())[-dias:]
+    d = resumen[resumen["FECHA"].isin(fechas)]
+    orden = d.groupby("EMISORA")["IMPORTE"].sum().sort_values(ascending=False).head(top).index
+    piv = (d[d["EMISORA"].isin(orden)]
+           .pivot_table(index="EMISORA", columns="FECHA", values="IMPORTE", aggfunc="sum")
+           .reindex(index=orden, columns=fechas))
+    etiquetas = [pd.Timestamp(f).strftime("%d-%b").upper() for f in piv.columns]
+    texto = piv.map(lambda v: T.fmt_mxn(v) if pd.notna(v) else "sin recompra")
+    fig = go.Figure(go.Heatmap(
+        z=np.log10(piv.fillna(0) + 1).where(piv.notna()), x=etiquetas, y=piv.index,
+        colorscale=T.SECUENCIAL, xgap=2, ygap=2, showscale=False,
+        customdata=texto.values, hovertemplate="<b>%{y}</b> · %{x}<br>%{customdata}<extra></extra>",
+    ))
+    fig.update_xaxes(showspikes=False, tickangle=-45, gridcolor=T.PANEL, type="category")
+    fig.update_yaxes(showspikes=False, gridcolor=T.PANEL, autorange="reversed", type="category")
+    fig.update_layout(hovermode="closest")
+    return _base(fig, f"Mapa de calor · top {len(orden)} emisoras × últimos {len(fechas)} días", max(360, 22 * len(orden) + 110), leyenda=False)
+
+
+def grafica_ranking_emisoras(agg: pd.DataFrame, metrica: str = "IMPORTE", top: int = 15) -> go.Figure:
+    if agg is None or agg.empty:
+        return _vacio()
+    d = agg.sort_values(metrica).tail(top)
+    fmt = T.fmt_mxn if metrica == "IMPORTE" else T.fmt_num
+    fig = go.Figure(go.Bar(x=d[metrica], y=d["EMISORA"], orientation="h", marker_color=T.SERIE_1, **_barras_kw(),
+                           text=[fmt(v) for v in d[metrica]], textposition="outside",
+                           textfont=dict(color=T.TEXT_2, size=10),
+                           hovertemplate="<b>%{y}</b> %{x:,.0f}<extra></extra>"))
+    fig.update_xaxes(tickprefix="$" if metrica == "IMPORTE" else "", tickformat="~s", showspikes=False)
+    fig.update_layout(hovermode="closest")
+    return _base(fig, f"Ranking por {metrica.lower()}", max(320, 26 * len(d) + 80), leyenda=False)
+
+
+def grafica_acumulado_emisoras(resumen: pd.DataFrame, emisoras: list[str]) -> go.Figure:
+    if resumen is None or resumen.empty or not emisoras:
+        return _vacio()
+    fig = go.Figure()
+    for i, emi in enumerate(emisoras[:8]):
+        d = resumen[resumen["EMISORA"] == emi].sort_values("FECHA")
+        fig.add_trace(go.Scatter(x=d["FECHA"], y=d["IMPORTE"].cumsum(), name=emi, mode="lines",
+                                 line=dict(color=T.CATEGORICA[i], width=2),
+                                 hovertemplate=f"{emi} $%{{y:,.0f}}<extra></extra>"))
+    fig.update_yaxes(tickprefix="$", tickformat="~s")
+    return _sin_fines(_base(fig, "Importe acumulado por emisora", 420))

@@ -1,14 +1,49 @@
-# Fondos de Recompra BMV — Tracker Multi-Activo
+# BUYB — Monitor de Recompras BMV
 
-App de Streamlit para extraer, consolidar y analizar las operaciones de
-**fondo de recompra** que las emisoras mexicanas publican en la BMV
-(`https://www.bmv.com.mx/docs-pub/recompra/...pdf`).
+App de Streamlit estilo terminal Bloomberg para extraer, consolidar y analizar
+las operaciones de **fondo de recompra** que las emisoras mexicanas publican en
+la BMV (`https://www.bmv.com.mx/docs-pub/recompra/...pdf`).
 
 > Reemplazo del notebook `Modelo_Fondos_de_Recompra_V1_8.ipynb` con
 > arquitectura modular, cero dependencias del sistema operativo
 > (sin Java/Tabula) y soporte multi-activo desde el día 1.
 
 ---
+
+## 🖥️ Monitor de mercado + scanner diario automático
+
+**Todas** las emisoras de la BMV, sin que tengas que pedirlas una por una.
+
+| Pieza | Qué hace |
+|---|---|
+| `.github/workflows/daily_scan.yml` | Corre **20:30 y 09:30 CDMX, lun–vie** en GitHub Actions (gratis en repos públicos). |
+| `src/daily_scanner.py` | Recorre los IDs de documento de BMV (`recompra_{ID}_1.pdf`, ~320 IDs/día hábil) desde el último conocido: si la URL es un PDF, es una recompra (de cualquier emisora). Descarga en paralelo, parsea, y guarda. |
+| `data/daily/resumen_diario.parquet` | Una fila por (fecha, emisora): importe, operaciones, acciones, VWAP total/compra/venta, casas, remanente del fondo. |
+| `data/daily/documentos.parquet` | Registro de cada PDF procesado (idempotencia + auditoría con link al PDF). |
+| `data/activos/{EMISORA}/` | Las operaciones de cada emisora, disponibles en el Dashboard individual. |
+| `views/monitor.py` | Pantalla **BUYB &lt;GO&gt;**: cinta, KPIs del día, ranking (clic → dashboard), treemap, actividad apilada del mercado, heatmap emisora × sesión, historial, rankings, estado del scanner. |
+
+**Robustez del scanner**
+- Re-revisa los últimos 800 IDs en cada corrida (PDFs publicados tarde).
+- Frontera adaptativa: si un feriado deja un hueco largo sin recompras, la ventana se duplica en la siguiente corrida.
+- Presupuesto de tiempo por corrida: si no termina, guarda avance y la siguiente continúa.
+- Si otro commit entra mientras escanea, reinicia sobre `origin/main` y re-ejecuta (idempotente).
+
+**Backfill histórico**: *Actions → Scanner diario de recompras BMV → Run workflow*, con
+`seed_id` de un ID antiguo (≈320 IDs por día hábil; `1540000` ≈ mar-2026) y `max_minutos` hasta 300.
+
+**Local**: `python scripts/daily_scan.py` (o `--rebuild-only` para recalcular el resumen).
+
+> GitHub desactiva los workflows programados tras 60 días sin actividad en el repo; los
+> commits diarios del scanner cuentan como actividad.
+
+## 🎨 Diseño
+
+Terminal oscura, ámbar como color de cromo, tipografía IBM Plex Mono. La paleta
+categórica y el par compra/venta están validados para daltonismo y contraste sobre
+el fondo oscuro (`src/theme.py`). Dos medidas de escala distinta nunca comparten
+gráfica con doble eje: van en paneles apilados con eje X compartido (precio arriba,
+volumen abajo). Ejes diarios sin fines de semana.
 
 ## ✨ Características
 
@@ -37,10 +72,17 @@ App de Streamlit para extraer, consolidar y analizar las operaciones de
 
 ```
 fondos-recompra-bmv/
-├── app.py                     # Entry point Streamlit (home + selector global)
-├── requirements.txt
-├── .streamlit/config.toml     # Tema morado consistente
+├── app.py                     # Router (st.navigation) + sidebar común
+├── views/monitor.py           # BUYB <GO>: monitor de mercado
+├── scripts/daily_scan.py      # CLI del scanner diario
+├── .github/workflows/daily_scan.yml
+├── requirements.txt           # App
+├── requirements-scanner.txt   # Scanner (sin Streamlit)
+├── .streamlit/config.toml     # Tema oscuro terminal
 ├── src/
+│   ├── theme.py               # Paleta validada, template Plotly "bbg", CSS, componentes
+│   ├── daily_scanner.py       # Scanner de toda la BMV por ID de documento
+│   ├── market_store.py        # Lectura de data/daily para la app
 │   ├── pdf_parser.py          # Extracción robusta con pdfplumber
 │   ├── data_processor.py      # Consolidación + VWAP + agregaciones
 │   ├── storage.py             # Persistencia parquet por activo
@@ -54,7 +96,9 @@ fondos-recompra-bmv/
 │   ├── 4_📈_Comparativo_Mercado.py
 │   ├── 5_⚖️_Multi_Activo.py
 │   └── 6_⬇️_Exportar.py
-└── data/activos/              # Parquets por emisora (autogenerado)
+└── data/
+    ├── activos/               # Parquets por emisora (autogenerado)
+    └── daily/                 # Resumen de mercado + registro de documentos (scanner)
 ```
 
 ## 🏗️ Cómo correrlo localmente

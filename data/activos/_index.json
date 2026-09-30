@@ -1,22 +1,30 @@
 {
   "ICH": {
-    "nombre": "ICH",
+    "actualizado": "2026-06-15T18:42:33",
     "creado": "2026-05-15T16:39:50",
-    "actualizado": "2026-06-15T18:42:33"
+    "n_operaciones": 6481,
+    "nombre": "ICH",
+    "ultima_fecha": "2026-06-12"
   },
   "SIMEC": {
-    "nombre": "SIMEC",
+    "actualizado": "2026-05-15T17:12:53",
     "creado": "2026-05-15T17:12:53",
-    "actualizado": "2026-05-15T17:12:53"
-  },
-  "VINTE": {
-    "nombre": "VINTE",
-    "creado": "2026-09-29T18:48:18",
-    "actualizado": "2026-09-29T20:17:20"
+    "n_operaciones": 1567,
+    "nombre": "SIMEC",
+    "ultima_fecha": "2026-05-12"
   },
   "TRAXION": {
-    "nombre": "TRAXION",
+    "actualizado": "2026-09-29T19:57:32",
     "creado": "2026-09-29T19:57:32",
-    "actualizado": "2026-09-29T19:57:32"
+    "n_operaciones": 25864,
+    "nombre": "TRAXION",
+    "ultima_fecha": "2026-07-14"
+  },
+  "VINTE": {
+    "actualizado": "2026-09-29T20:17:20",
+    "creado": "2026-09-29T18:48:18",
+    "n_operaciones": 229,
+    "nombre": "VINTE",
+    "ultima_fecha": "2026-09-24"
   }
 }

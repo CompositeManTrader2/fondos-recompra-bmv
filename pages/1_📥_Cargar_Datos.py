@@ -11,10 +11,11 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from src import bmv_downloader, bmv_scraper, data_processor, pdf_parser, storage
+from src import bmv_downloader, bmv_scraper, data_processor, pdf_parser, storage, theme as T
 
 st.set_page_config(page_title="Cargar Datos", page_icon="📥", layout="wide")
-st.title("📥 Cargar datos")
+T.aplicar_tema()
+T.header("LOAD", "Cargar datos", "Auto-descarga BMV · PDFs · URLs")
 
 st.markdown(
     "Sube PDFs de **fondo de recompra** o usa la auto-descarga de BMV. "
@@ -118,7 +119,7 @@ def _procesar_archivos(
     if not por_emisora:
         st.error("No se encontraron tablas de operaciones en los PDFs procesados.")
         with st.expander("🔍 Diagnóstico por archivo"):
-            st.dataframe(pd.DataFrame(diagnosticos), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame(diagnosticos), width="stretch", hide_index=True)
         return
 
     # Avisar si se mezclaron varias emisoras detectadas
@@ -160,14 +161,14 @@ def _procesar_archivos(
                     storage.guardar_pdf_bytes(ticker, nombre, contenido)
 
     st.success(f"✅ {len(resultados)} PDFs procesados.")
-    st.dataframe(pd.DataFrame(resumen_filas), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(resumen_filas), width="stretch", hide_index=True)
 
     with st.expander("🔍 Diagnóstico por archivo"):
-        st.dataframe(pd.DataFrame(diagnosticos), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(diagnosticos), width="stretch", hide_index=True)
 
     if metadata_remanentes:
         with st.expander("📑 Remanente de recursos detectado"):
-            st.dataframe(pd.DataFrame(metadata_remanentes), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame(metadata_remanentes), width="stretch", hide_index=True)
 
     if errores:
         with st.expander(f"⚠️ {len(errores)} archivo(s) con problemas"):
@@ -275,7 +276,7 @@ with tab1:
             status.update(label=f"✅ {len(docs)} PDFs de recompra encontrados.")
             st.dataframe(
                 docs[:50],
-                use_container_width=True, hide_index=True,
+                width="stretch", hide_index=True,
                 column_config={
                     "url": st.column_config.LinkColumn("PDF"),
                     "fecha": "Fecha publicación",
@@ -404,7 +405,7 @@ activos = storage.listar_activos()
 if not activos:
     st.info("Sin activos. Empieza arriba con la auto-descarga.")
 else:
-    st.dataframe(activos, use_container_width=True, hide_index=True)
+    st.dataframe(activos, width="stretch", hide_index=True)
 
     with st.expander("🛠️ Mantenimiento (mover, fusionar, eliminar)"):
         st.markdown("##### Renombrar / fusionar tickers")

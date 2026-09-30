@@ -11,10 +11,11 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from src import data_processor, storage
+from src import data_processor, storage, theme as T
 
 st.set_page_config(page_title="Exportar", page_icon="⬇️", layout="wide")
-st.title("⬇️ Exportar resultados")
+T.aplicar_tema()
+T.header("EXPT", "Exportar", f"Excel consolidado · {st.session_state.get('ticker_activo') or ''}")
 
 ticker = st.session_state.get("ticker_activo")
 if not ticker:
@@ -59,4 +60,4 @@ st.download_button(
 )
 
 st.markdown("### Vista previa")
-st.dataframe(df.head(50), use_container_width=True, hide_index=True)
+st.dataframe(df.head(50), width="stretch", hide_index=True)

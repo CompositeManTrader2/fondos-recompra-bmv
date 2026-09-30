@@ -10,10 +10,11 @@ import streamlit as st
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from src import data_processor, storage, visualizations as viz
+from src import data_processor, storage, theme as T, visualizations as viz
 
 st.set_page_config(page_title="Multi-Activo", page_icon="⚖️", layout="wide")
-st.title("⚖️ Comparativo multi-activo")
+T.aplicar_tema()
+T.header("COMP", "Multi-activo", "Comparativo entre emisoras")
 
 activos = storage.listar_activos()
 tickers_disponibles = [a["ticker"] for a in activos if a["n_operaciones"] > 0]
@@ -59,17 +60,17 @@ for t in seleccion:
 
 st.dataframe(
     pd.DataFrame(filas_resumen),
-    use_container_width=True,
+    width="stretch",
     hide_index=True,
     column_config={
-        "Importe": st.column_config.NumberColumn("Importe", format="$%d"),
+        "Importe": st.column_config.NumberColumn("Importe", format="$%,.0f"),
         "VWAP": st.column_config.NumberColumn("VWAP", format="$%.4f"),
         "VWAP Compra": st.column_config.NumberColumn("VWAP Compra", format="$%.4f"),
         "VWAP Venta": st.column_config.NumberColumn("VWAP Venta", format="$%.4f"),
     },
 )
 
-st.plotly_chart(viz.grafica_multi_activo(series, metrica=metrica), use_container_width=True)
+st.plotly_chart(viz.grafica_multi_activo(series, metrica=metrica), width="stretch")
 
 st.markdown("### 🔥 Heatmap de actividad mensual")
 filas = []
@@ -90,7 +91,7 @@ if filas:
         pivot,
         labels=dict(color=metrica.title()),
         aspect="auto",
-        color_continuous_scale="Purples",
+        color_continuous_scale=T.SECUENCIAL,
     )
-    fig.update_layout(template="plotly_white", height=380)
-    st.plotly_chart(fig, use_container_width=True)
+    fig.update_layout(template="bbg", height=380, hovermode="closest")
+    st.plotly_chart(fig, width="stretch")
