@@ -377,13 +377,16 @@ def grafica_treemap_emisoras(res_dia: pd.DataFrame) -> go.Figure:
     if res_dia is None or res_dia.empty:
         return _vacio()
     d = res_dia[res_dia["IMPORTE"] > 0].sort_values("IMPORTE", ascending=False)
+    z = np.log10(d["IMPORTE"] + 1)
+    rel = (z - z.min()) / (z.max() - z.min()) if z.max() > z.min() else z * 0 + 1
+    # Texto oscuro sobre ámbar brillante, claro sobre tonos oscuros (contraste).
+    color_txt = [T.PANEL if r > 0.6 else T.TEXT for r in rel]
     fig = go.Figure(go.Treemap(
         labels=d["EMISORA"], parents=[""] * len(d), values=d["IMPORTE"],
         customdata=np.stack([[T.fmt_mxn(v) for v in d["IMPORTE"]], d["OPERACIONES"]], axis=-1),
-        marker=dict(colors=np.log10(d["IMPORTE"] + 1), colorscale=T.SECUENCIAL,
-                    line=dict(color=T.PANEL, width=2)),
+        marker=dict(colors=z, colorscale=T.SECUENCIAL, line=dict(color=T.PANEL, width=2)),
         texttemplate="<b>%{label}</b><br>%{customdata[0]}<br>%{percentRoot:.1%}",
-        textfont=dict(family=T.FONT_MONO, color=T.TEXT, size=12),
+        textfont=dict(family=T.FONT_MONO, color=color_txt, size=12),
         hovertemplate="<b>%{label}</b><br>%{customdata[0]} · %{customdata[1]} ops<br>%{percentRoot:.1%} del día<extra></extra>",
         tiling=dict(pad=1),
     ))

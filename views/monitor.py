@@ -101,9 +101,11 @@ def main():
     prev = resumen[resumen["FECHA"] == pd.Timestamp(previas[0])] if previas else pd.DataFrame(columns=resumen.columns)
     tot_20 = resumen[resumen["FECHA"].isin(previas[:20])].groupby("FECHA")["IMPORTE"].sum()
 
-    # Color por emisora: orden estable = ranking histórico (no cambia con la ventana)
-    orden_hist = resumen.groupby("EMISORA")["IMPORTE"].sum().sort_values(ascending=False).index.tolist()
-    colores = T.colores_emisoras(orden_hist)
+    # Color por emisora con orden estable: ranking de los últimos 90 días al
+    # último dato disponible (no cambia al mover la ventana ni la fecha).
+    reciente = resumen[resumen["FECHA"] > resumen["FECHA"].max() - timedelta(days=90)]
+    orden = reciente.groupby("EMISORA")["IMPORTE"].sum().sort_values(ascending=False).index.tolist()
+    colores = T.colores_emisoras(orden)
 
     # ---- Cinta ----
     T.ticker_tape([

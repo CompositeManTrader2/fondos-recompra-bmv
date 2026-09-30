@@ -54,9 +54,8 @@ CDMX = timezone(timedelta(hours=-6))
 # ---------------------------------------------------------------------------
 
 def _registrar_template() -> None:
-    if "bbg" in pio.templates:
-        pio.templates.default = "bbg"
-        return
+    # Se re-registra siempre: pio.templates sobrevive a recargas del módulo en
+    # el mismo proceso, y un registro "sólo si no existe" congelaría estilos viejos.
     eje = dict(
         gridcolor=GRID, gridwidth=1, zeroline=False,
         linecolor=BORDER, tickcolor=BORDER, ticks="outside", ticklen=4,
@@ -71,14 +70,15 @@ def _registrar_template() -> None:
         colorway=CATEGORICA,
         title=dict(font=dict(family=FONT_MONO, size=12, color=TEXT), x=0.01, xanchor="left", y=0.98),
         xaxis=eje, yaxis=eje,
+        # Leyenda a la izquierda bajo el título: no choca con la barra de zoom.
         legend=dict(
-            orientation="h", yanchor="bottom", y=1.01, xanchor="right", x=1,
+            orientation="h", yanchor="bottom", y=1.0, xanchor="left", x=0,
             font=dict(family=FONT_MONO, size=10, color=TEXT_2), bgcolor="rgba(0,0,0,0)",
         ),
         hoverlabel=dict(bgcolor=PANEL_2, bordercolor=AMBER_UI,
                         font=dict(family=FONT_MONO, size=11, color=TEXT)),
         hovermode="x unified",
-        margin=dict(l=8, r=8, t=44, b=8),
+        margin=dict(l=8, r=8, t=64, b=8),
         bargap=0.25, barcornerradius=3,
         colorscale=dict(sequential=SECUENCIAL),
     ))
