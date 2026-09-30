@@ -37,13 +37,37 @@ la BMV (`https://www.bmv.com.mx/docs-pub/recompra/...pdf`).
 > GitHub desactiva los workflows programados tras 60 días sin actividad en el repo; los
 > commits diarios del scanner cuentan como actividad.
 
-## 🎨 Diseño
+## 🎨 Diseño · identidad Punto Casa de Bolsa
 
-Terminal oscura, ámbar como color de cromo, tipografía IBM Plex Mono. La paleta
-categórica y el par compra/venta están validados para daltonismo y contraste sobre
-el fondo oscuro (`src/theme.py`). Dos medidas de escala distinta nunca comparten
-gráfica con doble eje: van en paneles apilados con eje X compartido (precio arriba,
-volumen abajo). Ejes diarios sin fines de semana.
+Colores muestreados del reporte oficial: morado `#7030A0`, lavanda `#ECDEF5`, gris
+`#949BA1`. Tipografía Fira Sans / Fira Code. La paleta de gráficas (morado de marca
+primero, gris de marca para "OTRAS") y el par compra/venta están validados para
+daltonismo y contraste sobre blanco (`src/theme.py`). Nunca doble eje Y: medidas de
+escala distinta van en paneles apilados. Ejes diarios sin fines de semana.
+
+**Logotipo oficial**: coloca el archivo como `assets/logo_punto.png` (o `.svg`) y la
+app, el reporte HTML y el Excel lo usan automáticamente. Sin archivo se muestra un
+wordmark de texto.
+
+### Pantallas
+
+| Grupo | Pantalla | Para qué |
+|---|---|---|
+| Mercado | **Resumen** | Indicadores de la sesión, señales (volumen inusual, aceleración, inician/reanudan, prima vs cierre, pausa, fondo por agotarse, venta neta) y tablero de emisoras con métricas de decisión. |
+| Mercado | **Buyback Activity** | Réplica del reporte diario de Punto (TRADE DATE · STOCK · BROKER · B/S · SHARES · AVG PRICE · GROSS MXN), por fecha de reporte u operación. Descarga Excel con el mismo formato y HTML para correo. |
+| Mercado | **Casas de bolsa** | Liga de intermediarios, participación de Punto y su evolución, matriz emisora × casa y emisoras que recompran con otras casas (oportunidades comerciales). |
+| Mercado | **Rankings e historial** | Ranking por importe/sesiones y consulta histórica descargable. |
+| Emisora | Dashboard, Intermediarios, VWAP vs mercado, Exportar | Análisis individual. |
+| Herramientas | Multi-activo, Cargar datos, Estado del scanner | |
+
+### Métricas de decisión (Resumen)
+
+- **× prom. 20**: importe de la sesión / promedio de sus 20 sesiones previas.
+- **Aceleración**: ritmo de 5 sesiones / ritmo de 20.
+- **% del volumen**: acciones recompradas / volumen del mercado (Yahoo Finance).
+- **vs cierre**: VWAP de compra vs cierre del día (negativo = compró abajo del cierre).
+- **% circulación**: acciones recompradas en 20 sesiones / acciones en circulación (del PDF).
+- **Fondo para**: sesiones de remanente al ritmo actual.
 
 ## ✨ Características
 

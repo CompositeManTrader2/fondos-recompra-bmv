@@ -64,6 +64,9 @@ FRONTIER_GAP_BASE = 1500    # IDs seguidos sin recompra para declarar "frontera"
 FRONTIER_GAP_MAX = 24000
 CHUNK = 200
 FLUSH_EVERY_DOCS = 150
+MAX_REPARSE = 4000
+MERCADO_FILE_NAME = "mercado.parquet"
+ACTIVIDAD_FILE_NAME = "actividad.parquet"
 
 
 # ---------------------------------------------------------------------------
@@ -91,8 +94,9 @@ def leer_documentos() -> pd.DataFrame:
         except Exception:
             pass
     return pd.DataFrame(columns=[
-        "ID", "URL", "ARCHIVO", "EMISORA", "FECHA_OPERACION", "CASA_BOLSA",
-        "N_OPS", "ACCIONES", "IMPORTE", "REMANENTE_PRESENTE", "ESTADO", "ERROR", "PROCESADO_EN",
+        "ID", "URL", "ARCHIVO", "EMISORA", "SERIE", "FECHA_REPORTE", "FECHA_OPERACION", "CASA_BOLSA",
+        "N_OPS", "ACCIONES", "IMPORTE", "REMANENTE_PRESENTE", "TESORERIA", "CIRCULACION",
+        "ESTADO", "ERROR", "PARSER_VERSION", "PROCESADO_EN",
     ])
 
 
@@ -151,23 +155,94 @@ def _parse_worker(item: tuple[int, bytes]) -> tuple[int, pdf_parser.ResultadoPDF
 # Resumen de mercado
 # ---------------------------------------------------------------------------
 
-def reconstruir_resumen(docs: Optional[pd.DataFrame] = None) -> pd.DataFrame:
-    """Recalcula resumen_diario desde TODOS los parquets de emisoras."""
-    if docs is None:
-        docs = leer_documentos()
-    filas = []
+def _operaciones_todas() -> list[tuple[str, pd.DataFrame]]:
+    out = []
     for p in sorted((REPO_ROOT / "data" / "activos").glob("*/operations.parquet")):
-        emisora = p.parent.name
         try:
             df = data_processor.consolidar_operaciones(pd.read_parquet(p))
         except Exception:
             continue
-        if df.empty:
+        if not df.empty:
+            out.append((p.parent.name, df))
+    return out
+
+
+def _serie_por_emisora(docs: pd.DataFrame) -> dict[str, str]:
+    """Serie más reciente reportada por cada emisora (del registro)."""
+    if docs.empty or "SERIE" not in docs:
+        return {}
+    s = docs.dropna(subset=["SERIE"]).sort_values("ID")
+    return s.groupby("EMISORA")["SERIE"].last().to_dict()
+
+
+def simbolo_yahoo(emisora: str, serie: Optional[str]) -> str:
+    """AMX+B → AMXB.MX · WALMEX+* → WALMEX.MX · GCARSO+A1 → GCARSOA1.MX · FEXI+21 → FEXI21.MX"""
+    from src import market_data
+    if serie:
+        return f"{emisora}{str(serie).replace('*', '')}.MX"
+    return market_data.MAPEO_MANUAL.get(emisora, f"{emisora}.MX")
+
+
+def actualizar_mercado(docs: pd.DataFrame, emisoras: list[str], log=print) -> pd.DataFrame:
+    """
+    Cierre y volumen diario de Yahoo Finance para cada emisora (una sola
+    descarga en lote). Si Yahoo falla, conserva el archivo anterior.
+    """
+    destino = DAILY_ROOT / MERCADO_FILE_NAME
+    previo = pd.read_parquet(destino) if destino.exists() else pd.DataFrame()
+    try:
+        import yfinance as yf
+    except Exception:
+        log("  · yfinance no instalado: se omiten datos de mercado")
+        return previo
+    series = _serie_por_emisora(docs)
+    mapa = {simbolo_yahoo(e, series.get(e)): e for e in emisoras}
+    if not mapa:
+        return previo
+    inicio = (datetime.now() - pd.Timedelta(days=400)).strftime("%Y-%m-%d")
+    try:
+        raw = yf.download(list(mapa), start=inicio, group_by="ticker", auto_adjust=False,
+                          progress=False, threads=True)
+    except Exception as e:
+        log(f"  ⚠ Yahoo Finance falló ({e}); se conserva el archivo anterior")
+        return previo
+    filas = []
+    for sym, emi in mapa.items():
+        try:
+            sub = raw[sym] if isinstance(raw.columns, pd.MultiIndex) else raw
+            sub = sub[["Close", "Volume"]].dropna(how="all")
+        except KeyError:
             continue
+        if sub.empty:
+            continue
+        sub = sub.reset_index().rename(columns={"Date": "FECHA", "Close": "CLOSE", "Volume": "VOLUMEN"})
+        sub["FECHA"] = pd.to_datetime(sub["FECHA"]).dt.tz_localize(None).dt.normalize()
+        sub["EMISORA"], sub["SIMBOLO"] = emi, sym
+        filas.append(sub[["FECHA", "EMISORA", "SIMBOLO", "CLOSE", "VOLUMEN"]])
+    if not filas:
+        log("  ⚠ Yahoo no devolvió precios; se conserva el archivo anterior")
+        return previo
+    mercado = pd.concat(filas, ignore_index=True)
+    log(f"  · Mercado: {mercado['EMISORA'].nunique()}/{len(mapa)} emisoras con precio (Yahoo)")
+    DAILY_ROOT.mkdir(parents=True, exist_ok=True)
+    mercado.to_parquet(destino, index=False)
+    return mercado
+
+
+def reconstruir_resumen(docs: Optional[pd.DataFrame] = None, mercado: Optional[pd.DataFrame] = None,
+                        ops_todas: Optional[list] = None) -> pd.DataFrame:
+    """Recalcula resumen_diario desde TODOS los parquets de emisoras (+ mercado)."""
+    if docs is None:
+        docs = leer_documentos()
+    if ops_todas is None:
+        ops_todas = _operaciones_todas()
+    filas = []
+    for emisora, df in ops_todas:
         diarios = data_processor.estadisticos_por_periodo(df, "FECHA")
         extra = df.groupby("FECHA").agg(
             N_CASAS=("CASA_BOLSA", "nunique"),
             N_DOCS=("ARCHIVO_ORIGEN", "nunique"),
+            CASA_PRINCIPAL=("CASA_BOLSA", lambda s: s.mode().iat[0] if not s.mode().empty else None),
         ).reset_index()
         diarios = diarios.merge(extra, on="FECHA", how="left")
         diarios.insert(1, "EMISORA", emisora)
@@ -176,18 +251,89 @@ def reconstruir_resumen(docs: Optional[pd.DataFrame] = None) -> pd.DataFrame:
         return pd.DataFrame()
     res = pd.concat(filas, ignore_index=True)
 
-    # Remanente de recursos del fondo: el del documento más reciente del día.
-    if not docs.empty and "REMANENTE_PRESENTE" in docs.columns:
-        rem = docs.dropna(subset=["REMANENTE_PRESENTE", "FECHA_OPERACION"]).copy()
-        if not rem.empty:
-            rem["FECHA"] = pd.to_datetime(rem["FECHA_OPERACION"]).dt.normalize()
-            rem = rem.sort_values("ID").groupby(["FECHA", "EMISORA"])["REMANENTE_PRESENTE"].last().reset_index()
-            res = res.merge(rem, on=["FECHA", "EMISORA"], how="left")
-    if "REMANENTE_PRESENTE" not in res.columns:
-        res["REMANENTE_PRESENTE"] = pd.NA
+    # Del registro: remanente del fondo, serie y acciones en circulación (doc más reciente del día).
+    if not docs.empty:
+        reg = docs.dropna(subset=["FECHA_OPERACION"]).copy()
+        reg["FECHA"] = pd.to_datetime(reg["FECHA_OPERACION"]).dt.normalize()
+        cols = [c for c in ["REMANENTE_PRESENTE", "SERIE", "CIRCULACION"] if c in reg]
+        if cols:
+            ult = reg.sort_values("ID").groupby(["FECHA", "EMISORA"])[cols].last().reset_index()
+            res = res.merge(ult, on=["FECHA", "EMISORA"], how="left")
+    for c in ["REMANENTE_PRESENTE", "SERIE", "CIRCULACION"]:
+        if c not in res:
+            res[c] = pd.NA
+
+    # Mercado: cierre y volumen → % del volumen operado y prima/descuento vs cierre.
+    if mercado is not None and not mercado.empty:
+        res = res.merge(mercado[["FECHA", "EMISORA", "CLOSE", "VOLUMEN"]], on=["FECHA", "EMISORA"], how="left")
+        vol = pd.to_numeric(res["VOLUMEN"], errors="coerce").where(lambda v: v > 0)
+        res["PCT_VOLUMEN"] = 100 * pd.to_numeric(res["ACCIONES_COMPRA"], errors="coerce") / vol
+        ref = pd.to_numeric(res["VWAP_COMPRA"], errors="coerce").fillna(pd.to_numeric(res["VWAP"], errors="coerce"))
+        res["PRIMA_PCT"] = 100 * (ref / pd.to_numeric(res["CLOSE"], errors="coerce") - 1)
+    else:
+        res["CLOSE"] = res["VOLUMEN"] = res["PCT_VOLUMEN"] = res["PRIMA_PCT"] = pd.NA
+    circ = pd.to_numeric(res["CIRCULACION"], errors="coerce").where(lambda v: v > 0)
+    res["PCT_CIRC"] = 100 * pd.to_numeric(res["ACCIONES_COMPRA"], errors="coerce") / circ
 
     res = res[pd.to_datetime(res["FECHA"]).dt.weekday < 5]
     return res.sort_values(["FECHA", "IMPORTE"], ascending=[True, False]).reset_index(drop=True)
+
+
+def reconstruir_actividad(docs: pd.DataFrame, ops_todas: list) -> pd.DataFrame:
+    """
+    Tabla 'Buyback Activity': una fila por (fecha de reporte, fecha de
+    operación, emisora, serie, casa, lado) con acciones, importe y precio
+    promedio ponderado.
+    """
+    series = _serie_por_emisora(docs)
+    reg = docs[["ARCHIVO", "FECHA_REPORTE", "SERIE"]].rename(
+        columns={"ARCHIVO": "ARCHIVO_ORIGEN", "FECHA_REPORTE": "_FR", "SERIE": "_SR"}) if not docs.empty and "FECHA_REPORTE" in docs else None
+    partes = []
+    for emisora, df in ops_todas:
+        d = df.copy()
+        for c in ["FECHA_REPORTE", "SERIE"]:
+            if c not in d:
+                d[c] = pd.NA
+        if reg is not None:
+            # Operaciones cargadas antes del parser v2: completar desde el registro.
+            d = d.merge(reg, on="ARCHIVO_ORIGEN", how="left")
+            d["FECHA_REPORTE"] = pd.to_datetime(d["FECHA_REPORTE"], errors="coerce").fillna(
+                pd.to_datetime(d["_FR"], errors="coerce"))
+            d["SERIE"] = d["SERIE"].fillna(d["_SR"])
+        d["FECHA_REPORTE"] = pd.to_datetime(d["FECHA_REPORTE"], errors="coerce").fillna(d["FECHA"]).dt.normalize()
+        d["SERIE"] = d["SERIE"].fillna(series.get(emisora) or "")
+        d["EMISORA"] = emisora
+        partes.append(d)
+    if not partes:
+        return pd.DataFrame()
+    todo = pd.concat(partes, ignore_index=True)
+    todo["CASA_BOLSA"] = todo["CASA_BOLSA"].fillna("N/D")
+    g = todo.groupby(["FECHA_REPORTE", "FECHA", "EMISORA", "SERIE", "CASA_BOLSA", "TIPO"], dropna=False).agg(
+        ACCIONES=("NUMERO_DE_ACCIONES", "sum"), IMPORTE=("IMPORTE_OPERACION", "sum"), N_OPS=("PRECIO_UNITARIO", "size"),
+    ).reset_index().rename(columns={"FECHA": "FECHA_OPERACION"})
+    g["PRECIO_PROM"] = g["IMPORTE"] / g["ACCIONES"].where(g["ACCIONES"] > 0)
+    return g.sort_values(["FECHA_REPORTE", "EMISORA", "FECHA_OPERACION", "TIPO"]).reset_index(drop=True)
+
+
+def reconstruir_todo(docs: Optional[pd.DataFrame] = None, con_mercado: bool = True, log=print) -> dict:
+    """Recalcula mercado, resumen, actividad e índice. Devuelve conteos."""
+    docs = leer_documentos() if docs is None else docs
+    ops_todas = _operaciones_todas()
+    emisoras = [e for e, _ in ops_todas]
+    destino_m = DAILY_ROOT / MERCADO_FILE_NAME
+    if con_mercado:
+        mercado = actualizar_mercado(docs, emisoras, log=log)
+    else:
+        mercado = pd.read_parquet(destino_m) if destino_m.exists() else pd.DataFrame()
+    DAILY_ROOT.mkdir(parents=True, exist_ok=True)
+    resumen = reconstruir_resumen(docs, mercado, ops_todas)
+    if not resumen.empty:
+        resumen.to_parquet(RESUMEN_FILE, index=False)
+    actividad = reconstruir_actividad(docs, ops_todas)
+    if not actividad.empty:
+        actividad.to_parquet(DAILY_ROOT / ACTIVIDAD_FILE_NAME, index=False)
+    n_idx = storage.reconstruir_metadatos_indice()
+    return {"resumen": len(resumen), "actividad": len(actividad), "mercado": len(mercado), "indice": n_idx}
 
 
 # ---------------------------------------------------------------------------
@@ -234,7 +380,7 @@ def _flush(pendientes_ops: dict[str, list[pd.DataFrame]], docs_nuevos: list[dict
 
 def escanear(
     seed_id: Optional[int] = None,
-    max_ids: int = 60000,
+    max_ids: int = 200000,
     max_minutos: float = 45,
     workers: int = 6,
     dry_run: bool = False,
@@ -268,7 +414,16 @@ def escanear(
 
     # IDs que dieron error de red en corridas previas: se reintentan primero,
     # así un timeout puntual nunca deja un documento fuera del historial.
-    reintentar = sorted({int(i) for i in estado.get("ids_error", [])} - conocidos)
+    reintentar = {int(i) for i in estado.get("ids_error", [])} - conocidos
+    # Documentos leídos con un parser anterior se re-procesan (acotado por corrida).
+    if not docs.empty:
+        pv = pd.to_numeric(docs["PARSER_VERSION"] if "PARSER_VERSION" in docs else pd.Series(1, index=docs.index),
+                           errors="coerce").fillna(1)
+        viejos = pd.to_numeric(docs.loc[pv < pdf_parser.PARSER_VERSION, "ID"], errors="coerce").dropna().astype(int)
+        if len(viejos):
+            log(f"  ↻ {len(viejos):,} documentos con parser v<{pdf_parser.PARSER_VERSION}; se re-procesan hasta {MAX_REPARSE:,}")
+        reintentar |= set(viejos.tolist()[:MAX_REPARSE])
+    reintentar = sorted(reintentar)
     errores_run: set[int] = set()
 
     n_proc = max(1, min(4, os.cpu_count() or 1))
@@ -314,14 +469,19 @@ def escanear(
                     "URL": URL_TEMPLATE.format(id=doc_id),
                     "ARCHIVO": f"recompra_{doc_id}_1.pdf",
                     "EMISORA": emisora,
+                    "SERIE": parsed.serie,
+                    "FECHA_REPORTE": parsed.fecha_reporte,
                     "FECHA_OPERACION": parsed.fecha_operacion,
                     "CASA_BOLSA": parsed.casa_bolsa,
                     "N_OPS": int(len(ops)),
                     "ACCIONES": float(acc or 0),
                     "IMPORTE": float(imp or 0),
                     "REMANENTE_PRESENTE": parsed.remanente_presente,
+                    "TESORERIA": parsed.acciones_tesoreria,
+                    "CIRCULACION": parsed.acciones_circulacion,
                     "ESTADO": estado_doc,
                     "ERROR": parsed.error,
+                    "PARSER_VERSION": pdf_parser.PARSER_VERSION,
                     "PROCESADO_EN": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                 })
                 conocidos.add(doc_id)
@@ -338,9 +498,9 @@ def escanear(
                     guardar_estado(estado)
             return err_ids
 
-        # 1) Reintentos de errores de red previos
+        # 1) Reintentos de errores de red previos + re-proceso de parser viejo
         for k in range(0, len(reintentar), CHUNK):
-            _procesar(reintentar[k:k + CHUNK], f"reintento {len(reintentar):,} IDs con error previo")
+            _procesar(reintentar[k:k + CHUNK], f"reproceso {k + 1:,}–{min(k + CHUNK, len(reintentar)):,} de {len(reintentar):,}")
 
         # 2) Barrido secuencial hasta la frontera
         while True:
@@ -371,11 +531,8 @@ def escanear(
     res.duracion_s = round(time.time() - t0, 1)
 
     if not dry_run:
-        docs_all = leer_documentos()
-        resumen = reconstruir_resumen(docs_all)
-        if not resumen.empty:
-            resumen.to_parquet(RESUMEN_FILE, index=False)
-        storage.reconstruir_metadatos_indice()
+        conteos = reconstruir_todo(leer_documentos(), con_mercado=True, log=log)
+        log(f"  · Derivados: {conteos}")
         corrida = {"utc": datetime.now(timezone.utc).isoformat(timespec="seconds"), **res.to_dict()}
         estado["last_run_utc"] = corrida["utc"]
         estado["runs"] = ([corrida] + list(estado.get("runs", [])))[:60]

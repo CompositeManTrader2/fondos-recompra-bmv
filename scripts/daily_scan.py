@@ -50,20 +50,16 @@ def _step_summary(res: daily_scanner.Resumen) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--seed-id", type=int, default=None, help="ID inicial (backfill). Por defecto: incremental.")
-    ap.add_argument("--max-ids", type=int, default=60000)
+    ap.add_argument("--max-ids", type=int, default=200000)
     ap.add_argument("--max-minutos", type=float, default=45)
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--rebuild-only", action="store_true")
+    ap.add_argument("--sin-mercado", action="store_true", help="No descargar precios de Yahoo")
     args = ap.parse_args()
 
     if args.rebuild_only:
-        res = daily_scanner.reconstruir_resumen()
-        if not res.empty:
-            daily_scanner.DAILY_ROOT.mkdir(parents=True, exist_ok=True)
-            res.to_parquet(daily_scanner.RESUMEN_FILE, index=False)
-        n = storage.reconstruir_metadatos_indice()
-        print(f"Resumen: {len(res):,} filas · índice: {n} emisoras")
+        print(daily_scanner.reconstruir_todo(con_mercado=not args.sin_mercado))
         return 0
 
     res = daily_scanner.escanear(

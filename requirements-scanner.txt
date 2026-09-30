@@ -4,3 +4,4 @@ numpy>=1.26
 pdfplumber>=0.11
 pyarrow>=15.0
 requests>=2.32
+yfinance>=0.2.50

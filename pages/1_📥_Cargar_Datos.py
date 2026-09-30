@@ -24,7 +24,7 @@ st.markdown(
 )
 
 tab1, tab2, tab3 = st.tabs(
-    ["🤖 Auto-descarga BMV", "📄 Subir PDFs", "🔗 Pegar URLs BMV"]
+    ["Auto-descarga BMV", "Subir PDFs", "Pegar URLs BMV"]
 )
 
 
@@ -118,7 +118,7 @@ def _procesar_archivos(
 
     if not por_emisora:
         st.error("No se encontraron tablas de operaciones en los PDFs procesados.")
-        with st.expander("🔍 Diagnóstico por archivo"):
+        with st.expander("Diagnóstico por archivo"):
             st.dataframe(pd.DataFrame(diagnosticos), width="stretch", hide_index=True)
         return
 
@@ -126,13 +126,13 @@ def _procesar_archivos(
     detecciones_unicas = {d["Emisora detectada"] for d in diagnosticos if d["Emisora detectada"] != "—"}
     if not ticker_forzar and len(detecciones_unicas) > 1:
         st.info(
-            f"📋 Se detectaron **{len(detecciones_unicas)} emisoras distintas** en los "
+            f"Se detectaron **{len(detecciones_unicas)} emisoras distintas** en los "
             f"PDFs subidos: {', '.join(sorted(detecciones_unicas))}. "
             "Cada una se guardará por separado."
         )
     elif "DESCONOCIDA" in por_emisora and len(por_emisora) > 1:
         st.warning(
-            "⚠️ Algunos PDFs no tenían la *Clave de cotización* detectable y "
+            "Algunos PDFs no tenían la *Clave de cotización* detectable y "
             "fueron a **DESCONOCIDA**. Considera forzar el ticker para no "
             "mezclar emisoras."
         )
@@ -160,18 +160,18 @@ def _procesar_archivos(
                 if contenido:
                     storage.guardar_pdf_bytes(ticker, nombre, contenido)
 
-    st.success(f"✅ {len(resultados)} PDFs procesados.")
+    st.success(f"{len(resultados)} PDFs procesados.")
     st.dataframe(pd.DataFrame(resumen_filas), width="stretch", hide_index=True)
 
-    with st.expander("🔍 Diagnóstico por archivo"):
+    with st.expander("Diagnóstico por archivo"):
         st.dataframe(pd.DataFrame(diagnosticos), width="stretch", hide_index=True)
 
     if metadata_remanentes:
-        with st.expander("📑 Remanente de recursos detectado"):
+        with st.expander("Remanente de recursos detectado"):
             st.dataframe(pd.DataFrame(metadata_remanentes), width="stretch", hide_index=True)
 
     if errores:
-        with st.expander(f"⚠️ {len(errores)} archivo(s) con problemas"):
+        with st.expander(f"{len(errores)} archivo(s) con problemas"):
             for e in errores:
                 st.text(e)
 
@@ -186,7 +186,7 @@ def _procesar_archivos(
 # =============================================================================
 with tab1:
     st.markdown(
-        "🚀 **Auto-descarga 100 % automática** vía la API REST interna de BMV. "
+        "**Auto-descarga 100 % automática** vía la API REST interna de BMV. "
         "Escribe el ticker como lo conozcas (`AMXL`, `BIMBOA`, `WALMEX*`, "
         "`AMX`, `BIMBO`, `WALMEX`...) — el sistema **resuelve la clave "
         "BMV automáticamente** y descarga sólo los PDFs de recompra de esa emisora."
@@ -207,16 +207,16 @@ with tab1:
                 cve_resuelto = resol["cve_emisora"]
                 if cve_resuelto != clave_auto:
                     col_resol.success(
-                        f"🎯 `{clave_auto}` → **{cve_resuelto}**  ·  "
+                        f"`{clave_auto}` → **{cve_resuelto}**  ·  "
                         f"_{resol['razon_social']}_"
                     )
                 else:
                     col_resol.success(
-                        f"🎯 **{cve_resuelto}**  ·  _{resol['razon_social']}_"
+                        f"**{cve_resuelto}**  ·  _{resol['razon_social']}_"
                     )
             elif resol["estado"] == "ambiguo":
                 col_resol.warning(
-                    f"⚠️ `{clave_auto}` coincide con varias emisoras. "
+                    f"`{clave_auto}` coincide con varias emisoras. "
                     "Selecciona abajo."
                 )
                 opciones = {
@@ -231,7 +231,7 @@ with tab1:
                 cve_resuelto = opciones[pick]
             else:
                 col_resol.error(
-                    f"❌ No encontré `{clave_auto}` en BMV. "
+                    f"No encontré `{clave_auto}` en BMV. "
                     f"Variantes intentadas: {', '.join(resol['intentos'])}"
                 )
         except Exception as e:
@@ -244,7 +244,7 @@ with tab1:
 
     boton_disabled = not (clave_auto and cve_resuelto)
     if st.button(
-        f"⚡ Auto-descargar **{cve_resuelto}**" if cve_resuelto else "⚡ Auto-descargar",
+        f"Auto-descargar **{cve_resuelto}**" if cve_resuelto else "Auto-descargar",
         type="primary",
         disabled=boton_disabled,
     ):
@@ -273,7 +273,7 @@ with tab1:
                 )
                 st.stop()
 
-            status.update(label=f"✅ {len(docs)} PDFs de recompra encontrados.")
+            status.update(label=f"{len(docs)} PDFs de recompra encontrados.")
             st.dataframe(
                 docs[:50],
                 width="stretch", hide_index=True,
@@ -306,7 +306,7 @@ with tab1:
         # canónico por activo.
         _procesar_archivos(archivos, ticker_forzar=cve_resuelto or clave_auto)
 
-    with st.expander("🔖 Fallback: bookmarklet (sólo si el endpoint de BMV cambia)"):
+    with st.expander("Fallback: bookmarklet (sólo si el endpoint de BMV cambia)"):
         st.markdown(
             "Si en el futuro la API REST de BMV cambia, este bookmarklet en tu "
             "navegador siempre funciona como respaldo:"
@@ -351,7 +351,7 @@ with tab2:
     ).upper().strip()
     nombre_aqui = col_b.text_input("Nombre legible (opcional)", value="")
 
-    if st.button("🚀 Procesar PDFs", type="primary", disabled=not archivos_subidos, key="btn_procesar_manual"):
+    if st.button("Procesar PDFs", type="primary", disabled=not archivos_subidos, key="btn_procesar_manual"):
         archivos = [(f.name, f.read()) for f in archivos_subidos]
         _procesar_archivos(
             archivos,
@@ -383,7 +383,7 @@ with tab3:
         key="forzar_urls",
     ).upper().strip()
 
-    if st.button("🌐 Descargar y procesar URLs", type="primary", disabled=not raw, key="btn_urls"):
+    if st.button("Descargar y procesar URLs", type="primary", disabled=not raw, key="btn_urls"):
         urls = bmv_downloader.extraer_urls(raw)
         if not urls:
             st.error("No se encontraron URLs válidas de BMV en el texto pegado.")
@@ -400,14 +400,14 @@ with tab3:
 # Activos almacenados + administración
 # =============================================================================
 st.divider()
-st.markdown("### 🗂️ Activos actualmente almacenados")
+st.markdown("### Activos actualmente almacenados")
 activos = storage.listar_activos()
 if not activos:
     st.info("Sin activos. Empieza arriba con la auto-descarga.")
 else:
     st.dataframe(activos, width="stretch", hide_index=True)
 
-    with st.expander("🛠️ Mantenimiento (mover, fusionar, eliminar)"):
+    with st.expander("Mantenimiento (mover, fusionar, eliminar)"):
         st.markdown("##### Renombrar / fusionar tickers")
         st.caption(
             "Útil si te quedaron datos en `DESCONOCIDA` o si tienes el mismo "
@@ -421,7 +421,7 @@ else:
             ["Fusionar (append + dedupe)", "Sobrescribir destino"],
             key="rename_modo",
         )
-        if st.button("🔀 Mover/Fusionar", type="secondary"):
+        if st.button("Mover/Fusionar", type="secondary"):
             if not destino:
                 st.error("Especifica el ticker destino.")
             elif destino == origen:
@@ -437,7 +437,7 @@ else:
                     n = storage.guardar_operaciones(destino, df_src, modo=modo)
                     storage.eliminar_activo(origen)
                     st.success(
-                        f"✅ Movidas {len(df_src):,} operaciones de "
+                        f"Movidas {len(df_src):,} operaciones de "
                         f"`{origen}` → `{destino}` (total ahora: {n:,}). "
                         "Origen eliminado."
                     )
@@ -446,7 +446,7 @@ else:
         st.markdown("##### Eliminar un activo")
         a_borrar = st.selectbox("Selecciona ticker a eliminar", [a["ticker"] for a in activos], key="del_select")
         confirma = st.text_input("Escribe el ticker para confirmar", value="", key="del_confirm")
-        if st.button("🗑️ Eliminar permanentemente", type="secondary"):
+        if st.button("Eliminar permanentemente", type="secondary"):
             if confirma.strip().upper() == a_borrar:
                 storage.eliminar_activo(a_borrar)
                 st.success(f"Activo {a_borrar} eliminado.")

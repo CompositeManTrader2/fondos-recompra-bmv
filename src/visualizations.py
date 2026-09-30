@@ -1,5 +1,5 @@
 """
-Gráficas Plotly estilo terminal Bloomberg (template "bbg" de src/theme.py).
+Gráficas Plotly con la identidad de Punto Casa de Bolsa (template de src/theme.py).
 
 Reglas que se cumplen en todo el módulo:
   - Nunca doble eje Y: dos medidas de escala distinta van en paneles
@@ -17,9 +17,9 @@ from plotly.subplots import make_subplots
 
 from src import theme as T
 
-MERCADO = "#C9CDD2"   # línea de referencia (precio de mercado): neutro claro
+MERCADO = "#3F3947"   # línea de referencia (precio de mercado): neutro oscuro
 VOLUMEN = T.CATEGORICA[1]
-NEUTRO_BAR = "#5B6572"
+NEUTRO_BAR = T.GRAY_BRAND
 
 
 # ---------------------------------------------------------------------------
@@ -32,7 +32,7 @@ def _sin_fines(fig: go.Figure) -> go.Figure:
 
 
 def _base(fig: go.Figure, titulo: str, alto: int = 440, leyenda: bool = True) -> go.Figure:
-    fig.update_layout(title=dict(text=titulo.upper()), height=alto, showlegend=leyenda, template="bbg")
+    fig.update_layout(title=dict(text=titulo.upper()), height=alto, showlegend=leyenda, template=T.TEMPLATE)
     return fig
 
 
@@ -119,7 +119,7 @@ def grafica_acumulado(diarios: pd.DataFrame) -> go.Figure:
     fig = _doble_panel((0.5, 0.5))
     fig.add_trace(go.Scatter(x=x, y=netas.cumsum(), name="Acciones netas acumuladas", mode="lines",
                              line=dict(color=T.SERIE_1, width=2), fill="tozeroy",
-                             fillcolor="rgba(211,126,1,0.18)",
+                             fillcolor="rgba(112,48,160,0.14)",
                              hovertemplate="Netas %{y:,.0f}<extra></extra>"), 1, 1)
     fig.add_trace(go.Scatter(x=x, y=d["IMPORTE"].fillna(0).cumsum(), name="Importe acumulado", mode="lines",
                              line=dict(color=T.SERIE_2, width=2),
@@ -157,7 +157,7 @@ def grafica_dispersion_intradia(df_ops: pd.DataFrame, max_dias: int = 60) -> go.
     d = d[d["FECHA"].isin(dias)]
     fig = go.Figure(go.Box(x=d["FECHA"], y=d["PRECIO_UNITARIO"], name="Precio", boxpoints="outliers",
                            marker=dict(color=T.SERIE_1, size=4), line=dict(color=T.SERIE_1, width=1),
-                           fillcolor="rgba(211,126,1,0.25)",
+                           fillcolor="rgba(112,48,160,0.18)",
                            hovertemplate="$%{y:,.4f}<extra></extra>"))
     fig.update_yaxes(tickprefix="$")
     return _sin_fines(_base(fig, f"Dispersión intradía · últimos {len(dias)} días", 420, leyenda=False))
@@ -379,8 +379,8 @@ def grafica_treemap_emisoras(res_dia: pd.DataFrame) -> go.Figure:
     d = res_dia[res_dia["IMPORTE"] > 0].sort_values("IMPORTE", ascending=False)
     z = np.log10(d["IMPORTE"] + 1)
     rel = (z - z.min()) / (z.max() - z.min()) if z.max() > z.min() else z * 0 + 1
-    # Texto oscuro sobre ámbar brillante, claro sobre tonos oscuros (contraste).
-    color_txt = [T.PANEL if r > 0.6 else T.TEXT for r in rel]
+    # Texto blanco sobre morado profundo, oscuro sobre lavanda (contraste).
+    color_txt = ["#FFFFFF" if r > 0.55 else T.TEXT for r in rel]
     fig = go.Figure(go.Treemap(
         labels=d["EMISORA"], parents=[""] * len(d), values=d["IMPORTE"],
         customdata=np.stack([[T.fmt_mxn(v) for v in d["IMPORTE"]], d["OPERACIONES"]], axis=-1),
@@ -441,3 +441,72 @@ def grafica_acumulado_emisoras(resumen: pd.DataFrame, emisoras: list[str]) -> go
                                  hovertemplate=f"{emi} $%{{y:,.0f}}<extra></extra>"))
     fig.update_yaxes(tickprefix="$", tickformat="~s")
     return _sin_fines(_base(fig, "Importe acumulado por emisora", 420))
+
+
+# ---------------------------------------------------------------------------
+# Casas de bolsa · mercado completo (tabla de actividad del scanner)
+# ---------------------------------------------------------------------------
+
+def grafica_liga_casas(liga: pd.DataFrame, destacar: str = "PUNTO", top: int = 15) -> go.Figure:
+    """Barras horizontales de participación; la casa destacada en morado, el resto en gris de marca."""
+    if liga is None or liga.empty:
+        return _vacio()
+    d = liga.sort_values("IMPORTE").tail(top)
+    colores = [T.PURPLE if c == destacar else T.GRAY_BRAND for c in d["CASA_BOLSA"]]
+    fig = go.Figure(go.Bar(
+        x=d["PART"], y=d["CASA_BOLSA"], orientation="h", marker_color=colores, **_barras_kw(),
+        text=[f"{p:.1f}%  {T.fmt_mxn(v)}" for p, v in zip(d["PART"], d["IMPORTE"])], textposition="outside",
+        textfont=dict(color=T.TEXT_2, size=11), customdata=d["EMISORAS"],
+        hovertemplate="<b>%{y}</b><br>%{x:.1f}% del importe · %{customdata} emisoras<extra></extra>",
+    ))
+    fig.update_xaxes(ticksuffix="%", showspikes=False, range=[0, max(d["PART"].max() * 1.35, 5)])
+    fig.update_layout(hovermode="closest")
+    return _base(fig, f"Participación por casa de bolsa · {destacar} resaltada", max(340, 28 * len(d) + 90), leyenda=False)
+
+
+def grafica_participacion_semanal(act: pd.DataFrame, casas: list[str]) -> go.Figure:
+    """% del importe semanal ejecutado por cada casa (líneas, máximo 8 casas)."""
+    if act is None or act.empty or not casas:
+        return _vacio()
+    d = act.copy()
+    d["SEMANA"] = d["FECHA_OPERACION"] - pd.to_timedelta(d["FECHA_OPERACION"].dt.weekday, unit="D")
+    tot = d.groupby("SEMANA")["IMPORTE"].sum()
+    piv = d.pivot_table(index="SEMANA", columns="CASA_BOLSA", values="IMPORTE", aggfunc="sum").fillna(0)
+    share = piv.div(tot, axis=0) * 100
+    fig = go.Figure()
+    for i, c in enumerate(casas[:8]):
+        if c in share:
+            fig.add_trace(go.Scatter(x=share.index, y=share[c], name=c, mode="lines+markers",
+                                     line=dict(color=T.CATEGORICA[i], width=2.5 if i == 0 else 1.8), marker=dict(size=7),
+                                     hovertemplate=f"{c} %{{y:.1f}}%<extra></extra>"))
+    fig.update_yaxes(ticksuffix="%", rangemode="tozero")
+    return _base(fig, "Participación semanal en el importe de recompras", 400)
+
+
+def grafica_matriz_casas(act: pd.DataFrame, top_emisoras: int = 25, top_casas: int = 10) -> go.Figure:
+    """Quién ejecuta para quién: importe por emisora x casa de bolsa."""
+    if act is None or act.empty:
+        return _vacio()
+    em = act.groupby("EMISORA")["IMPORTE"].sum().sort_values(ascending=False).head(top_emisoras).index
+    cs = act.groupby("CASA_BOLSA")["IMPORTE"].sum().sort_values(ascending=False).head(top_casas).index
+    piv = (act[act["EMISORA"].isin(em) & act["CASA_BOLSA"].isin(cs)]
+           .pivot_table(index="EMISORA", columns="CASA_BOLSA", values="IMPORTE", aggfunc="sum")
+           .reindex(index=em, columns=cs))
+    texto = piv.map(lambda v: T.fmt_mxn(v) if pd.notna(v) else "")
+    z = np.log10(piv.fillna(0) + 1).where(piv.notna())
+    rel = (z - np.nanmin(z.values)) / max(np.nanmax(z.values) - np.nanmin(z.values), 1e-9)
+    fig = go.Figure(go.Heatmap(
+        z=z, x=list(piv.columns), y=list(piv.index),
+        colorscale=T.SECUENCIAL, xgap=2, ygap=2, showscale=False, customdata=texto.values,
+        hovertemplate="<b>%{y}</b> · %{x}<br>%{customdata}<extra></extra>",
+    ))
+    # Etiquetas con contraste según el tono de la celda
+    for i, emi in enumerate(piv.index):
+        for j, casa in enumerate(piv.columns):
+            if pd.notna(piv.iat[i, j]):
+                fig.add_annotation(x=casa, y=emi, text=texto.iat[i, j], showarrow=False,
+                                   font=dict(size=9, color="#FFFFFF" if rel.iat[i, j] > 0.55 else T.TEXT))
+    fig.update_xaxes(showspikes=False, side="top", type="category", gridcolor=T.PANEL)
+    fig.update_yaxes(showspikes=False, autorange="reversed", type="category", gridcolor=T.PANEL)
+    fig.update_layout(hovermode="closest")
+    return _base(fig, "Matriz emisora x casa de bolsa (importe)", max(380, 22 * len(piv) + 120), leyenda=False)

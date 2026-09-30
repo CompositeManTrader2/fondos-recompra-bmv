@@ -249,7 +249,8 @@ def guardar_operaciones(ticker: str, df: pd.DataFrame, modo: str = "append") -> 
 
     keys = [c for c in ["EMISORA", "FECHA_OPERACION", "FOLIO", "CASA_BOLSA", "PRECIO_UNITARIO"] if c in df.columns]
     if keys:
-        df = df.drop_duplicates(subset=keys, keep="first")
+        # keep="last": una re-lectura (p.ej. parser nuevo con SERIE) reemplaza a la anterior.
+        df = df.drop_duplicates(subset=keys, keep="last")
     registrar_activo(ticker, meta=_meta_desde_df(df))
     _cache_drop(_parquet_relpath(ticker))
 

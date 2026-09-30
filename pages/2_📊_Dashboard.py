@@ -38,7 +38,7 @@ if "EMISORA" in df_raw.columns:
 
 if df_raw.empty:
     st.error(
-        f"⚠️ Las operaciones almacenadas no pertenecen a `{ticker}`. "
+        f"Las operaciones almacenadas no pertenecen a `{ticker}`. "
         "Ve a **📥 Cargar Datos → Mantenimiento** para reorganizar."
     )
     st.stop()

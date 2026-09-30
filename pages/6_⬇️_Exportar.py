@@ -52,7 +52,7 @@ excel_bytes = _construir_excel(df)
 st.success(f"Excel listo para **{ticker}** — {len(df):,} operaciones.")
 
 st.download_button(
-    label="📥 Descargar Excel consolidado",
+    label="Descargar Excel consolidado",
     data=excel_bytes,
     file_name=f"recompra_{ticker}.xlsx",
     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

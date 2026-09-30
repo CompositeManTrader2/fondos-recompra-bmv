@@ -66,6 +66,7 @@ def _guardar_cache(mapping: dict) -> None:
 # barrer sufijos genéricos. Esto evita falsos positivos.
 MAPEO_MANUAL: dict[str, str] = {
     "AMX": "AMXB.MX",
+    "TRAXION": "TRAXIONA.MX",
     "BIMBO": "BIMBOA.MX",
     "GFNORTE": "GFNORTEO.MX",
     "CEMEX": "CEMEXCPO.MX",

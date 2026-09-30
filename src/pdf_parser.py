@@ -38,6 +38,11 @@ DIAS_SEMANA_ES = {
 }
 
 
+# Sube cuando cambie lo que el parser extrae: el scanner re-procesa los
+# documentos registrados con una versión menor.
+PARSER_VERSION = 2
+
+
 @dataclass
 class ResultadoPDF:
     """Encapsula todo lo extraído de un PDF de recompra."""
@@ -49,6 +54,10 @@ class ResultadoPDF:
     remanente_presente: Optional[float]
     operaciones: pd.DataFrame  # DataFrame normalizado (puede estar vacío)
     error: Optional[str] = None
+    serie: Optional[str] = None                 # "B", "A1", "A-1", "*", "21"…
+    fecha_reporte: Optional[datetime] = None    # "FECHA:" del encabezado (publicación)
+    acciones_tesoreria: Optional[int] = None    # saldo "al último reporte"
+    acciones_circulacion: Optional[int] = None  # saldo "al último reporte"
 
 
 # ---------------------------------------------------------------------------
@@ -65,7 +74,11 @@ def _to_float_decimal(x) -> Optional[float]:
     if "," in t and "." in t:
         t = t.replace(",", "")
     elif "," in t and "." not in t:
-        t = t.replace(",", ".")
+        grupos = t.lstrip("-").split(",")
+        if len(grupos) > 1 and all(len(g) == 3 for g in grupos[1:]):
+            t = t.replace(",", "")        # 12,500,568 → miles
+        else:
+            t = t.replace(",", ".")       # 19,6 → coma decimal
     parts = t.split(".")
     if len(parts) > 2:
         t = parts[0] + "." + "".join(parts[1:])
@@ -154,7 +167,9 @@ def _extraer_remanente(texto: str) -> tuple[Optional[float], Optional[float]]:
             for j in range(i, min(i + 6, len(lineas))):
                 up = lineas[j].upper()
                 ultimo_token = lineas[j].split()[-1] if lineas[j].split() else ""
-                valor = _to_float_decimal(ultimo_token)
+                # Montos enteros con separador de miles ("12,500,568,776")
+                valor = _to_int_strict(ultimo_token) if re.fullmatch(r"-?[\d,]+", ultimo_token) else None
+                valor = float(valor) if valor is not None else None
                 if valor is None:
                     continue
                 if "ÚLTIMO REPORTE" in up or "ULTIMO REPORTE" in up:
@@ -163,6 +178,43 @@ def _extraer_remanente(texto: str) -> tuple[Optional[float], Optional[float]]:
                     presente = valor
             break
     return ultimo, presente
+
+
+_PATRON_SERIE = re.compile(r"^\s*SERIE\s+([A-Z0-9\*\-]{1,6})\s*$", re.IGNORECASE | re.MULTILINE)
+_PATRON_FECHA_REPORTE = re.compile(r"^\s*FECHA:\s*(\d{2}/\d{2}/\d{4})", re.IGNORECASE | re.MULTILINE)
+_PATRON_SALDO = re.compile(r"^\s*Al\s+[úu]ltimo\s+reporte\s+([\d,]+)\s+([\d,]+)(?:\s+([\d,]+))?\s*$",
+                           re.IGNORECASE | re.MULTILINE)
+
+
+def _extraer_serie(texto: str) -> Optional[str]:
+    """'SERIE B' / 'SERIE A1' / 'SERIE A-1' / 'SERIE *' debajo de 'OPERACIÓN POR SERIE'."""
+    m = _PATRON_SERIE.search(texto)
+    return m.group(1).upper() if m else None
+
+
+def _extraer_fecha_reporte(texto: str) -> Optional[datetime]:
+    m = _PATRON_FECHA_REPORTE.search(texto)
+    if m:
+        try:
+            return datetime.strptime(m.group(1), "%d/%m/%Y")
+        except ValueError:
+            return None
+    return None
+
+
+def _extraer_saldos(texto: str) -> tuple[Optional[int], Optional[int]]:
+    """
+    Sección SALDOS → (acciones en tesorería, acciones en circulación) al
+    último reporte. La línea 'Al presente reporte' viene con texto
+    superpuesto en el PDF y no es confiable; la del último reporte sí.
+    La primera coincidencia de 'Al último reporte' con UN número es el
+    remanente; buscamos la que trae 2–3 números (tabla de saldos).
+    """
+    i = texto.upper().find("SALDOS")
+    m = _PATRON_SALDO.search(texto, i if i >= 0 else 0)
+    if not m:
+        return None, None
+    return _to_int_strict(m.group(1)), _to_int_strict(m.group(2))
 
 
 # ---------------------------------------------------------------------------
@@ -285,6 +337,9 @@ def parsear_pdf(file_or_bytes, nombre_archivo: str = "documento.pdf") -> Resulta
             fecha = _extraer_fecha(texto_total)
             casa = _extraer_casa_bolsa(texto_total)
             ultimo, presente = _extraer_remanente(texto_total)
+            serie = _extraer_serie(texto_total)
+            fecha_rep = _extraer_fecha_reporte(texto_total)
+            tesoreria, circulacion = _extraer_saldos(texto_total)
             ops = _extraer_tablas(pdf)
 
         if not ops.empty:
@@ -295,6 +350,8 @@ def parsear_pdf(file_or_bytes, nombre_archivo: str = "documento.pdf") -> Resulta
                 ops["CASA_BOLSA"] = casa
             if emisora is not None:
                 ops["EMISORA"] = emisora
+            ops["SERIE"] = serie
+            ops["FECHA_REPORTE"] = fecha_rep
             ops["ARCHIVO_ORIGEN"] = nombre_archivo
 
         return ResultadoPDF(
@@ -305,6 +362,10 @@ def parsear_pdf(file_or_bytes, nombre_archivo: str = "documento.pdf") -> Resulta
             remanente_ultimo=ultimo,
             remanente_presente=presente,
             operaciones=ops,
+            serie=serie,
+            fecha_reporte=fecha_rep,
+            acciones_tesoreria=tesoreria,
+            acciones_circulacion=circulacion,
         )
     except Exception as e:
         return ResultadoPDF(

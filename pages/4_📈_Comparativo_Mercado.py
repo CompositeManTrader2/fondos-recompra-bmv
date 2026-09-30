@@ -55,7 +55,7 @@ with st.sidebar:
     st.markdown(f"### Fuente de precios · {ticker}")
     fuente = st.radio(
         "Origen",
-        ["🪄 Auto-resolver Yahoo Finance", "✏️ Símbolo Yahoo manual", "📂 Subir Excel/CSV"],
+        ["Auto-resolver Yahoo Finance", "Símbolo Yahoo manual", "Subir Excel/CSV"],
         index=0,
     )
 
@@ -66,7 +66,7 @@ precios = pd.DataFrame()
 sym_usado: str | None = None
 intentos: list[str] = []
 
-if fuente == "🪄 Auto-resolver Yahoo Finance":
+if fuente == "Auto-resolver Yahoo Finance":
     st.markdown(
         "El sistema prueba automáticamente las variantes Yahoo de tu cve_emisora "
         "BMV (`AMX`→`AMXB.MX`, `BIMBO`→`BIMBOA.MX`, `CEMEX`→`CEMEXCPO.MX`...) "
@@ -81,10 +81,10 @@ if fuente == "🪄 Auto-resolver Yahoo Finance":
 
     col_l, col_r = st.columns([3, 1])
     if sym_usado:
-        col_l.success(f"✅ Símbolo Yahoo encontrado: **`{sym_usado}`** · {len(precios)} días con precios.")
+        col_l.success(f"Símbolo Yahoo encontrado: **`{sym_usado}`** · {len(precios)} días con precios.")
     else:
         col_l.error(
-            f"❌ No se encontró ningún símbolo Yahoo válido para `{ticker}`."
+            f"No se encontró ningún símbolo Yahoo válido para `{ticker}`."
         )
     with col_r.expander(f"Variantes probadas ({len(intentos)})"):
         for s in intentos:
@@ -100,7 +100,7 @@ if fuente == "🪄 Auto-resolver Yahoo Finance":
         )
         st.stop()
 
-elif fuente == "✏️ Símbolo Yahoo manual":
+elif fuente == "Símbolo Yahoo manual":
     cache_actual = market_data.cache_yahoo_mapping().get(ticker.upper())
     valor_default = (
         cache_actual
@@ -114,7 +114,7 @@ elif fuente == "✏️ Símbolo Yahoo manual":
              "Verifica primero en https://finance.yahoo.com/quote/",
     ).strip().upper()
     col_b1, col_b2 = st.columns([1, 1])
-    if col_b1.button("🔎 Descargar", type="primary", disabled=not sym_in):
+    if col_b1.button("Descargar", type="primary", disabled=not sym_in):
         with st.spinner(f"Descargando {sym_in} de Yahoo Finance…"):
             precios = _cache_descarga_directa(
                 sym_in,
@@ -123,15 +123,15 @@ elif fuente == "✏️ Símbolo Yahoo manual":
             )
         if precios.empty:
             st.error(
-                f"❌ Yahoo no devolvió datos para `{sym_in}`. "
+                f"Yahoo no devolvió datos para `{sym_in}`. "
                 "Verifica el símbolo en https://finance.yahoo.com/quote/."
             )
             st.stop()
         sym_usado = sym_in
-        st.success(f"✅ {len(precios)} días con precios.")
-        if col_b2.button("💾 Guardar como mapping default", help="Persiste para que el auto-resolver lo use siempre."):
+        st.success(f"{len(precios)} días con precios.")
+        if col_b2.button("Guardar como mapping default", help="Persiste para que el auto-resolver lo use siempre."):
             market_data.set_yahoo_mapping(ticker, sym_in)
-            st.toast(f"✅ {ticker} → {sym_in} guardado.")
+            st.toast(f"{ticker} → {sym_in} guardado.")
     else:
         st.stop()
 
@@ -149,7 +149,7 @@ else:  # Subir Excel
         else:
             precios = pd.read_csv(archivo)
         precios.columns = [str(c).strip() for c in precios.columns]
-        st.success(f"✅ {len(precios)} filas leídas del archivo.")
+        st.success(f"{len(precios)} filas leídas del archivo.")
         st.dataframe(precios.head(10), width="stretch", hide_index=True)
     except Exception as e:
         st.error(f"Error leyendo el archivo: {e}")
@@ -169,7 +169,7 @@ if comp.empty:
         "`Close` (o `PRECIO_MERCADO`/`CIERRE`)."
     )
     if not precios.empty:
-        with st.expander("🔍 Columnas detectadas en la fuente de precios"):
+        with st.expander("Columnas detectadas en la fuente de precios"):
             st.write(list(precios.columns))
             st.dataframe(precios.head(5), width="stretch", hide_index=True)
     st.stop()

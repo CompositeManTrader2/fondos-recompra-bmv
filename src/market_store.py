@@ -60,5 +60,17 @@ def estado_scanner() -> dict:
         return {}
 
 
+@st.cache_data(ttl=600, show_spinner=False)
+def actividad() -> pd.DataFrame:
+    """Agregado por (fecha reporte, fecha operación, emisora, serie, casa, lado)."""
+    data = _leer("actividad.parquet")
+    if not data:
+        return pd.DataFrame()
+    df = pd.read_parquet(io.BytesIO(data))
+    for c in ["FECHA_REPORTE", "FECHA_OPERACION"]:
+        df[c] = pd.to_datetime(df[c]).dt.normalize()
+    return df
+
+
 def limpiar_cache() -> None:
-    resumen_diario.clear(); documentos.clear(); estado_scanner.clear()
+    resumen_diario.clear(); documentos.clear(); estado_scanner.clear(); actividad.clear()

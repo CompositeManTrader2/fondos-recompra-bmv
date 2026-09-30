@@ -1,8 +1,57 @@
 {
-  "last_hit_id": 1592239,
+  "last_hit_id": 1592285,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-09-30T19:02:35+00:00",
+  "last_run_utc": "2026-09-30T20:01:41+00:00",
   "runs": [
+    {
+      "utc": "2026-09-30T20:01:41+00:00",
+      "inicio_id": 1591440,
+      "fin_id": 1593839,
+      "ids_revisados": 2580,
+      "pdfs_encontrados": 234,
+      "docs_nuevos": 234,
+      "ops_nuevas": 9276,
+      "errores_red": 0,
+      "sin_tabla": 1,
+      "emisoras": [
+        "AC",
+        "ACTINVR",
+        "AGUA",
+        "ALSEA",
+        "ALTERNA",
+        "AMX",
+        "AUTLAN",
+        "BIMBO",
+        "CMOCTEZ",
+        "CYDSASA",
+        "FEMSA",
+        "GCARSO",
+        "GCC",
+        "GFINBUR",
+        "GISSA",
+        "GMEXICO",
+        "GRUMA",
+        "HERDEZ",
+        "ICH",
+        "KIMBER",
+        "LAB",
+        "LAMOSA",
+        "LIVEPOL",
+        "MEGA",
+        "NEMAK",
+        "ORBIA",
+        "PINFRA",
+        "Q",
+        "R",
+        "SIMEC",
+        "SITES1",
+        "SPORT",
+        "VINTE",
+        "WALMEX"
+      ],
+      "abortado": null,
+      "duracion_s": 1130.5
+    },
     {
       "utc": "2026-09-30T19:02:35+00:00",
       "inicio_id": 1588442,
@@ -52,5 +101,6 @@
       "abortado": null,
       "duracion_s": 598.5
     }
-  ]
+  ],
+  "ids_error": []
 }

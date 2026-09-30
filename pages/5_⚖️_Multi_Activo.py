@@ -72,7 +72,7 @@ st.dataframe(
 
 st.plotly_chart(viz.grafica_multi_activo(series, metrica=metrica), width="stretch")
 
-st.markdown("### 🔥 Heatmap de actividad mensual")
+st.markdown("### Heatmap de actividad mensual")
 filas = []
 for t, diarios in series.items():
     if diarios.empty:
@@ -93,5 +93,5 @@ if filas:
         aspect="auto",
         color_continuous_scale=T.SECUENCIAL,
     )
-    fig.update_layout(template="bbg", height=380, hovermode="closest")
+    fig.update_layout(template=T.TEMPLATE, height=380, hovermode="closest")
     st.plotly_chart(fig, width="stretch")
