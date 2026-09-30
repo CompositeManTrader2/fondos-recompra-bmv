@@ -106,7 +106,8 @@ p, li, label, .stMarkdown {{ font-size: .88rem; }}
 code {{ color: {AMBER_UI}; background: {PANEL_2}; }}
 
 section[data-testid="stSidebar"] {{ background: {PANEL}; border-right: 1px solid {BORDER}; }}
-section[data-testid="stSidebar"] * {{ font-family: {FONT_MONO}; }}
+section[data-testid="stSidebar"] p, section[data-testid="stSidebar"] label,
+section[data-testid="stSidebar"] h3 {{ font-family: {FONT_MONO}; }}
 
 /* Tabs → teclas de función de terminal */
 .stTabs [data-baseweb="tab-list"] {{ gap: 2px; border-bottom: 1px solid {BORDER}; }}

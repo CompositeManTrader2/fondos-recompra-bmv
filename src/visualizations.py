@@ -276,9 +276,10 @@ def grafica_pastel_casas(por_casa: pd.DataFrame, metrica: str = "IMPORTE") -> go
                            marker=dict(colors=colores, line=dict(color=T.PANEL, width=2)),
                            textinfo="percent", textfont=dict(color=T.TEXT, size=10),
                            hovertemplate="<b>%{label}</b><br>%{value:,.0f} · %{percent}<extra></extra>"))
-    fig.update_layout(legend=dict(orientation="v", x=1.02, y=0.5, yanchor="middle", xanchor="left"))
+    fig.update_layout(legend=dict(orientation="h", x=0.5, xanchor="center", y=-0.05, yanchor="top"),
+                      margin=dict(l=8, r=8, t=44, b=60))
     titulo = "Participación por importe" if metrica == "IMPORTE" else "Participación por # operaciones"
-    return _base(fig, titulo, 420)
+    return _base(fig, titulo, 440)
 
 
 def grafica_actividad_casas_temporal(df_ops: pd.DataFrame, top_n: int = 7) -> go.Figure:

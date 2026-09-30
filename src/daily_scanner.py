@@ -266,35 +266,33 @@ def escanear(
     ultimo_hit_corrida = last_hit
     next_id = inicio
 
+    # IDs que dieron error de red en corridas previas: se reintentan primero,
+    # así un timeout puntual nunca deja un documento fuera del historial.
+    reintentar = sorted({int(i) for i in estado.get("ids_error", [])} - conocidos)
+    errores_run: set[int] = set()
+
     n_proc = max(1, min(4, os.cpu_count() or 1))
     with ThreadPoolExecutor(max_workers=workers) as pool, ProcessPoolExecutor(max_workers=n_proc) as ppool:
-        while True:
-            if time.time() - t0 > max_minutos * 60:
-                res.abortado = f"presupuesto de tiempo ({max_minutos} min) agotado"
-                break
-            if res.ids_revisados >= max_ids:
-                res.abortado = f"límite de IDs ({max_ids:,}) alcanzado"
-                break
 
-            ids = [i for i in range(next_id, next_id + CHUNK) if i not in conocidos]
+        def _descargar(ids: list[int]) -> list:
             resultados = list(pool.map(lambda i: _fetch(sess, i), ids))
             errores = [r for r in resultados if r[1] == "error"]
-
             if ids and len(errores) > 0.5 * len(ids):
-                log(f"  ⚠ {len(errores)}/{len(ids)} errores de red en {next_id:,}; reintento en 20 s")
+                log(f"  ⚠ {len(errores)}/{len(ids)} errores de red desde ID {ids[0]:,}; reintento en 20 s")
                 time.sleep(20)
                 resultados = list(pool.map(lambda i: _fetch(sess, i), ids))
-                errores = [r for r in resultados if r[1] == "error"]
-                if len(errores) > 0.5 * len(ids):
-                    res.abortado = f"BMV no responde (≥50 % errores en IDs {next_id:,}+)"
-                    res.errores_red += len(errores)
-                    break
+            return resultados
 
-            res.errores_red += len(errores)
+        def _procesar(ids: list[int], etiqueta: str) -> list:
+            nonlocal hits_esta_corrida, ultimo_hit_corrida
+            resultados = _descargar(ids)
+            err_ids = [i for i, est, _ in resultados if est == "error"]
+            errores_run.update(err_ids)
+            errores_run.difference_update(i for i, est, _ in resultados if est != "error")
+            res.errores_red += len(err_ids)
             res.ids_revisados += len(ids)
             pdfs = [(i, c) for i, est, c in resultados if est == "pdf"]
             res.pdfs_encontrados += len(pdfs)
-
             emisoras_chunk: set[str] = set()
             for doc_id, parsed in ppool.map(_parse_worker, pdfs):
                 emisora = (parsed.emisora or "DESCONOCIDA").upper().strip()
@@ -332,14 +330,31 @@ def escanear(
                 ultimo_hit_corrida = max(ultimo_hit_corrida, doc_id)
 
             if pdfs:
-                log(f"  · IDs {next_id:,}–{next_id + CHUNK - 1:,}: {len(pdfs)} PDFs ({', '.join(sorted(emisoras_chunk))})")
-
+                log(f"  · {etiqueta}: {len(pdfs)} PDFs ({', '.join(sorted(emisoras_chunk))})")
             if len(docs_nuevos) >= FLUSH_EVERY_DOCS:
                 _flush(pendientes_ops, docs_nuevos, dry_run)
                 estado["last_hit_id"] = ultimo_hit_corrida
                 if not dry_run:
                     guardar_estado(estado)
+            return err_ids
 
+        # 1) Reintentos de errores de red previos
+        for k in range(0, len(reintentar), CHUNK):
+            _procesar(reintentar[k:k + CHUNK], f"reintento {len(reintentar):,} IDs con error previo")
+
+        # 2) Barrido secuencial hasta la frontera
+        while True:
+            if time.time() - t0 > max_minutos * 60:
+                res.abortado = f"presupuesto de tiempo ({max_minutos} min) agotado"
+                break
+            if res.ids_revisados >= max_ids:
+                res.abortado = f"límite de IDs ({max_ids:,}) alcanzado"
+                break
+            ids = [i for i in range(next_id, next_id + CHUNK) if i not in conocidos]
+            err_ids = _procesar(ids, f"IDs {next_id:,}–{next_id + CHUNK - 1:,}")
+            if ids and len(err_ids) > 0.5 * len(ids):
+                res.abortado = f"BMV no responde (≥50 % errores en IDs {next_id:,}+)"
+                break
             next_id += CHUNK
             res.fin_id = next_id - 1
             if next_id - ultimo_hit_corrida > frontier_gap:
@@ -351,6 +366,8 @@ def escanear(
     # para cruzar huecos largos (feriados); con hits, vuelve a la base.
     estado["frontier_gap"] = FRONTIER_GAP_BASE if hits_esta_corrida else min(frontier_gap * 2, FRONTIER_GAP_MAX)
     estado["last_hit_id"] = ultimo_hit_corrida
+    # IDs que siguen fallando (y no son ya documentos conocidos) → siguiente corrida
+    estado["ids_error"] = sorted(errores_run - conocidos)[-5000:]
     res.duracion_s = round(time.time() - t0, 1)
 
     if not dry_run:
