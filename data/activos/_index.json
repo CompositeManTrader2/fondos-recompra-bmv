@@ -42,9 +42,9 @@
     "ultima_fecha": "2026-09-30"
   },
   "AMX": {
-    "actualizado": "2026-09-30T22:50:43",
+    "actualizado": "2026-10-01T09:23:36",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 3908,
+    "n_operaciones": 3919,
     "nombre": "AMX",
     "ultima_fecha": "2026-09-30"
   },
@@ -105,11 +105,11 @@
     "ultima_fecha": "2026-06-10"
   },
   "CMOCTEZ": {
-    "actualizado": "2026-09-30T22:50:43",
+    "actualizado": "2026-10-01T09:23:36",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 88,
+    "n_operaciones": 89,
     "nombre": "CMOCTEZ",
-    "ultima_fecha": "2026-09-29"
+    "ultima_fecha": "2026-09-30"
   },
   "CULTIBA": {
     "actualizado": "2026-09-30T22:00:15",
@@ -273,11 +273,11 @@
     "ultima_fecha": "2026-09-29"
   },
   "PINFRA": {
-    "actualizado": "2026-09-30T22:50:43",
+    "actualizado": "2026-10-01T09:23:36",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 2597,
+    "n_operaciones": 2626,
     "nombre": "PINFRA",
-    "ultima_fecha": "2026-09-29"
+    "ultima_fecha": "2026-09-30"
   },
   "PV": {
     "actualizado": "2026-09-30T22:00:15",
@@ -287,11 +287,11 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-09-30T22:50:43",
+    "actualizado": "2026-10-01T09:23:36",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 25042,
+    "n_operaciones": 25194,
     "nombre": "Q",
-    "ultima_fecha": "2026-09-28"
+    "ultima_fecha": "2026-09-29"
   },
   "R": {
     "actualizado": "2026-09-30T22:20:11",
