@@ -28,11 +28,11 @@
     "ultima_fecha": "2026-07-24"
   },
   "ALSEA": {
-    "actualizado": "2026-10-02T08:56:49",
+    "actualizado": "2026-10-02T20:10:41",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 4981,
+    "n_operaciones": 5056,
     "nombre": "ALSEA",
-    "ultima_fecha": "2026-10-01"
+    "ultima_fecha": "2026-10-02"
   },
   "ALTERNA": {
     "actualizado": "2026-10-02T08:56:49",
@@ -168,18 +168,18 @@
     "ultima_fecha": "2026-09-15"
   },
   "GMEXICO": {
-    "actualizado": "2026-10-02T08:56:49",
+    "actualizado": "2026-10-02T20:10:41",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 6944,
+    "n_operaciones": 7148,
     "nombre": "GMEXICO",
     "ultima_fecha": "2026-10-01"
   },
   "GRUMA": {
-    "actualizado": "2026-10-01T20:31:14",
+    "actualizado": "2026-10-02T20:10:41",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 14166,
+    "n_operaciones": 14169,
     "nombre": "GRUMA",
-    "ultima_fecha": "2026-10-01"
+    "ultima_fecha": "2026-10-02"
   },
   "HERDEZ": {
     "actualizado": "2026-10-02T08:56:49",
@@ -189,11 +189,11 @@
     "ultima_fecha": "2026-10-01"
   },
   "ICH": {
-    "actualizado": "2026-10-01T20:31:14",
+    "actualizado": "2026-10-02T20:10:41",
     "creado": "2026-05-15T16:39:50",
-    "n_operaciones": 6705,
+    "n_operaciones": 6706,
     "nombre": "ICH",
-    "ultima_fecha": "2026-09-30"
+    "ultima_fecha": "2026-10-01"
   },
   "IDEAL": {
     "actualizado": "2026-09-30T20:49:44",
@@ -210,11 +210,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "KIMBER": {
-    "actualizado": "2026-10-02T08:56:49",
+    "actualizado": "2026-10-02T20:10:41",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 46,
+    "n_operaciones": 47,
     "nombre": "KIMBER",
-    "ultima_fecha": "2026-10-01"
+    "ultima_fecha": "2026-10-02"
   },
   "KUO": {
     "actualizado": "2026-09-30T22:50:43",
@@ -266,11 +266,11 @@
     "ultima_fecha": "2026-09-25"
   },
   "ORBIA": {
-    "actualizado": "2026-09-30T22:50:43",
+    "actualizado": "2026-10-02T20:10:41",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 6972,
+    "n_operaciones": 7014,
     "nombre": "ORBIA",
-    "ultima_fecha": "2026-09-29"
+    "ultima_fecha": "2026-10-01"
   },
   "PINFRA": {
     "actualizado": "2026-10-01T09:23:36",
