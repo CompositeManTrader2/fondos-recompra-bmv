@@ -311,6 +311,9 @@ def reconstruir_actividad(docs: pd.DataFrame, ops_todas: list) -> pd.DataFrame:
     g = todo.groupby(["FECHA_REPORTE", "FECHA", "EMISORA", "SERIE", "CASA_BOLSA", "TIPO"], dropna=False).agg(
         ACCIONES=("NUMERO_DE_ACCIONES", "sum"), IMPORTE=("IMPORTE_OPERACION", "sum"), N_OPS=("PRECIO_UNITARIO", "size"),
     ).reset_index().rename(columns={"FECHA": "FECHA_OPERACION"})
+    # float64 puro: los Int64 nullable (pd.NA) rompen operaciones de NumPy en la app.
+    for c in ["ACCIONES", "IMPORTE", "N_OPS"]:
+        g[c] = pd.to_numeric(g[c], errors="coerce").astype("float64")
     g["PRECIO_PROM"] = g["IMPORTE"] / g["ACCIONES"].where(g["ACCIONES"] > 0)
     return g.sort_values(["FECHA_REPORTE", "EMISORA", "FECHA_OPERACION", "TIPO"]).reset_index(drop=True)
 

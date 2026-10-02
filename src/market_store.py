@@ -29,12 +29,24 @@ def _leer(nombre: str) -> bytes | None:
     return local.read_bytes() if local.exists() else None
 
 
+def _a_float(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Convierte columnas numéricas nullable de pandas (Int64/Float64) a float64.
+    pd.NA dentro de operaciones de NumPy (nanmin, log10, where) lanza
+    "boolean value of NA is ambiguous"; con float64 los faltantes son NaN.
+    """
+    for c in df.columns:
+        if pd.api.types.is_extension_array_dtype(df[c].dtype) and pd.api.types.is_numeric_dtype(df[c].dtype):
+            df[c] = df[c].astype("float64")
+    return df
+
+
 @st.cache_data(ttl=600, show_spinner=False)
 def resumen_diario() -> pd.DataFrame:
     data = _leer("resumen_diario.parquet")
     if not data:
         return pd.DataFrame()
-    df = pd.read_parquet(io.BytesIO(data))
+    df = _a_float(pd.read_parquet(io.BytesIO(data)))
     df["FECHA"] = pd.to_datetime(df["FECHA"]).dt.normalize()
     return df
 
@@ -44,7 +56,7 @@ def documentos() -> pd.DataFrame:
     data = _leer("documentos.parquet")
     if not data:
         return pd.DataFrame()
-    df = pd.read_parquet(io.BytesIO(data))
+    df = _a_float(pd.read_parquet(io.BytesIO(data)))
     df["FECHA_OPERACION"] = pd.to_datetime(df["FECHA_OPERACION"], errors="coerce")
     return df
 
@@ -66,7 +78,7 @@ def actividad() -> pd.DataFrame:
     data = _leer("actividad.parquet")
     if not data:
         return pd.DataFrame()
-    df = pd.read_parquet(io.BytesIO(data))
+    df = _a_float(pd.read_parquet(io.BytesIO(data)))
     for c in ["FECHA_REPORTE", "FECHA_OPERACION"]:
         df[c] = pd.to_datetime(df[c]).dt.normalize()
     return df

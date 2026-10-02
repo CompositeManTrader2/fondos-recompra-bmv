@@ -491,7 +491,8 @@ def grafica_matriz_casas(act: pd.DataFrame, top_emisoras: int = 25, top_casas: i
     cs = act.groupby("CASA_BOLSA")["IMPORTE"].sum().sort_values(ascending=False).head(top_casas).index
     piv = (act[act["EMISORA"].isin(em) & act["CASA_BOLSA"].isin(cs)]
            .pivot_table(index="EMISORA", columns="CASA_BOLSA", values="IMPORTE", aggfunc="sum")
-           .reindex(index=em, columns=cs))
+           .reindex(index=em, columns=cs)
+           .astype("float64"))   # pd.NA de columnas Int64 rompe nanmin/log10
     texto = piv.map(lambda v: T.fmt_mxn(v) if pd.notna(v) else "")
     z = np.log10(piv.fillna(0) + 1).where(piv.notna())
     rel = (z - np.nanmin(z.values)) / max(np.nanmax(z.values) - np.nanmin(z.values), 1e-9)
