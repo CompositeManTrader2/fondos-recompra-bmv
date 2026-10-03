@@ -1,10 +1,10 @@
 {
   "AC": {
-    "actualizado": "2026-10-02T08:56:49",
+    "actualizado": "2026-10-03T08:33:43",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 5573,
+    "n_operaciones": 5576,
     "nombre": "AC",
-    "ultima_fecha": "2026-10-01"
+    "ultima_fecha": "2026-10-02"
   },
   "ACTINVR": {
     "actualizado": "2026-10-02T08:56:49",
@@ -42,11 +42,11 @@
     "ultima_fecha": "2026-10-01"
   },
   "AMX": {
-    "actualizado": "2026-10-02T08:56:49",
+    "actualizado": "2026-10-03T08:33:43",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 3930,
+    "n_operaciones": 3958,
     "nombre": "AMX",
-    "ultima_fecha": "2026-10-01"
+    "ultima_fecha": "2026-10-02"
   },
   "ARA": {
     "actualizado": "2026-09-30T22:25:23",
@@ -168,11 +168,11 @@
     "ultima_fecha": "2026-09-15"
   },
   "GMEXICO": {
-    "actualizado": "2026-10-02T20:10:41",
+    "actualizado": "2026-10-03T08:33:43",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 7148,
+    "n_operaciones": 7400,
     "nombre": "GMEXICO",
-    "ultima_fecha": "2026-10-01"
+    "ultima_fecha": "2026-10-02"
   },
   "GRUMA": {
     "actualizado": "2026-10-02T20:10:41",
@@ -224,11 +224,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-10-02T08:56:49",
+    "actualizado": "2026-10-03T08:33:43",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 7895,
+    "n_operaciones": 7918,
     "nombre": "LAB",
-    "ultima_fecha": "2026-10-01"
+    "ultima_fecha": "2026-10-02"
   },
   "LACOMER": {
     "actualizado": "2026-09-30T22:25:23",
@@ -287,11 +287,11 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-10-02T08:56:49",
+    "actualizado": "2026-10-03T08:33:43",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 25291,
+    "n_operaciones": 25413,
     "nombre": "Q",
-    "ultima_fecha": "2026-09-30"
+    "ultima_fecha": "2026-10-01"
   },
   "R": {
     "actualizado": "2026-09-30T22:20:11",
