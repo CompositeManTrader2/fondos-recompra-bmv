@@ -7,11 +7,11 @@
     "ultima_fecha": "2026-10-02"
   },
   "ACTINVR": {
-    "actualizado": "2026-10-02T08:56:49",
+    "actualizado": "2026-10-05T22:14:28",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 200,
+    "n_operaciones": 201,
     "nombre": "ACTINVR",
-    "ultima_fecha": "2026-10-01"
+    "ultima_fecha": "2026-10-05"
   },
   "AGUA": {
     "actualizado": "2026-09-30T22:50:43",
@@ -35,11 +35,11 @@
     "ultima_fecha": "2026-10-02"
   },
   "ALTERNA": {
-    "actualizado": "2026-10-02T08:56:49",
+    "actualizado": "2026-10-05T22:14:28",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 125,
+    "n_operaciones": 126,
     "nombre": "ALTERNA",
-    "ultima_fecha": "2026-10-01"
+    "ultima_fecha": "2026-10-05"
   },
   "AMX": {
     "actualizado": "2026-10-03T08:33:43",
@@ -154,11 +154,11 @@
     "ultima_fecha": "2026-09-25"
   },
   "GFINBUR": {
-    "actualizado": "2026-10-01T13:51:44",
+    "actualizado": "2026-10-05T22:14:28",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1679,
+    "n_operaciones": 1680,
     "nombre": "GFINBUR",
-    "ultima_fecha": "2026-09-30"
+    "ultima_fecha": "2026-10-05"
   },
   "GISSA": {
     "actualizado": "2026-09-30T22:50:43",
@@ -175,11 +175,11 @@
     "ultima_fecha": "2026-10-02"
   },
   "GRUMA": {
-    "actualizado": "2026-10-02T20:10:41",
+    "actualizado": "2026-10-05T22:14:28",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 14169,
+    "n_operaciones": 14206,
     "nombre": "GRUMA",
-    "ultima_fecha": "2026-10-02"
+    "ultima_fecha": "2026-10-05"
   },
   "HERDEZ": {
     "actualizado": "2026-10-02T08:56:49",
@@ -189,11 +189,11 @@
     "ultima_fecha": "2026-10-01"
   },
   "ICH": {
-    "actualizado": "2026-10-02T20:10:41",
+    "actualizado": "2026-10-05T22:14:28",
     "creado": "2026-05-15T16:39:50",
-    "n_operaciones": 6706,
+    "n_operaciones": 6710,
     "nombre": "ICH",
-    "ultima_fecha": "2026-10-01"
+    "ultima_fecha": "2026-10-02"
   },
   "IDEAL": {
     "actualizado": "2026-09-30T20:49:44",
@@ -224,11 +224,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-10-03T08:33:43",
+    "actualizado": "2026-10-05T22:14:28",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 7918,
+    "n_operaciones": 7946,
     "nombre": "LAB",
-    "ultima_fecha": "2026-10-02"
+    "ultima_fecha": "2026-10-05"
   },
   "LACOMER": {
     "actualizado": "2026-09-30T22:25:23",
@@ -266,11 +266,11 @@
     "ultima_fecha": "2026-09-25"
   },
   "ORBIA": {
-    "actualizado": "2026-10-02T20:10:41",
+    "actualizado": "2026-10-05T22:14:28",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 7014,
+    "n_operaciones": 7064,
     "nombre": "ORBIA",
-    "ultima_fecha": "2026-10-01"
+    "ultima_fecha": "2026-10-02"
   },
   "PINFRA": {
     "actualizado": "2026-10-01T09:23:36",
@@ -308,11 +308,11 @@
     "ultima_fecha": "2026-06-12"
   },
   "SIMEC": {
-    "actualizado": "2026-09-30T22:50:43",
+    "actualizado": "2026-10-05T22:14:28",
     "creado": "2026-05-15T17:12:53",
-    "n_operaciones": 1707,
+    "n_operaciones": 1710,
     "nombre": "SIMEC",
-    "ultima_fecha": "2026-09-24"
+    "ultima_fecha": "2026-10-02"
   },
   "SITES1": {
     "actualizado": "2026-09-30T22:29:05",
