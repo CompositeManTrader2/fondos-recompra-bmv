@@ -113,6 +113,127 @@ def html_documento(tabla: pd.DataFrame, fecha: date, logo_html: str = "") -> str
 
 
 # ---------------------------------------------------------------------------
+# PNG (Pillow)
+# ---------------------------------------------------------------------------
+
+# Calibri (Windows) → Carlito (misma métrica que Calibri; apt fonts-crosextra-carlito
+# en Streamlit Cloud) → DejaVu → fuente por defecto de Pillow.
+_FUENTES = {
+    "regular": ["C:/Windows/Fonts/calibri.ttf", "/usr/share/fonts/truetype/crosextra/Carlito-Regular.ttf",
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"],
+    "bold": ["C:/Windows/Fonts/calibrib.ttf", "/usr/share/fonts/truetype/crosextra/Carlito-Bold.ttf",
+             "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"],
+}
+
+
+def _fuente(peso: str, px: int):
+    from PIL import ImageFont
+    for ruta in _FUENTES[peso]:
+        if Path(ruta).exists():
+            return ImageFont.truetype(ruta, px)
+    return ImageFont.load_default(size=px)
+
+
+def _hex_rgb(h: str) -> tuple[int, int, int]:
+    h = h.lstrip("#")
+    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
+
+
+def png_bytes(tabla: pd.DataFrame, fecha: date, escala: int = 2) -> bytes:
+    """
+    Imagen PNG de la tabla con el formato del reporte (título morado, logotipo,
+    encabezado #7030A0, renglones alternos #ECDEF5, montos en formato contable).
+    `escala=2` la genera a doble resolución para que se vea nítida en pantallas
+    de alta densidad y al pegarla en correos o presentaciones.
+    """
+    from PIL import Image, ImageDraw
+
+    s = escala
+    f_txt, f_bold = _fuente("regular", 13 * s), _fuente("bold", 13 * s)
+    f_tit = _fuente("bold", 17 * s)
+    pad_x, pad_y, alto_fila, margen = 9 * s, 3 * s, 20 * s, 18 * s
+
+    filas = [[f"{r[0]:%d/%m/%Y}", str(r[1]), str(r[2]), str(r[3]), f"{r[4]:,.0f}",
+              f"{r[5]:,.4f}", f"{r[6]:,.2f}"] for r in tabla.itertuples(index=False)]
+    medir = ImageDraw.Draw(Image.new("RGB", (1, 1)))
+    ancho_txt = lambda t, f: medir.textlength(t, font=f)
+    signo = ancho_txt("$", f_txt) + 10 * s          # "$" + separación en columnas de dinero
+    anchos = []
+    for j, col in enumerate(COLUMNAS):
+        contenido = max((ancho_txt(f[j], f_txt) for f in filas), default=0)
+        if j >= 5:
+            contenido += signo
+        anchos.append(int(max(ancho_txt(col, f_bold), contenido) + 2 * pad_x))
+    ancho_tabla = sum(anchos)
+
+    # Encabezado del reporte: título + logotipo
+    alto_logo = 46 * s
+    logo = None
+    if LOGO.exists():
+        try:
+            logo = Image.open(LOGO).convert("RGBA")
+            logo = logo.resize((int(logo.width * alto_logo / logo.height), alto_logo))
+        except Exception:
+            logo = None
+    alto_cab = max(alto_logo, 30 * s) + 8 * s
+    ancho = ancho_tabla + 2 * margen
+    alto = margen + alto_cab + alto_fila * (len(filas) + 1) + margen + (24 * s if not filas else 0)
+    img = Image.new("RGB", (int(ancho), int(alto)), "white")
+    d = ImageDraw.Draw(img)
+    morado, zebra, texto = _hex_rgb(PURPLE), _hex_rgb(ZEBRA), _hex_rgb(TEXTO)
+
+    y_titulo = margen + alto_cab - 8 * s - (f_tit.size + 2 * s)
+    d.text((margen, y_titulo), f"BUYBACK ACTIVITY {fecha:%d/%m/%Y}", font=f_tit, fill=morado)
+    if logo is not None:
+        img.paste(logo, (int(ancho - margen - logo.width), margen), logo)
+    else:   # wordmark de texto: "punt" gris + "o" morada, "casa de bolsa" debajo
+        gris = _hex_rgb("#949BA1")
+        f_w, f_c = _fuente("bold", 30 * s), _fuente("regular", 12 * s)
+        w_punt, w_o = ancho_txt("punt", f_w), ancho_txt("o", f_w)
+        x0 = ancho - margen - (w_punt + w_o)
+        d.text((x0, margen), "punt", font=f_w, fill=gris)
+        d.text((x0 + w_punt, margen), "o", font=f_w, fill=morado)
+        d.text((ancho - margen - ancho_txt("casa de bolsa", f_c), margen + 32 * s), "casa de bolsa", font=f_c, fill=gris)
+
+    # Tabla
+    y = margen + alto_cab
+    d.rectangle([margen, y, margen + ancho_tabla, y + alto_fila], fill=morado)
+    x = margen
+    for j, col in enumerate(COLUMNAS):
+        w = ancho_txt(col, f_bold)
+        if col == "SHARES":
+            tx = x + anchos[j] - pad_x - w
+        elif j >= 5:
+            tx = x + (anchos[j] - w) / 2
+        else:
+            tx = x + pad_x
+        d.text((tx, y + pad_y), col, font=f_bold, fill="white")
+        x += anchos[j]
+    for i, f in enumerate(filas):
+        y += alto_fila
+        if i % 2 == 1:
+            d.rectangle([margen, y, margen + ancho_tabla, y + alto_fila], fill=zebra)
+        x = margen
+        for j, valor in enumerate(f):
+            w = ancho_txt(valor, f_txt)
+            if j == 4:
+                d.text((x + anchos[j] - pad_x - w, y + pad_y), valor, font=f_txt, fill=texto)
+            elif j >= 5:      # formato contable: "$" a la izquierda, cifra a la derecha
+                d.text((x + pad_x, y + pad_y), "$", font=f_txt, fill=texto)
+                d.text((x + anchos[j] - pad_x - w, y + pad_y), valor, font=f_txt, fill=texto)
+            else:
+                d.text((x + pad_x, y + pad_y), valor, font=f_txt, fill=texto)
+            x += anchos[j]
+    if not filas:
+        d.text((margen + pad_x, y + alto_fila + pad_y), "Sin operaciones de recompra para esta fecha.",
+               font=f_txt, fill=_hex_rgb("#6B6475"))
+
+    buf = io.BytesIO()
+    img.save(buf, format="PNG", optimize=True, dpi=(96 * s, 96 * s))
+    return buf.getvalue()
+
+
+# ---------------------------------------------------------------------------
 # Excel
 # ---------------------------------------------------------------------------
 

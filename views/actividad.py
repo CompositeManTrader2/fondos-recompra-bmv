@@ -48,7 +48,10 @@ T.tiles([
     {"label": "Casas de bolsa", "value": f"{tabla['BROKER'].nunique()}"},
 ])
 
-d1, d2, _ = st.columns([1, 1, 3])
+d0, d1, d2, _ = st.columns([1, 1, 1, 2])
+d0.download_button("Descargar PNG", rb.png_bytes(tabla, fecha), icon=":material/image:",
+                   file_name=f"Buyback_Activity_{fecha:%Y%m%d}.png", mime="image/png",
+                   width="stretch", type="primary")
 d1.download_button("Descargar Excel", rb.excel_bytes(tabla, fecha), icon=":material/table:",
                    file_name=f"Buyback_Activity_{fecha:%Y%m%d}.xlsx", width="stretch",
                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
