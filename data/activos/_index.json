@@ -189,11 +189,11 @@
     "ultima_fecha": "2026-10-01"
   },
   "ICH": {
-    "actualizado": "2026-10-05T22:14:28",
+    "actualizado": "2026-10-06T20:33:49",
     "creado": "2026-05-15T16:39:50",
-    "n_operaciones": 6710,
+    "n_operaciones": 6711,
     "nombre": "ICH",
-    "ultima_fecha": "2026-10-02"
+    "ultima_fecha": "2026-10-05"
   },
   "IDEAL": {
     "actualizado": "2026-09-30T20:49:44",
@@ -224,11 +224,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-10-05T22:14:28",
+    "actualizado": "2026-10-06T20:33:49",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 7946,
+    "n_operaciones": 7991,
     "nombre": "LAB",
-    "ultima_fecha": "2026-10-05"
+    "ultima_fecha": "2026-10-06"
   },
   "LACOMER": {
     "actualizado": "2026-09-30T22:25:23",
@@ -252,11 +252,11 @@
     "ultima_fecha": "2026-09-18"
   },
   "MEGA": {
-    "actualizado": "2026-10-02T08:56:50",
+    "actualizado": "2026-10-06T20:33:49",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1211,
+    "n_operaciones": 1345,
     "nombre": "MEGA",
-    "ultima_fecha": "2026-10-01"
+    "ultima_fecha": "2026-10-05"
   },
   "NEMAK": {
     "actualizado": "2026-09-30T22:50:43",
@@ -266,18 +266,18 @@
     "ultima_fecha": "2026-09-25"
   },
   "ORBIA": {
-    "actualizado": "2026-10-05T22:14:28",
+    "actualizado": "2026-10-06T20:33:49",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 7064,
+    "n_operaciones": 7103,
     "nombre": "ORBIA",
-    "ultima_fecha": "2026-10-02"
+    "ultima_fecha": "2026-10-05"
   },
   "PINFRA": {
-    "actualizado": "2026-10-01T09:23:36",
+    "actualizado": "2026-10-06T20:33:49",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 2626,
+    "n_operaciones": 2650,
     "nombre": "PINFRA",
-    "ultima_fecha": "2026-09-30"
+    "ultima_fecha": "2026-10-05"
   },
   "PV": {
     "actualizado": "2026-09-30T22:00:15",
