@@ -7,11 +7,11 @@
     "ultima_fecha": "2026-10-05"
   },
   "ACTINVR": {
-    "actualizado": "2026-10-05T22:14:28",
+    "actualizado": "2026-10-07T09:13:08",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 201,
+    "n_operaciones": 202,
     "nombre": "ACTINVR",
-    "ultima_fecha": "2026-10-05"
+    "ultima_fecha": "2026-10-06"
   },
   "AGUA": {
     "actualizado": "2026-09-30T22:50:43",
@@ -28,25 +28,25 @@
     "ultima_fecha": "2026-07-24"
   },
   "ALSEA": {
-    "actualizado": "2026-10-06T09:22:21",
+    "actualizado": "2026-10-07T09:13:08",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 5095,
+    "n_operaciones": 5130,
     "nombre": "ALSEA",
-    "ultima_fecha": "2026-10-05"
+    "ultima_fecha": "2026-10-06"
   },
   "ALTERNA": {
-    "actualizado": "2026-10-05T22:14:28",
+    "actualizado": "2026-10-07T09:13:08",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 126,
+    "n_operaciones": 127,
     "nombre": "ALTERNA",
-    "ultima_fecha": "2026-10-05"
+    "ultima_fecha": "2026-10-06"
   },
   "AMX": {
-    "actualizado": "2026-10-06T09:22:21",
+    "actualizado": "2026-10-07T09:13:08",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 3976,
+    "n_operaciones": 3988,
     "nombre": "AMX",
-    "ultima_fecha": "2026-10-05"
+    "ultima_fecha": "2026-10-06"
   },
   "ARA": {
     "actualizado": "2026-09-30T22:25:23",
@@ -105,11 +105,11 @@
     "ultima_fecha": "2026-06-10"
   },
   "CMOCTEZ": {
-    "actualizado": "2026-10-02T08:56:49",
+    "actualizado": "2026-10-07T09:13:08",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 90,
+    "n_operaciones": 91,
     "nombre": "CMOCTEZ",
-    "ultima_fecha": "2026-10-01"
+    "ultima_fecha": "2026-10-06"
   },
   "CULTIBA": {
     "actualizado": "2026-09-30T22:00:15",
@@ -287,11 +287,11 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-10-06T09:22:21",
+    "actualizado": "2026-10-07T09:13:08",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 25551,
+    "n_operaciones": 25648,
     "nombre": "Q",
-    "ultima_fecha": "2026-10-02"
+    "ultima_fecha": "2026-10-05"
   },
   "R": {
     "actualizado": "2026-09-30T22:20:11",
@@ -336,11 +336,11 @@
     "ultima_fecha": "2026-07-14"
   },
   "VINTE": {
-    "actualizado": "2026-10-06T09:22:21",
+    "actualizado": "2026-10-07T09:13:08",
     "creado": "2026-09-29T18:48:18",
-    "n_operaciones": 246,
+    "n_operaciones": 247,
     "nombre": "VINTE",
-    "ultima_fecha": "2026-10-05"
+    "ultima_fecha": "2026-10-06"
   },
   "VISTA": {
     "actualizado": "2026-09-30T22:29:05",
