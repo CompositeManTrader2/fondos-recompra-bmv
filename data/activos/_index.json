@@ -168,18 +168,18 @@
     "ultima_fecha": "2026-09-15"
   },
   "GMEXICO": {
-    "actualizado": "2026-10-06T09:22:21",
+    "actualizado": "2026-10-07T20:47:40",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 7650,
+    "n_operaciones": 7740,
     "nombre": "GMEXICO",
     "ultima_fecha": "2026-10-05"
   },
   "GRUMA": {
-    "actualizado": "2026-10-05T22:14:28",
+    "actualizado": "2026-10-07T20:47:40",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 14206,
+    "n_operaciones": 14222,
     "nombre": "GRUMA",
-    "ultima_fecha": "2026-10-05"
+    "ultima_fecha": "2026-10-07"
   },
   "HERDEZ": {
     "actualizado": "2026-10-02T08:56:49",
@@ -189,11 +189,11 @@
     "ultima_fecha": "2026-10-01"
   },
   "ICH": {
-    "actualizado": "2026-10-06T20:33:49",
+    "actualizado": "2026-10-07T20:47:40",
     "creado": "2026-05-15T16:39:50",
-    "n_operaciones": 6711,
+    "n_operaciones": 6715,
     "nombre": "ICH",
-    "ultima_fecha": "2026-10-05"
+    "ultima_fecha": "2026-10-06"
   },
   "IDEAL": {
     "actualizado": "2026-09-30T20:49:44",
@@ -224,11 +224,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-10-06T20:33:49",
+    "actualizado": "2026-10-07T20:47:40",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 7991,
+    "n_operaciones": 8019,
     "nombre": "LAB",
-    "ultima_fecha": "2026-10-06"
+    "ultima_fecha": "2026-10-07"
   },
   "LACOMER": {
     "actualizado": "2026-09-30T22:25:23",
@@ -308,11 +308,11 @@
     "ultima_fecha": "2026-06-12"
   },
   "SIMEC": {
-    "actualizado": "2026-10-05T22:14:28",
+    "actualizado": "2026-10-07T20:47:40",
     "creado": "2026-05-15T17:12:53",
-    "n_operaciones": 1710,
+    "n_operaciones": 1713,
     "nombre": "SIMEC",
-    "ultima_fecha": "2026-10-02"
+    "ultima_fecha": "2026-10-06"
   },
   "SITES1": {
     "actualizado": "2026-09-30T22:29:05",
