@@ -1,10 +1,10 @@
 {
   "AC": {
-    "actualizado": "2026-10-06T09:22:21",
+    "actualizado": "2026-10-08T09:27:06",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 5596,
+    "n_operaciones": 5694,
     "nombre": "AC",
-    "ultima_fecha": "2026-10-05"
+    "ultima_fecha": "2026-10-07"
   },
   "ACTINVR": {
     "actualizado": "2026-10-07T09:13:08",
@@ -42,11 +42,11 @@
     "ultima_fecha": "2026-10-06"
   },
   "AMX": {
-    "actualizado": "2026-10-07T09:13:08",
+    "actualizado": "2026-10-08T09:27:06",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 3988,
+    "n_operaciones": 3999,
     "nombre": "AMX",
-    "ultima_fecha": "2026-10-06"
+    "ultima_fecha": "2026-10-07"
   },
   "ARA": {
     "actualizado": "2026-09-30T22:25:23",
@@ -238,11 +238,11 @@
     "ultima_fecha": "2026-08-05"
   },
   "LAMOSA": {
-    "actualizado": "2026-09-30T22:50:43",
+    "actualizado": "2026-10-08T09:27:06",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 75,
+    "n_operaciones": 78,
     "nombre": "LAMOSA",
-    "ultima_fecha": "2026-09-17"
+    "ultima_fecha": "2026-10-07"
   },
   "LIVEPOL": {
     "actualizado": "2026-09-30T22:50:43",
@@ -266,11 +266,11 @@
     "ultima_fecha": "2026-09-25"
   },
   "ORBIA": {
-    "actualizado": "2026-10-06T20:33:49",
+    "actualizado": "2026-10-08T09:27:06",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 7103,
+    "n_operaciones": 7173,
     "nombre": "ORBIA",
-    "ultima_fecha": "2026-10-05"
+    "ultima_fecha": "2026-10-07"
   },
   "PINFRA": {
     "actualizado": "2026-10-06T20:33:49",
@@ -287,11 +287,11 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-10-07T09:13:08",
+    "actualizado": "2026-10-08T09:27:06",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 25648,
+    "n_operaciones": 25742,
     "nombre": "Q",
-    "ultima_fecha": "2026-10-05"
+    "ultima_fecha": "2026-10-06"
   },
   "R": {
     "actualizado": "2026-09-30T22:20:11",
