@@ -28,11 +28,11 @@
     "ultima_fecha": "2026-07-24"
   },
   "ALSEA": {
-    "actualizado": "2026-10-07T09:13:08",
+    "actualizado": "2026-10-08T20:51:10",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 5130,
+    "n_operaciones": 5155,
     "nombre": "ALSEA",
-    "ultima_fecha": "2026-10-06"
+    "ultima_fecha": "2026-10-08"
   },
   "ALTERNA": {
     "actualizado": "2026-10-07T09:13:08",
@@ -175,11 +175,11 @@
     "ultima_fecha": "2026-10-05"
   },
   "GRUMA": {
-    "actualizado": "2026-10-07T20:47:40",
+    "actualizado": "2026-10-08T20:51:10",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 14222,
+    "n_operaciones": 14290,
     "nombre": "GRUMA",
-    "ultima_fecha": "2026-10-07"
+    "ultima_fecha": "2026-10-08"
   },
   "HERDEZ": {
     "actualizado": "2026-10-02T08:56:49",
@@ -189,11 +189,11 @@
     "ultima_fecha": "2026-10-01"
   },
   "ICH": {
-    "actualizado": "2026-10-07T20:47:40",
+    "actualizado": "2026-10-08T20:51:10",
     "creado": "2026-05-15T16:39:50",
-    "n_operaciones": 6715,
+    "n_operaciones": 6722,
     "nombre": "ICH",
-    "ultima_fecha": "2026-10-06"
+    "ultima_fecha": "2026-10-07"
   },
   "IDEAL": {
     "actualizado": "2026-09-30T20:49:44",
@@ -273,11 +273,11 @@
     "ultima_fecha": "2026-10-07"
   },
   "PINFRA": {
-    "actualizado": "2026-10-06T20:33:49",
+    "actualizado": "2026-10-08T20:51:10",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 2650,
+    "n_operaciones": 2761,
     "nombre": "PINFRA",
-    "ultima_fecha": "2026-10-05"
+    "ultima_fecha": "2026-10-07"
   },
   "PV": {
     "actualizado": "2026-09-30T22:00:15",
@@ -322,11 +322,11 @@
     "ultima_fecha": "2026-09-29"
   },
   "SPORT": {
-    "actualizado": "2026-09-30T22:50:43",
+    "actualizado": "2026-10-08T20:51:10",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1509,
+    "n_operaciones": 1519,
     "nombre": "SPORT",
-    "ultima_fecha": "2026-09-30"
+    "ultima_fecha": "2026-10-08"
   },
   "TRAXION": {
     "actualizado": "2026-09-30T22:13:30",
