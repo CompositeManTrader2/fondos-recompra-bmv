@@ -42,11 +42,11 @@
     "ultima_fecha": "2026-10-06"
   },
   "AMX": {
-    "actualizado": "2026-10-08T09:27:06",
+    "actualizado": "2026-10-09T09:34:27",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 3999,
+    "n_operaciones": 4012,
     "nombre": "AMX",
-    "ultima_fecha": "2026-10-07"
+    "ultima_fecha": "2026-10-08"
   },
   "ARA": {
     "actualizado": "2026-09-30T22:25:23",
@@ -154,11 +154,11 @@
     "ultima_fecha": "2026-09-25"
   },
   "GFINBUR": {
-    "actualizado": "2026-10-05T22:14:28",
+    "actualizado": "2026-10-09T09:34:26",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1680,
+    "n_operaciones": 1697,
     "nombre": "GFINBUR",
-    "ultima_fecha": "2026-10-05"
+    "ultima_fecha": "2026-10-08"
   },
   "GISSA": {
     "actualizado": "2026-09-30T22:50:43",
@@ -224,11 +224,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-10-07T20:47:40",
+    "actualizado": "2026-10-09T09:34:26",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 8019,
+    "n_operaciones": 8047,
     "nombre": "LAB",
-    "ultima_fecha": "2026-10-07"
+    "ultima_fecha": "2026-10-08"
   },
   "LACOMER": {
     "actualizado": "2026-09-30T22:25:23",
@@ -287,11 +287,11 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-10-08T09:27:06",
+    "actualizado": "2026-10-09T09:34:26",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 25742,
+    "n_operaciones": 25855,
     "nombre": "Q",
-    "ultima_fecha": "2026-10-06"
+    "ultima_fecha": "2026-10-07"
   },
   "R": {
     "actualizado": "2026-09-30T22:20:11",

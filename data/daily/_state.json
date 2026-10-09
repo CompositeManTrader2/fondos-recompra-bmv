@@ -1,8 +1,27 @@
 {
-  "last_hit_id": 1594237,
+  "last_hit_id": 1594289,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-10-08T20:51:28+00:00",
+  "last_run_utc": "2026-10-09T09:34:55+00:00",
   "runs": [
+    {
+      "utc": "2026-10-09T09:34:55+00:00",
+      "inicio_id": 1593438,
+      "fin_id": 1595837,
+      "ids_revisados": 2370,
+      "pdfs_encontrados": 4,
+      "docs_nuevos": 4,
+      "ops_nuevas": 171,
+      "errores_red": 12,
+      "sin_tabla": 0,
+      "emisoras": [
+        "AMX",
+        "GFINBUR",
+        "LAB",
+        "Q"
+      ],
+      "abortado": null,
+      "duracion_s": 273.7
+    },
     {
       "utc": "2026-10-08T20:51:28+00:00",
       "inicio_id": 1593264,
@@ -437,6 +456,17 @@
     }
   ],
   "ids_error": [
-    1594866
+    1595691,
+    1595692,
+    1595693,
+    1595694,
+    1595695,
+    1595696,
+    1595697,
+    1595698,
+    1595699,
+    1595700,
+    1595701,
+    1595702
   ]
 }
