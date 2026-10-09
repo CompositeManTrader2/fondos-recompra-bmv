@@ -1,8 +1,30 @@
 {
-  "last_hit_id": 1594289,
+  "last_hit_id": 1594459,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-10-09T09:34:55+00:00",
+  "last_run_utc": "2026-10-09T20:18:25+00:00",
   "runs": [
+    {
+      "utc": "2026-10-09T20:18:25+00:00",
+      "inicio_id": 1593490,
+      "fin_id": 1596089,
+      "ids_revisados": 2580,
+      "pdfs_encontrados": 7,
+      "docs_nuevos": 7,
+      "ops_nuevas": 345,
+      "errores_red": 2,
+      "sin_tabla": 0,
+      "emisoras": [
+        "ALSEA",
+        "GMEXICO",
+        "GRUMA",
+        "ICH",
+        "LAB",
+        "SIMEC",
+        "SPORT"
+      ],
+      "abortado": null,
+      "duracion_s": 194.9
+    },
     {
       "utc": "2026-10-09T09:34:55+00:00",
       "inicio_id": 1593438,
@@ -456,17 +478,7 @@
     }
   ],
   "ids_error": [
-    1595691,
-    1595692,
-    1595693,
-    1595694,
-    1595695,
-    1595696,
-    1595697,
-    1595698,
-    1595699,
-    1595700,
-    1595701,
-    1595702
+    1596088,
+    1596089
   ]
 }
