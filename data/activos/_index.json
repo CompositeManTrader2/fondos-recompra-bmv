@@ -7,11 +7,11 @@
     "ultima_fecha": "2026-10-07"
   },
   "ACTINVR": {
-    "actualizado": "2026-10-07T09:13:08",
+    "actualizado": "2026-10-10T09:00:12",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 202,
+    "n_operaciones": 203,
     "nombre": "ACTINVR",
-    "ultima_fecha": "2026-10-06"
+    "ultima_fecha": "2026-10-09"
   },
   "AGUA": {
     "actualizado": "2026-09-30T22:50:43",
@@ -42,11 +42,11 @@
     "ultima_fecha": "2026-10-06"
   },
   "AMX": {
-    "actualizado": "2026-10-09T09:34:27",
+    "actualizado": "2026-10-10T09:00:12",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 4012,
+    "n_operaciones": 4038,
     "nombre": "AMX",
-    "ultima_fecha": "2026-10-08"
+    "ultima_fecha": "2026-10-09"
   },
   "ARA": {
     "actualizado": "2026-09-30T22:25:23",
@@ -154,11 +154,11 @@
     "ultima_fecha": "2026-09-25"
   },
   "GFINBUR": {
-    "actualizado": "2026-10-09T09:34:26",
+    "actualizado": "2026-10-10T09:00:12",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1697,
+    "n_operaciones": 1703,
     "nombre": "GFINBUR",
-    "ultima_fecha": "2026-10-08"
+    "ultima_fecha": "2026-10-09"
   },
   "GISSA": {
     "actualizado": "2026-09-30T22:50:43",
@@ -287,11 +287,11 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-10-09T09:34:26",
+    "actualizado": "2026-10-10T09:00:12",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 25855,
+    "n_operaciones": 25941,
     "nombre": "Q",
-    "ultima_fecha": "2026-10-07"
+    "ultima_fecha": "2026-10-08"
   },
   "R": {
     "actualizado": "2026-09-30T22:20:11",

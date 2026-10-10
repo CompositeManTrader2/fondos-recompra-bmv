@@ -1,8 +1,27 @@
 {
-  "last_hit_id": 1594459,
+  "last_hit_id": 1594535,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-10-09T20:18:25+00:00",
+  "last_run_utc": "2026-10-10T09:00:41+00:00",
   "runs": [
+    {
+      "utc": "2026-10-10T09:00:41+00:00",
+      "inicio_id": 1593660,
+      "fin_id": 1596059,
+      "ids_revisados": 2369,
+      "pdfs_encontrados": 4,
+      "docs_nuevos": 4,
+      "ops_nuevas": 119,
+      "errores_red": 0,
+      "sin_tabla": 0,
+      "emisoras": [
+        "ACTINVR",
+        "AMX",
+        "GFINBUR",
+        "Q"
+      ],
+      "abortado": null,
+      "duracion_s": 507.2
+    },
     {
       "utc": "2026-10-09T20:18:25+00:00",
       "inicio_id": 1593490,
@@ -477,8 +496,5 @@
       "duracion_s": 598.5
     }
   ],
-  "ids_error": [
-    1596088,
-    1596089
-  ]
+  "ids_error": []
 }
