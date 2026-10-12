@@ -7,11 +7,11 @@
     "ultima_fecha": "2026-10-07"
   },
   "ACTINVR": {
-    "actualizado": "2026-10-10T09:00:12",
+    "actualizado": "2026-10-12T22:38:17",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 203,
+    "n_operaciones": 204,
     "nombre": "ACTINVR",
-    "ultima_fecha": "2026-10-09"
+    "ultima_fecha": "2026-10-12"
   },
   "AGUA": {
     "actualizado": "2026-09-30T22:50:43",
@@ -28,11 +28,11 @@
     "ultima_fecha": "2026-07-24"
   },
   "ALSEA": {
-    "actualizado": "2026-10-09T20:17:57",
+    "actualizado": "2026-10-12T22:38:16",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 5167,
+    "n_operaciones": 5196,
     "nombre": "ALSEA",
-    "ultima_fecha": "2026-10-09"
+    "ultima_fecha": "2026-10-12"
   },
   "ALTERNA": {
     "actualizado": "2026-10-07T09:13:08",
@@ -175,25 +175,25 @@
     "ultima_fecha": "2026-10-09"
   },
   "GRUMA": {
-    "actualizado": "2026-10-09T20:17:57",
+    "actualizado": "2026-10-12T22:38:17",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 14299,
+    "n_operaciones": 14304,
     "nombre": "GRUMA",
-    "ultima_fecha": "2026-10-09"
+    "ultima_fecha": "2026-10-12"
   },
   "HERDEZ": {
-    "actualizado": "2026-10-02T08:56:49",
+    "actualizado": "2026-10-12T22:38:16",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 625,
+    "n_operaciones": 627,
     "nombre": "HERDEZ",
     "ultima_fecha": "2026-10-01"
   },
   "ICH": {
-    "actualizado": "2026-10-09T20:17:56",
+    "actualizado": "2026-10-12T22:38:16",
     "creado": "2026-05-15T16:39:50",
-    "n_operaciones": 6725,
+    "n_operaciones": 6727,
     "nombre": "ICH",
-    "ultima_fecha": "2026-10-08"
+    "ultima_fecha": "2026-10-09"
   },
   "IDEAL": {
     "actualizado": "2026-09-30T20:49:44",
@@ -224,11 +224,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-10-09T20:17:57",
+    "actualizado": "2026-10-12T22:38:17",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 8086,
+    "n_operaciones": 8104,
     "nombre": "LAB",
-    "ultima_fecha": "2026-10-09"
+    "ultima_fecha": "2026-10-12"
   },
   "LACOMER": {
     "actualizado": "2026-09-30T22:25:23",
@@ -308,11 +308,11 @@
     "ultima_fecha": "2026-06-12"
   },
   "SIMEC": {
-    "actualizado": "2026-10-09T20:17:56",
+    "actualizado": "2026-10-12T22:38:16",
     "creado": "2026-05-15T17:12:53",
-    "n_operaciones": 1723,
+    "n_operaciones": 1732,
     "nombre": "SIMEC",
-    "ultima_fecha": "2026-10-08"
+    "ultima_fecha": "2026-10-09"
   },
   "SITES1": {
     "actualizado": "2026-09-30T22:29:05",

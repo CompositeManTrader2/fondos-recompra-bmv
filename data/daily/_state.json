@@ -1,8 +1,30 @@
 {
-  "last_hit_id": 1594535,
+  "last_hit_id": 1594662,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-10-10T09:00:41+00:00",
+  "last_run_utc": "2026-10-12T22:38:43+00:00",
   "runs": [
+    {
+      "utc": "2026-10-12T22:38:43+00:00",
+      "inicio_id": 1593736,
+      "fin_id": 1596335,
+      "ids_revisados": 2568,
+      "pdfs_encontrados": 7,
+      "docs_nuevos": 7,
+      "ops_nuevas": 66,
+      "errores_red": 9,
+      "sin_tabla": 0,
+      "emisoras": [
+        "ACTINVR",
+        "ALSEA",
+        "GRUMA",
+        "HERDEZ",
+        "ICH",
+        "LAB",
+        "SIMEC"
+      ],
+      "abortado": null,
+      "duracion_s": 298.2
+    },
     {
       "utc": "2026-10-10T09:00:41+00:00",
       "inicio_id": 1593660,
@@ -496,5 +518,15 @@
       "duracion_s": 598.5
     }
   ],
-  "ids_error": []
+  "ids_error": [
+    1595886,
+    1595888,
+    1595889,
+    1595890,
+    1595892,
+    1595893,
+    1595896,
+    1595897,
+    1595898
+  ]
 }
