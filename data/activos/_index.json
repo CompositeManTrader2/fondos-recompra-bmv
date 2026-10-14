@@ -7,11 +7,11 @@
     "ultima_fecha": "2026-10-07"
   },
   "ACTINVR": {
-    "actualizado": "2026-10-12T22:38:17",
+    "actualizado": "2026-10-14T08:01:26",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 204,
+    "n_operaciones": 208,
     "nombre": "ACTINVR",
-    "ultima_fecha": "2026-10-12"
+    "ultima_fecha": "2026-10-13"
   },
   "AGUA": {
     "actualizado": "2026-09-30T22:50:43",
@@ -42,11 +42,11 @@
     "ultima_fecha": "2026-10-06"
   },
   "AMX": {
-    "actualizado": "2026-10-13T09:45:32",
+    "actualizado": "2026-10-14T08:01:26",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 4054,
+    "n_operaciones": 4076,
     "nombre": "AMX",
-    "ultima_fecha": "2026-10-12"
+    "ultima_fecha": "2026-10-13"
   },
   "ARA": {
     "actualizado": "2026-09-30T22:25:23",
@@ -168,11 +168,11 @@
     "ultima_fecha": "2026-09-15"
   },
   "GMEXICO": {
-    "actualizado": "2026-10-09T20:17:57",
+    "actualizado": "2026-10-14T08:01:26",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 8010,
+    "n_operaciones": 8161,
     "nombre": "GMEXICO",
-    "ultima_fecha": "2026-10-09"
+    "ultima_fecha": "2026-10-13"
   },
   "GRUMA": {
     "actualizado": "2026-10-13T20:52:14",
