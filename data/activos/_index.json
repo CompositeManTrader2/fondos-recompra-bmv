@@ -189,11 +189,11 @@
     "ultima_fecha": "2026-10-01"
   },
   "ICH": {
-    "actualizado": "2026-10-13T20:52:14",
+    "actualizado": "2026-10-14T19:41:24",
     "creado": "2026-05-15T16:39:50",
-    "n_operaciones": 6729,
+    "n_operaciones": 6733,
     "nombre": "ICH",
-    "ultima_fecha": "2026-10-12"
+    "ultima_fecha": "2026-10-13"
   },
   "IDEAL": {
     "actualizado": "2026-09-30T20:49:44",
@@ -273,11 +273,11 @@
     "ultima_fecha": "2026-10-07"
   },
   "PINFRA": {
-    "actualizado": "2026-10-13T20:52:14",
+    "actualizado": "2026-10-14T19:41:24",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 2792,
+    "n_operaciones": 2839,
     "nombre": "PINFRA",
-    "ultima_fecha": "2026-10-12"
+    "ultima_fecha": "2026-10-13"
   },
   "PV": {
     "actualizado": "2026-09-30T22:00:15",
@@ -308,11 +308,11 @@
     "ultima_fecha": "2026-06-12"
   },
   "SIMEC": {
-    "actualizado": "2026-10-13T20:52:14",
+    "actualizado": "2026-10-14T19:41:24",
     "creado": "2026-05-15T17:12:53",
-    "n_operaciones": 1740,
+    "n_operaciones": 1742,
     "nombre": "SIMEC",
-    "ultima_fecha": "2026-10-12"
+    "ultima_fecha": "2026-10-13"
   },
   "SITES1": {
     "actualizado": "2026-09-30T22:29:05",
@@ -336,11 +336,11 @@
     "ultima_fecha": "2026-07-14"
   },
   "VINTE": {
-    "actualizado": "2026-10-13T20:52:14",
+    "actualizado": "2026-10-14T19:41:24",
     "creado": "2026-09-29T18:48:18",
-    "n_operaciones": 248,
+    "n_operaciones": 249,
     "nombre": "VINTE",
-    "ultima_fecha": "2026-10-12"
+    "ultima_fecha": "2026-10-13"
   },
   "VISTA": {
     "actualizado": "2026-09-30T22:29:05",
