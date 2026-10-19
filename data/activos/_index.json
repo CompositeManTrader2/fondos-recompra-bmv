@@ -189,11 +189,11 @@
     "ultima_fecha": "2026-10-01"
   },
   "ICH": {
-    "actualizado": "2026-10-16T19:00:10",
+    "actualizado": "2026-10-19T20:45:34",
     "creado": "2026-05-15T16:39:50",
-    "n_operaciones": 6735,
+    "n_operaciones": 6736,
     "nombre": "ICH",
-    "ultima_fecha": "2026-10-15"
+    "ultima_fecha": "2026-10-16"
   },
   "IDEAL": {
     "actualizado": "2026-09-30T20:49:44",
@@ -308,11 +308,11 @@
     "ultima_fecha": "2026-06-12"
   },
   "SIMEC": {
-    "actualizado": "2026-10-14T19:41:24",
+    "actualizado": "2026-10-19T20:45:34",
     "creado": "2026-05-15T17:12:53",
-    "n_operaciones": 1742,
+    "n_operaciones": 1748,
     "nombre": "SIMEC",
-    "ultima_fecha": "2026-10-13"
+    "ultima_fecha": "2026-10-16"
   },
   "SITES1": {
     "actualizado": "2026-09-30T22:29:05",
