@@ -28,11 +28,11 @@
     "ultima_fecha": "2026-07-24"
   },
   "ALSEA": {
-    "actualizado": "2026-10-16T07:32:24",
+    "actualizado": "2026-10-22T19:26:50",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 5311,
+    "n_operaciones": 5449,
     "nombre": "ALSEA",
-    "ultima_fecha": "2026-10-15"
+    "ultima_fecha": "2026-10-21"
   },
   "ALTERNA": {
     "actualizado": "2026-10-07T09:13:08",
@@ -168,9 +168,9 @@
     "ultima_fecha": "2026-09-15"
   },
   "GMEXICO": {
-    "actualizado": "2026-10-22T07:57:39",
+    "actualizado": "2026-10-22T19:26:50",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 9526,
+    "n_operaciones": 9594,
     "nombre": "GMEXICO",
     "ultima_fecha": "2026-10-21"
   },
