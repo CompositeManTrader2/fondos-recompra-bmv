@@ -42,11 +42,11 @@
     "ultima_fecha": "2026-10-06"
   },
   "AMX": {
-    "actualizado": "2026-10-21T08:01:01",
+    "actualizado": "2026-10-22T07:57:39",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 4155,
+    "n_operaciones": 4169,
     "nombre": "AMX",
-    "ultima_fecha": "2026-10-20"
+    "ultima_fecha": "2026-10-21"
   },
   "ARA": {
     "actualizado": "2026-09-30T22:25:23",
@@ -168,11 +168,11 @@
     "ultima_fecha": "2026-09-15"
   },
   "GMEXICO": {
-    "actualizado": "2026-10-20T07:58:11",
+    "actualizado": "2026-10-22T07:57:39",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 9276,
+    "n_operaciones": 9526,
     "nombre": "GMEXICO",
-    "ultima_fecha": "2026-10-19"
+    "ultima_fecha": "2026-10-21"
   },
   "GRUMA": {
     "actualizado": "2026-10-15T07:45:40",
@@ -210,11 +210,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "KIMBER": {
-    "actualizado": "2026-10-02T20:10:41",
+    "actualizado": "2026-10-22T07:57:39",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 47,
+    "n_operaciones": 49,
     "nombre": "KIMBER",
-    "ultima_fecha": "2026-10-02"
+    "ultima_fecha": "2026-10-21"
   },
   "KUO": {
     "actualizado": "2026-09-30T22:50:43",
@@ -224,11 +224,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-10-21T08:01:01",
+    "actualizado": "2026-10-22T07:57:39",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 8286,
+    "n_operaciones": 8330,
     "nombre": "LAB",
-    "ultima_fecha": "2026-10-20"
+    "ultima_fecha": "2026-10-21"
   },
   "LACOMER": {
     "actualizado": "2026-09-30T22:25:23",
@@ -259,11 +259,11 @@
     "ultima_fecha": "2026-10-05"
   },
   "NEMAK": {
-    "actualizado": "2026-09-30T22:50:43",
+    "actualizado": "2026-10-22T07:57:39",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 107,
+    "n_operaciones": 108,
     "nombre": "NEMAK",
-    "ultima_fecha": "2026-09-25"
+    "ultima_fecha": "2026-10-21"
   },
   "ORBIA": {
     "actualizado": "2026-10-08T09:27:06",
@@ -294,11 +294,11 @@
     "ultima_fecha": "2026-10-14"
   },
   "R": {
-    "actualizado": "2026-10-21T08:01:01",
+    "actualizado": "2026-10-22T07:57:39",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 934,
+    "n_operaciones": 1002,
     "nombre": "R",
-    "ultima_fecha": "2026-10-20"
+    "ultima_fecha": "2026-10-21"
   },
   "SIGMAF": {
     "actualizado": "2026-09-30T22:00:15",
