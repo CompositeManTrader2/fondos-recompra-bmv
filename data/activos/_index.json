@@ -168,9 +168,9 @@
     "ultima_fecha": "2026-09-15"
   },
   "GMEXICO": {
-    "actualizado": "2026-10-23T07:56:45",
+    "actualizado": "2026-10-23T19:32:30",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 10162,
+    "n_operaciones": 10219,
     "nombre": "GMEXICO",
     "ultima_fecha": "2026-10-22"
   },
@@ -182,11 +182,11 @@
     "ultima_fecha": "2026-10-14"
   },
   "HERDEZ": {
-    "actualizado": "2026-10-12T22:38:16",
+    "actualizado": "2026-10-23T19:32:30",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 627,
+    "n_operaciones": 640,
     "nombre": "HERDEZ",
-    "ultima_fecha": "2026-10-01"
+    "ultima_fecha": "2026-10-22"
   },
   "ICH": {
     "actualizado": "2026-10-20T19:34:38",
@@ -259,11 +259,11 @@
     "ultima_fecha": "2026-10-05"
   },
   "NEMAK": {
-    "actualizado": "2026-10-22T07:57:39",
+    "actualizado": "2026-10-23T19:32:30",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 108,
+    "n_operaciones": 109,
     "nombre": "NEMAK",
-    "ultima_fecha": "2026-10-21"
+    "ultima_fecha": "2026-10-22"
   },
   "ORBIA": {
     "actualizado": "2026-10-08T09:27:06",
@@ -287,11 +287,11 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-10-16T07:32:25",
+    "actualizado": "2026-10-23T19:32:30",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 26316,
+    "n_operaciones": 26556,
     "nombre": "Q",
-    "ultima_fecha": "2026-10-14"
+    "ultima_fecha": "2026-10-22"
   },
   "R": {
     "actualizado": "2026-10-22T07:57:39",
