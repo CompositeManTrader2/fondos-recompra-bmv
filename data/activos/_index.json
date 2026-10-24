@@ -35,18 +35,18 @@
     "ultima_fecha": "2026-10-22"
   },
   "ALTERNA": {
-    "actualizado": "2026-10-07T09:13:08",
+    "actualizado": "2026-10-24T07:37:33",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 127,
+    "n_operaciones": 128,
     "nombre": "ALTERNA",
-    "ultima_fecha": "2026-10-06"
+    "ultima_fecha": "2026-10-23"
   },
   "AMX": {
-    "actualizado": "2026-10-23T07:56:45",
+    "actualizado": "2026-10-24T07:37:33",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 4182,
+    "n_operaciones": 4213,
     "nombre": "AMX",
-    "ultima_fecha": "2026-10-22"
+    "ultima_fecha": "2026-10-23"
   },
   "ARA": {
     "actualizado": "2026-09-30T22:25:23",
@@ -70,11 +70,11 @@
     "ultima_fecha": "2026-04-13"
   },
   "BIMBO": {
-    "actualizado": "2026-09-30T22:50:43",
+    "actualizado": "2026-10-24T07:37:33",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 5959,
+    "n_operaciones": 6000,
     "nombre": "BIMBO",
-    "ultima_fecha": "2026-09-30"
+    "ultima_fecha": "2026-10-23"
   },
   "BOLSA": {
     "actualizado": "2026-09-30T22:00:15",
@@ -168,11 +168,11 @@
     "ultima_fecha": "2026-09-15"
   },
   "GMEXICO": {
-    "actualizado": "2026-10-23T19:32:30",
+    "actualizado": "2026-10-24T07:37:33",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 10219,
+    "n_operaciones": 10260,
     "nombre": "GMEXICO",
-    "ultima_fecha": "2026-10-22"
+    "ultima_fecha": "2026-10-23"
   },
   "GRUMA": {
     "actualizado": "2026-10-15T07:45:40",
@@ -182,11 +182,11 @@
     "ultima_fecha": "2026-10-14"
   },
   "HERDEZ": {
-    "actualizado": "2026-10-23T19:32:30",
+    "actualizado": "2026-10-24T07:37:33",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 640,
+    "n_operaciones": 658,
     "nombre": "HERDEZ",
-    "ultima_fecha": "2026-10-22"
+    "ultima_fecha": "2026-10-23"
   },
   "ICH": {
     "actualizado": "2026-10-20T19:34:38",
@@ -224,11 +224,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-10-23T07:56:45",
+    "actualizado": "2026-10-24T07:37:33",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 8363,
+    "n_operaciones": 8399,
     "nombre": "LAB",
-    "ultima_fecha": "2026-10-22"
+    "ultima_fecha": "2026-10-23"
   },
   "LACOMER": {
     "actualizado": "2026-09-30T22:25:23",
@@ -259,11 +259,11 @@
     "ultima_fecha": "2026-10-05"
   },
   "NEMAK": {
-    "actualizado": "2026-10-23T19:32:30",
+    "actualizado": "2026-10-24T07:37:33",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 109,
+    "n_operaciones": 110,
     "nombre": "NEMAK",
-    "ultima_fecha": "2026-10-22"
+    "ultima_fecha": "2026-10-23"
   },
   "ORBIA": {
     "actualizado": "2026-10-08T09:27:06",
@@ -336,11 +336,11 @@
     "ultima_fecha": "2026-07-14"
   },
   "VINTE": {
-    "actualizado": "2026-10-14T19:41:24",
+    "actualizado": "2026-10-24T07:37:33",
     "creado": "2026-09-29T18:48:18",
-    "n_operaciones": 249,
+    "n_operaciones": 250,
     "nombre": "VINTE",
-    "ultima_fecha": "2026-10-13"
+    "ultima_fecha": "2026-10-23"
   },
   "VISTA": {
     "actualizado": "2026-09-30T22:29:05",
