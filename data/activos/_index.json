@@ -35,11 +35,11 @@
     "ultima_fecha": "2026-10-22"
   },
   "ALTERNA": {
-    "actualizado": "2026-10-24T07:37:33",
+    "actualizado": "2026-10-26T20:45:21",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 128,
+    "n_operaciones": 129,
     "nombre": "ALTERNA",
-    "ultima_fecha": "2026-10-23"
+    "ultima_fecha": "2026-10-26"
   },
   "AMX": {
     "actualizado": "2026-10-24T07:37:33",
@@ -182,11 +182,11 @@
     "ultima_fecha": "2026-10-14"
   },
   "HERDEZ": {
-    "actualizado": "2026-10-24T07:37:33",
+    "actualizado": "2026-10-26T20:45:21",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 658,
+    "n_operaciones": 665,
     "nombre": "HERDEZ",
-    "ultima_fecha": "2026-10-23"
+    "ultima_fecha": "2026-10-26"
   },
   "ICH": {
     "actualizado": "2026-10-20T19:34:38",
@@ -259,11 +259,11 @@
     "ultima_fecha": "2026-10-05"
   },
   "NEMAK": {
-    "actualizado": "2026-10-24T07:37:33",
+    "actualizado": "2026-10-26T20:45:21",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 110,
+    "n_operaciones": 111,
     "nombre": "NEMAK",
-    "ultima_fecha": "2026-10-23"
+    "ultima_fecha": "2026-10-26"
   },
   "ORBIA": {
     "actualizado": "2026-10-08T09:27:06",
@@ -273,11 +273,11 @@
     "ultima_fecha": "2026-10-07"
   },
   "PINFRA": {
-    "actualizado": "2026-10-21T19:33:23",
+    "actualizado": "2026-10-26T20:45:21",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 2874,
+    "n_operaciones": 2879,
     "nombre": "PINFRA",
-    "ultima_fecha": "2026-10-20"
+    "ultima_fecha": "2026-10-23"
   },
   "PV": {
     "actualizado": "2026-09-30T22:00:15",
