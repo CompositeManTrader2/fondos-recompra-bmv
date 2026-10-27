@@ -28,11 +28,11 @@
     "ultima_fecha": "2026-07-24"
   },
   "ALSEA": {
-    "actualizado": "2026-10-23T07:56:45",
+    "actualizado": "2026-10-27T08:21:34",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 5508,
+    "n_operaciones": 5526,
     "nombre": "ALSEA",
-    "ultima_fecha": "2026-10-22"
+    "ultima_fecha": "2026-10-26"
   },
   "ALTERNA": {
     "actualizado": "2026-10-26T20:45:21",
@@ -70,11 +70,11 @@
     "ultima_fecha": "2026-04-13"
   },
   "BIMBO": {
-    "actualizado": "2026-10-24T07:37:33",
+    "actualizado": "2026-10-27T08:21:34",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 6000,
+    "n_operaciones": 6122,
     "nombre": "BIMBO",
-    "ultima_fecha": "2026-10-23"
+    "ultima_fecha": "2026-10-26"
   },
   "BOLSA": {
     "actualizado": "2026-09-30T22:00:15",
@@ -224,11 +224,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-10-24T07:37:33",
+    "actualizado": "2026-10-27T08:21:34",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 8399,
+    "n_operaciones": 8439,
     "nombre": "LAB",
-    "ultima_fecha": "2026-10-23"
+    "ultima_fecha": "2026-10-26"
   },
   "LACOMER": {
     "actualizado": "2026-09-30T22:25:23",
@@ -287,11 +287,11 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-10-23T19:32:30",
+    "actualizado": "2026-10-27T08:21:34",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 26556,
+    "n_operaciones": 26715,
     "nombre": "Q",
-    "ultima_fecha": "2026-10-22"
+    "ultima_fecha": "2026-10-23"
   },
   "R": {
     "actualizado": "2026-10-22T07:57:39",
