@@ -28,11 +28,11 @@
     "ultima_fecha": "2026-07-24"
   },
   "ALSEA": {
-    "actualizado": "2026-10-27T08:21:34",
+    "actualizado": "2026-10-28T08:58:38",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 5526,
+    "n_operaciones": 5569,
     "nombre": "ALSEA",
-    "ultima_fecha": "2026-10-26"
+    "ultima_fecha": "2026-10-27"
   },
   "ALTERNA": {
     "actualizado": "2026-10-26T20:45:21",
@@ -42,11 +42,11 @@
     "ultima_fecha": "2026-10-26"
   },
   "AMX": {
-    "actualizado": "2026-10-24T07:37:33",
+    "actualizado": "2026-10-28T08:58:38",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 4213,
+    "n_operaciones": 4240,
     "nombre": "AMX",
-    "ultima_fecha": "2026-10-23"
+    "ultima_fecha": "2026-10-27"
   },
   "ARA": {
     "actualizado": "2026-09-30T22:25:23",
@@ -70,11 +70,11 @@
     "ultima_fecha": "2026-04-13"
   },
   "BIMBO": {
-    "actualizado": "2026-10-27T08:21:34",
+    "actualizado": "2026-10-28T08:58:38",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 6122,
+    "n_operaciones": 6246,
     "nombre": "BIMBO",
-    "ultima_fecha": "2026-10-26"
+    "ultima_fecha": "2026-10-27"
   },
   "BOLSA": {
     "actualizado": "2026-09-30T22:00:15",
@@ -168,11 +168,11 @@
     "ultima_fecha": "2026-09-15"
   },
   "GMEXICO": {
-    "actualizado": "2026-10-27T20:16:49",
+    "actualizado": "2026-10-28T08:58:38",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 10373,
+    "n_operaciones": 10545,
     "nombre": "GMEXICO",
-    "ultima_fecha": "2026-10-26"
+    "ultima_fecha": "2026-10-27"
   },
   "GRUMA": {
     "actualizado": "2026-10-27T20:16:49",
@@ -224,11 +224,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-10-27T08:21:34",
+    "actualizado": "2026-10-28T08:58:38",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 8439,
+    "n_operaciones": 8467,
     "nombre": "LAB",
-    "ultima_fecha": "2026-10-26"
+    "ultima_fecha": "2026-10-27"
   },
   "LACOMER": {
     "actualizado": "2026-09-30T22:25:23",
@@ -259,11 +259,11 @@
     "ultima_fecha": "2026-10-05"
   },
   "NEMAK": {
-    "actualizado": "2026-10-26T20:45:21",
+    "actualizado": "2026-10-28T08:58:38",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 111,
+    "n_operaciones": 112,
     "nombre": "NEMAK",
-    "ultima_fecha": "2026-10-26"
+    "ultima_fecha": "2026-10-27"
   },
   "ORBIA": {
     "actualizado": "2026-10-08T09:27:06",
@@ -287,11 +287,11 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-10-27T08:21:34",
+    "actualizado": "2026-10-28T08:58:38",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 26715,
+    "n_operaciones": 26889,
     "nombre": "Q",
-    "ultima_fecha": "2026-10-23"
+    "ultima_fecha": "2026-10-26"
   },
   "R": {
     "actualizado": "2026-10-22T07:57:39",
