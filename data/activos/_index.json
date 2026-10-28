@@ -168,25 +168,25 @@
     "ultima_fecha": "2026-09-15"
   },
   "GMEXICO": {
-    "actualizado": "2026-10-28T08:58:38",
+    "actualizado": "2026-10-28T20:33:54",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 10545,
+    "n_operaciones": 10795,
     "nombre": "GMEXICO",
-    "ultima_fecha": "2026-10-27"
+    "ultima_fecha": "2026-10-28"
   },
   "GRUMA": {
-    "actualizado": "2026-10-27T20:16:49",
+    "actualizado": "2026-10-28T20:33:54",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 14366,
+    "n_operaciones": 14417,
     "nombre": "GRUMA",
-    "ultima_fecha": "2026-10-27"
+    "ultima_fecha": "2026-10-28"
   },
   "HERDEZ": {
-    "actualizado": "2026-10-27T20:16:49",
+    "actualizado": "2026-10-28T20:33:54",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 678,
+    "n_operaciones": 690,
     "nombre": "HERDEZ",
-    "ultima_fecha": "2026-10-27"
+    "ultima_fecha": "2026-10-28"
   },
   "ICH": {
     "actualizado": "2026-10-20T19:34:38",
@@ -224,11 +224,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-10-28T08:58:38",
+    "actualizado": "2026-10-28T20:33:54",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 8467,
+    "n_operaciones": 8545,
     "nombre": "LAB",
-    "ultima_fecha": "2026-10-27"
+    "ultima_fecha": "2026-10-28"
   },
   "LACOMER": {
     "actualizado": "2026-09-30T22:25:23",
@@ -273,11 +273,11 @@
     "ultima_fecha": "2026-10-07"
   },
   "PINFRA": {
-    "actualizado": "2026-10-27T20:16:49",
+    "actualizado": "2026-10-28T20:33:54",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 2937,
+    "n_operaciones": 3032,
     "nombre": "PINFRA",
-    "ultima_fecha": "2026-10-26"
+    "ultima_fecha": "2026-10-27"
   },
   "PV": {
     "actualizado": "2026-09-30T22:00:15",
@@ -287,11 +287,11 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-10-28T08:58:38",
+    "actualizado": "2026-10-28T20:33:54",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 26889,
+    "n_operaciones": 27027,
     "nombre": "Q",
-    "ultima_fecha": "2026-10-26"
+    "ultima_fecha": "2026-10-27"
   },
   "R": {
     "actualizado": "2026-10-22T07:57:39",
@@ -322,11 +322,11 @@
     "ultima_fecha": "2026-09-29"
   },
   "SPORT": {
-    "actualizado": "2026-10-09T20:17:56",
+    "actualizado": "2026-10-28T20:33:54",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1521,
+    "n_operaciones": 1523,
     "nombre": "SPORT",
-    "ultima_fecha": "2026-10-09"
+    "ultima_fecha": "2026-10-28"
   },
   "TRAXION": {
     "actualizado": "2026-09-30T22:13:30",
