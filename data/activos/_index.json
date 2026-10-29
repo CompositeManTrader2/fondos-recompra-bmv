@@ -28,25 +28,25 @@
     "ultima_fecha": "2026-07-24"
   },
   "ALSEA": {
-    "actualizado": "2026-10-28T08:58:38",
+    "actualizado": "2026-10-29T08:53:36",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 5569,
+    "n_operaciones": 5620,
     "nombre": "ALSEA",
-    "ultima_fecha": "2026-10-27"
+    "ultima_fecha": "2026-10-28"
   },
   "ALTERNA": {
-    "actualizado": "2026-10-26T20:45:21",
+    "actualizado": "2026-10-29T08:53:36",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 129,
+    "n_operaciones": 130,
     "nombre": "ALTERNA",
-    "ultima_fecha": "2026-10-26"
+    "ultima_fecha": "2026-10-28"
   },
   "AMX": {
-    "actualizado": "2026-10-28T08:58:38",
+    "actualizado": "2026-10-29T08:53:36",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 4240,
+    "n_operaciones": 4257,
     "nombre": "AMX",
-    "ultima_fecha": "2026-10-27"
+    "ultima_fecha": "2026-10-28"
   },
   "ARA": {
     "actualizado": "2026-09-30T22:25:23",
@@ -140,11 +140,11 @@
     "ultima_fecha": "2026-08-20"
   },
   "GCARSO": {
-    "actualizado": "2026-10-15T07:45:40",
+    "actualizado": "2026-10-29T08:53:36",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 440,
+    "n_operaciones": 444,
     "nombre": "GCARSO",
-    "ultima_fecha": "2026-10-14"
+    "ultima_fecha": "2026-10-28"
   },
   "GCC": {
     "actualizado": "2026-09-30T22:50:43",
@@ -168,9 +168,9 @@
     "ultima_fecha": "2026-09-15"
   },
   "GMEXICO": {
-    "actualizado": "2026-10-28T20:33:54",
+    "actualizado": "2026-10-29T08:53:36",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 10795,
+    "n_operaciones": 10841,
     "nombre": "GMEXICO",
     "ultima_fecha": "2026-10-28"
   },
@@ -259,11 +259,11 @@
     "ultima_fecha": "2026-10-05"
   },
   "NEMAK": {
-    "actualizado": "2026-10-28T08:58:38",
+    "actualizado": "2026-10-29T08:53:36",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 112,
+    "n_operaciones": 113,
     "nombre": "NEMAK",
-    "ultima_fecha": "2026-10-27"
+    "ultima_fecha": "2026-10-28"
   },
   "ORBIA": {
     "actualizado": "2026-10-08T09:27:06",
