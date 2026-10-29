@@ -28,18 +28,18 @@
     "ultima_fecha": "2026-07-24"
   },
   "ALSEA": {
-    "actualizado": "2026-10-29T08:53:36",
+    "actualizado": "2026-10-29T20:32:37",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 5620,
+    "n_operaciones": 5640,
     "nombre": "ALSEA",
-    "ultima_fecha": "2026-10-28"
+    "ultima_fecha": "2026-10-29"
   },
   "ALTERNA": {
-    "actualizado": "2026-10-29T08:53:36",
+    "actualizado": "2026-10-29T20:32:37",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 130,
+    "n_operaciones": 131,
     "nombre": "ALTERNA",
-    "ultima_fecha": "2026-10-28"
+    "ultima_fecha": "2026-10-29"
   },
   "AMX": {
     "actualizado": "2026-10-29T08:53:36",
@@ -175,11 +175,11 @@
     "ultima_fecha": "2026-10-28"
   },
   "GRUMA": {
-    "actualizado": "2026-10-28T20:33:54",
+    "actualizado": "2026-10-29T20:32:37",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 14417,
+    "n_operaciones": 14463,
     "nombre": "GRUMA",
-    "ultima_fecha": "2026-10-28"
+    "ultima_fecha": "2026-10-29"
   },
   "HERDEZ": {
     "actualizado": "2026-10-28T20:33:54",
@@ -224,11 +224,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-10-28T20:33:54",
+    "actualizado": "2026-10-29T20:32:37",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 8545,
+    "n_operaciones": 8589,
     "nombre": "LAB",
-    "ultima_fecha": "2026-10-28"
+    "ultima_fecha": "2026-10-29"
   },
   "LACOMER": {
     "actualizado": "2026-09-30T22:25:23",
@@ -245,11 +245,11 @@
     "ultima_fecha": "2026-10-07"
   },
   "LIVEPOL": {
-    "actualizado": "2026-09-30T22:50:43",
+    "actualizado": "2026-10-29T20:32:37",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 58,
+    "n_operaciones": 59,
     "nombre": "LIVEPOL",
-    "ultima_fecha": "2026-09-18"
+    "ultima_fecha": "2026-10-28"
   },
   "MEGA": {
     "actualizado": "2026-10-06T20:33:49",
@@ -273,11 +273,11 @@
     "ultima_fecha": "2026-10-07"
   },
   "PINFRA": {
-    "actualizado": "2026-10-28T20:33:54",
+    "actualizado": "2026-10-29T20:32:37",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 3032,
+    "n_operaciones": 3107,
     "nombre": "PINFRA",
-    "ultima_fecha": "2026-10-27"
+    "ultima_fecha": "2026-10-28"
   },
   "PV": {
     "actualizado": "2026-09-30T22:00:15",
@@ -322,11 +322,11 @@
     "ultima_fecha": "2026-09-29"
   },
   "SPORT": {
-    "actualizado": "2026-10-28T20:33:54",
+    "actualizado": "2026-10-29T20:32:37",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1523,
+    "n_operaciones": 1553,
     "nombre": "SPORT",
-    "ultima_fecha": "2026-10-28"
+    "ultima_fecha": "2026-10-29"
   },
   "TRAXION": {
     "actualizado": "2026-09-30T22:13:30",
@@ -336,11 +336,11 @@
     "ultima_fecha": "2026-07-14"
   },
   "VINTE": {
-    "actualizado": "2026-10-24T07:37:33",
+    "actualizado": "2026-10-29T20:32:37",
     "creado": "2026-09-29T18:48:18",
-    "n_operaciones": 250,
+    "n_operaciones": 251,
     "nombre": "VINTE",
-    "ultima_fecha": "2026-10-23"
+    "ultima_fecha": "2026-10-28"
   },
   "VISTA": {
     "actualizado": "2026-09-30T22:29:05",
