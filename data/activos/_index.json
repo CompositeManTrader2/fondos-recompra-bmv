@@ -147,11 +147,11 @@
     "ultima_fecha": "2026-10-28"
   },
   "GCC": {
-    "actualizado": "2026-09-30T22:50:43",
+    "actualizado": "2026-11-03T21:26:53",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 11801,
+    "n_operaciones": 12017,
     "nombre": "GCC",
-    "ultima_fecha": "2026-09-25"
+    "ultima_fecha": "2026-10-30"
   },
   "GFINBUR": {
     "actualizado": "2026-10-10T09:00:12",
@@ -182,11 +182,11 @@
     "ultima_fecha": "2026-10-29"
   },
   "HERDEZ": {
-    "actualizado": "2026-10-28T20:33:54",
+    "actualizado": "2026-11-03T21:26:53",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 690,
+    "n_operaciones": 694,
     "nombre": "HERDEZ",
-    "ultima_fecha": "2026-10-28"
+    "ultima_fecha": "2026-11-03"
   },
   "ICH": {
     "actualizado": "2026-10-20T19:34:38",
@@ -266,11 +266,11 @@
     "ultima_fecha": "2026-10-30"
   },
   "ORBIA": {
-    "actualizado": "2026-10-31T08:54:14",
+    "actualizado": "2026-11-03T21:26:53",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 7230,
+    "n_operaciones": 7274,
     "nombre": "ORBIA",
-    "ultima_fecha": "2026-10-30"
+    "ultima_fecha": "2026-11-03"
   },
   "PINFRA": {
     "actualizado": "2026-10-29T20:32:37",
