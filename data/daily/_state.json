@@ -1,8 +1,32 @@
 {
-  "last_hit_id": 1601111,
+  "last_hit_id": 1601217,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-11-03T21:27:05+00:00",
+  "last_run_utc": "2026-11-04T09:54:28+00:00",
   "runs": [
+    {
+      "utc": "2026-11-04T09:54:28+00:00",
+      "inicio_id": 1600312,
+      "fin_id": 1602911,
+      "ids_revisados": 2595,
+      "pdfs_encontrados": 9,
+      "docs_nuevos": 9,
+      "ops_nuevas": 694,
+      "errores_red": 4,
+      "sin_tabla": 0,
+      "emisoras": [
+        "ACTINVR",
+        "ALTERNA",
+        "AMX",
+        "BIMBO",
+        "GCC",
+        "GMEXICO",
+        "LAB",
+        "SPORT",
+        "WALMEX"
+      ],
+      "abortado": null,
+      "duracion_s": 293.4
+    },
     {
       "utc": "2026-11-03T21:27:05+00:00",
       "inicio_id": 1599779,
@@ -1130,16 +1154,9 @@
     }
   ],
   "ids_error": [
-    1602097,
-    1602098,
-    1602099,
-    1602102,
-    1602103,
-    1602106,
-    1602107,
-    1602108,
-    1602109,
-    1602110,
-    1602111
+    1602112,
+    1602114,
+    1602118,
+    1602120
   ]
 }

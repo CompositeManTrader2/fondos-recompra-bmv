@@ -7,11 +7,11 @@
     "ultima_fecha": "2026-10-07"
   },
   "ACTINVR": {
-    "actualizado": "2026-10-31T08:54:14",
+    "actualizado": "2026-11-04T09:54:03",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 212,
+    "n_operaciones": 213,
     "nombre": "ACTINVR",
-    "ultima_fecha": "2026-10-30"
+    "ultima_fecha": "2026-11-03"
   },
   "AGUA": {
     "actualizado": "2026-09-30T22:50:43",
@@ -35,18 +35,18 @@
     "ultima_fecha": "2026-10-30"
   },
   "ALTERNA": {
-    "actualizado": "2026-10-29T20:32:37",
+    "actualizado": "2026-11-04T09:54:03",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 131,
+    "n_operaciones": 132,
     "nombre": "ALTERNA",
-    "ultima_fecha": "2026-10-29"
+    "ultima_fecha": "2026-11-03"
   },
   "AMX": {
-    "actualizado": "2026-10-31T08:54:14",
+    "actualizado": "2026-11-04T09:54:03",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 4283,
+    "n_operaciones": 4312,
     "nombre": "AMX",
-    "ultima_fecha": "2026-10-30"
+    "ultima_fecha": "2026-11-03"
   },
   "ARA": {
     "actualizado": "2026-09-30T22:25:23",
@@ -70,11 +70,11 @@
     "ultima_fecha": "2026-04-13"
   },
   "BIMBO": {
-    "actualizado": "2026-10-31T08:54:14",
+    "actualizado": "2026-11-04T09:54:03",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 6464,
+    "n_operaciones": 6593,
     "nombre": "BIMBO",
-    "ultima_fecha": "2026-10-30"
+    "ultima_fecha": "2026-11-03"
   },
   "BOLSA": {
     "actualizado": "2026-09-30T22:00:15",
@@ -147,11 +147,11 @@
     "ultima_fecha": "2026-10-28"
   },
   "GCC": {
-    "actualizado": "2026-11-03T21:26:53",
+    "actualizado": "2026-11-04T09:54:03",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 12017,
+    "n_operaciones": 12328,
     "nombre": "GCC",
-    "ultima_fecha": "2026-10-30"
+    "ultima_fecha": "2026-11-03"
   },
   "GFINBUR": {
     "actualizado": "2026-10-10T09:00:12",
@@ -168,11 +168,11 @@
     "ultima_fecha": "2026-09-15"
   },
   "GMEXICO": {
-    "actualizado": "2026-10-31T08:54:14",
+    "actualizado": "2026-11-04T09:54:03",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 11505,
+    "n_operaciones": 11622,
     "nombre": "GMEXICO",
-    "ultima_fecha": "2026-10-30"
+    "ultima_fecha": "2026-11-03"
   },
   "GRUMA": {
     "actualizado": "2026-10-29T20:32:37",
@@ -224,11 +224,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-10-31T08:54:14",
+    "actualizado": "2026-11-04T09:54:03",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 8607,
+    "n_operaciones": 8631,
     "nombre": "LAB",
-    "ultima_fecha": "2026-10-30"
+    "ultima_fecha": "2026-11-03"
   },
   "LACOMER": {
     "actualizado": "2026-10-30T08:58:24",
@@ -322,11 +322,11 @@
     "ultima_fecha": "2026-09-29"
   },
   "SPORT": {
-    "actualizado": "2026-10-31T08:54:14",
+    "actualizado": "2026-11-04T09:54:03",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1562,
+    "n_operaciones": 1564,
     "nombre": "SPORT",
-    "ultima_fecha": "2026-10-30"
+    "ultima_fecha": "2026-11-03"
   },
   "TRAXION": {
     "actualizado": "2026-09-30T22:13:30",
@@ -350,10 +350,10 @@
     "ultima_fecha": "2026-08-14"
   },
   "WALMEX": {
-    "actualizado": "2026-10-31T08:54:14",
+    "actualizado": "2026-11-04T09:54:03",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 3740,
+    "n_operaciones": 3820,
     "nombre": "WALMEX",
-    "ultima_fecha": "2026-10-30"
+    "ultima_fecha": "2026-11-03"
   }
 }
