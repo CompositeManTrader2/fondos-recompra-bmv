@@ -15,6 +15,10 @@ on:
         description: "Presupuesto de tiempo del scanner (min)"
         required: false
         default: "45"
+      backfill_desde:
+        description: "Inicia un backfill por partes desde este ID (ej. 1154000 ≈ ene-2022); las corridas siguientes lo continúan solas"
+        required: false
+        default: ""
       dry_run:
         description: "Dry run (no escribe ni commitea)"
         type: boolean
@@ -44,18 +48,23 @@ jobs:
           cache-dependency-path: requirements-scanner.txt
 
       - name: Instalar dependencias
-        run: pip install -r requirements-scanner.txt
+        run: |
+          pip install -r requirements-scanner.txt
+          # Carlito = métrica de Calibri, para el reporte PDF mensual
+          sudo apt-get install -y -qq fonts-crosextra-carlito > /dev/null || true
 
       - name: Ejecutar scanner y publicar datos
         env:
           SEED_ID: ${{ github.event.inputs.seed_id }}
           MAX_MIN: ${{ github.event.inputs.max_minutos || '45' }}
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          BACKFILL: ${{ github.event.inputs.backfill_desde }}
         run: |
           set -u
           ARGS="--max-minutos ${MAX_MIN}"
           if [ -n "${SEED_ID}" ]; then ARGS="$ARGS --seed-id ${SEED_ID}"; fi
           if [ "${DRY_RUN}" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          if [ -n "${BACKFILL}" ]; then ARGS="$ARGS --backfill-desde ${BACKFILL}"; fi
 
           git config user.name  "recompras-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -65,6 +74,7 @@ jobs:
             [ "${DRY_RUN}" = "true" ] && exit 0
 
             git add data/
+            if [ -d reportes ]; then git add reportes/; fi
             if git diff --cached --quiet; then
               echo "Sin cambios que publicar."; exit 0
             fi

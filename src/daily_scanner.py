@@ -523,6 +523,28 @@ def escanear(
             if next_id - ultimo_hit_corrida > frontier_gap:
                 break
 
+        # 3) Backfill histórico por partes: con el tiempo que sobre, avanza un
+        #    cursor desde un ID antiguo hacia el inicio de la cobertura actual.
+        #    Cada corrida continúa donde quedó la anterior (estado["backfill"]).
+        bf = estado.get("backfill")
+        if bf and not res.abortado:
+            cursor, hasta = int(bf["cursor"]), int(bf["hasta"])
+            log(f"  ↺ Backfill: cursor {cursor:,} → {hasta:,} ({hasta - cursor:,} IDs por revisar)")
+            while cursor < hasta and time.time() - t0 < max_minutos * 60:
+                ids = [i for i in range(cursor, min(cursor + CHUNK, hasta)) if i not in conocidos]
+                err_ids = _procesar(ids, f"backfill {cursor:,}–{min(cursor + CHUNK, hasta) - 1:,}")
+                if ids and len(err_ids) > 0.5 * len(ids):
+                    log("  ⚠ Backfill pausado: BMV no responde; se reintenta en la siguiente corrida")
+                    break
+                cursor += CHUNK
+                bf["cursor"] = cursor
+            if cursor >= hasta:
+                log("  ✓ Backfill histórico completo")
+                estado["backfill"] = None
+                estado["backfill_completo_utc"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
+            else:
+                estado["backfill"] = bf
+
     _flush(pendientes_ops, docs_nuevos, dry_run)
 
     # Ventana de frontera adaptativa: si no hubo hits nuevos, la duplicamos

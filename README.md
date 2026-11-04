@@ -37,6 +37,22 @@ la BMV (`https://www.bmv.com.mx/docs-pub/recompra/...pdf`).
 > GitHub desactiva los workflows programados tras 60 días sin actividad en el repo; los
 > commits diarios del scanner cuentan como actividad.
 
+## 📄 Reporte mensual "Net Buybacks" (PDF)
+
+Reporte de 8 páginas con identidad Punto: portada; recompra neta por sector (12M de los dos años
+previos, últimos 12M, YTD previo y YTD, con variación, buyback yield y # de emisoras); top 20 por
+buyback yield LTM (con precio promedio), top 20 compradores netos y recompra neta mes a mes;
+rankings YTD y 5 años; detalle por emisora (yield, monto y acciones por año, precio promedio de
+compra/venta, remanente del fondo) y metodología/aviso legal.
+
+- **App → Reporte PDF**: genera el reporte a cualquier fecha de corte, en inglés o español.
+- **Automático**: el primer scan de cada mes publica `reportes/Buybacks_AAAA-MM.pdf` (datos al cierre del mes anterior).
+- **Personalización**: `assets/portada.jpg` (foto de portada), `assets/logo_punto.png`, `assets/aviso_legal.txt`
+  (aviso legal oficial; sin él se imprime un texto genérico con una nota para reemplazarlo) y `data/sectores.csv`.
+- **Historia**: los periodos anteriores a la cobertura de todo el mercado aparecen como *n.d.*. Para llenarlos:
+  *Actions → Run workflow* con `backfill_desde` (p. ej. `1154000` ≈ ene-2022); las corridas diarias continúan
+  el backfill por partes hasta completarlo.
+
 ## 🎨 Diseño · identidad Punto Casa de Bolsa
 
 Colores muestreados del reporte oficial: morado `#7030A0`, lavanda `#ECDEF5`, gris

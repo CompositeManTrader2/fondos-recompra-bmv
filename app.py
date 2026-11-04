@@ -17,6 +17,7 @@ paginas = st.navigation({
     "Mercado": [
         st.Page("views/resumen.py", title="Resumen", icon=":material/space_dashboard:", default=True),
         st.Page("views/actividad.py", title="Buyback Activity", icon=":material/table_view:"),
+        st.Page("views/reporte.py", title="Reporte PDF", icon=":material/picture_as_pdf:"),
         st.Page("views/casas_mercado.py", title="Casas de bolsa", icon=":material/account_balance:"),
         st.Page("views/rankings.py", title="Rankings e historial", icon=":material/leaderboard:"),
     ],

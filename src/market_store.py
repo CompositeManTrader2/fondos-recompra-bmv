@@ -84,5 +84,16 @@ def actividad() -> pd.DataFrame:
     return df
 
 
+@st.cache_data(ttl=600, show_spinner=False)
+def mercado() -> pd.DataFrame:
+    """Cierre y volumen diario por emisora (Yahoo Finance, vía scanner)."""
+    data = _leer("mercado.parquet")
+    if not data:
+        return pd.DataFrame()
+    df = _a_float(pd.read_parquet(io.BytesIO(data)))
+    df["FECHA"] = pd.to_datetime(df["FECHA"]).dt.normalize()
+    return df
+
+
 def limpiar_cache() -> None:
-    resumen_diario.clear(); documentos.clear(); estado_scanner.clear(); actividad.clear()
+    resumen_diario.clear(); documentos.clear(); estado_scanner.clear(); actividad.clear(); mercado.clear()

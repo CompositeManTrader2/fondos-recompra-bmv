@@ -56,11 +56,23 @@ def main() -> int:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--rebuild-only", action="store_true")
     ap.add_argument("--sin-mercado", action="store_true", help="No descargar precios de Yahoo")
+    ap.add_argument("--backfill-desde", type=int, default=None,
+                    help="Inicia un backfill por partes desde este ID hasta el inicio de la cobertura actual. "
+                         "Las corridas siguientes lo continúan solas. Ej: 1154000 ≈ ene-2022.")
+    ap.add_argument("--sin-reporte", action="store_true", help="No generar el reporte PDF mensual")
     args = ap.parse_args()
 
     if args.rebuild_only:
         print(daily_scanner.reconstruir_todo(con_mercado=not args.sin_mercado))
         return 0
+
+    if args.backfill_desde:
+        docs = daily_scanner.leer_documentos()
+        hasta = int(docs["ID"].min()) if not docs.empty else daily_scanner.DEFAULT_SEED_ID
+        estado = daily_scanner.leer_estado()
+        estado["backfill"] = {"cursor": int(args.backfill_desde), "hasta": hasta}
+        daily_scanner.guardar_estado(estado)
+        print(f"Backfill programado: IDs {args.backfill_desde:,} → {hasta:,}")
 
     res = daily_scanner.escanear(
         seed_id=args.seed_id,
@@ -70,6 +82,16 @@ def main() -> int:
         dry_run=args.dry_run,
     )
     _step_summary(res)
+
+    # Reporte mensual: el primer scan de cada mes genera el del mes anterior.
+    if not args.dry_run and not args.sin_reporte:
+        try:
+            from src import reporte_pdf
+            ruta = reporte_pdf.generar_mensual_si_corresponde()
+            if ruta:
+                print(f"Reporte mensual generado: {ruta}")
+        except Exception as e:  # el reporte nunca debe tumbar el scan
+            print(f"⚠ No se pudo generar el reporte mensual: {e}")
     # Falla el job sólo si BMV no respondió en absoluto (útil para alertas).
     return 2 if (res.abortado and res.ids_revisados == 0) else 0
 
