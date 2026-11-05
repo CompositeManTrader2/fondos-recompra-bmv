@@ -7,11 +7,11 @@
     "ultima_fecha": "2026-11-04"
   },
   "ACTINVR": {
-    "actualizado": "2026-11-05T10:26:04",
+    "actualizado": "2026-11-05T21:33:03",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1203,
+    "n_operaciones": 1204,
     "nombre": "ACTINVR",
-    "ultima_fecha": "2026-11-03"
+    "ultima_fecha": "2026-11-04"
   },
   "AGUA": {
     "actualizado": "2026-11-05T10:26:04",
@@ -105,9 +105,9 @@
     "ultima_fecha": "2026-11-03"
   },
   "BOLSA": {
-    "actualizado": "2026-11-05T10:26:04",
+    "actualizado": "2026-11-05T21:33:03",
     "creado": "2026-09-30T20:24:37",
-    "n_operaciones": 30758,
+    "n_operaciones": 30779,
     "nombre": "BOLSA",
     "ultima_fecha": "2026-06-22"
   },
@@ -252,11 +252,11 @@
     "ultima_fecha": "2026-10-28"
   },
   "GCC": {
-    "actualizado": "2026-11-05T10:19:21",
+    "actualizado": "2026-11-05T21:33:03",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 80800,
+    "n_operaciones": 80981,
     "nombre": "GCC",
-    "ultima_fecha": "2026-11-03"
+    "ultima_fecha": "2026-11-04"
   },
   "GENTERA": {
     "actualizado": "2026-11-04T20:22:35",
@@ -371,11 +371,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-11-05T10:26:04",
+    "actualizado": "2026-11-05T21:33:03",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 53555,
+    "n_operaciones": 53601,
     "nombre": "LAB",
-    "ultima_fecha": "2026-11-04"
+    "ultima_fecha": "2026-11-05"
   },
   "LACOMER": {
     "actualizado": "2026-11-05T10:26:04",
@@ -441,11 +441,11 @@
     "ultima_fecha": "2023-05-15"
   },
   "PINFRA": {
-    "actualizado": "2026-11-05T10:26:04",
+    "actualizado": "2026-11-05T21:33:03",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 50849,
+    "n_operaciones": 51140,
     "nombre": "PINFRA",
-    "ultima_fecha": "2026-11-03"
+    "ultima_fecha": "2026-11-04"
   },
   "PV": {
     "actualizado": "2026-09-30T22:00:15",
@@ -546,11 +546,11 @@
     "ultima_fecha": "2025-03-31"
   },
   "VINTE": {
-    "actualizado": "2026-11-05T10:26:04",
+    "actualizado": "2026-11-05T21:33:03",
     "creado": "2026-09-29T18:48:18",
-    "n_operaciones": 252,
+    "n_operaciones": 253,
     "nombre": "VINTE",
-    "ultima_fecha": "2026-10-30"
+    "ultima_fecha": "2026-11-04"
   },
   "VISTA": {
     "actualizado": "2026-11-05T02:57:05",
