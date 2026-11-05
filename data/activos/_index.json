@@ -1,22 +1,22 @@
 {
   "AC": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 35757,
+    "n_operaciones": 37795,
     "nombre": "AC",
     "ultima_fecha": "2026-11-04"
   },
   "ACTINVR": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1180,
+    "n_operaciones": 1203,
     "nombre": "ACTINVR",
     "ultima_fecha": "2026-11-03"
   },
   "AGUA": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 28085,
+    "n_operaciones": 28242,
     "nombre": "AGUA",
     "ultima_fecha": "2026-09-25"
   },
@@ -28,30 +28,30 @@
     "ultima_fecha": "2022-09-27"
   },
   "ALPEK": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:05:33",
     "creado": "2026-09-30T21:55:05",
-    "n_operaciones": 969,
+    "n_operaciones": 996,
     "nombre": "ALPEK",
     "ultima_fecha": "2026-07-24"
   },
   "ALSEA": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 18317,
+    "n_operaciones": 19435,
     "nombre": "ALSEA",
     "ultima_fecha": "2026-10-30"
   },
   "ALTERNA": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 599,
+    "n_operaciones": 622,
     "nombre": "ALTERNA",
     "ultima_fecha": "2026-11-04"
   },
   "AMX": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 23952,
+    "n_operaciones": 24489,
     "nombre": "AMX",
     "ultima_fecha": "2026-11-04"
   },
@@ -63,9 +63,9 @@
     "ultima_fecha": "2026-08-11"
   },
   "AUTLAN": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 8116,
+    "n_operaciones": 8448,
     "nombre": "AUTLAN",
     "ultima_fecha": "2026-10-01"
   },
@@ -105,18 +105,18 @@
     "ultima_fecha": "2026-11-03"
   },
   "BOLSA": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T20:24:37",
-    "n_operaciones": 29047,
+    "n_operaciones": 30758,
     "nombre": "BOLSA",
     "ultima_fecha": "2026-06-22"
   },
   "CADU": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:14:11",
     "creado": "2026-11-04T15:52:44",
-    "n_operaciones": 258,
+    "n_operaciones": 266,
     "nombre": "CADU",
-    "ultima_fecha": "2025-10-28"
+    "ultima_fecha": "2025-12-09"
   },
   "CEMEX": {
     "actualizado": "2026-11-04T17:59:45",
@@ -133,9 +133,9 @@
     "ultima_fecha": "2023-11-13"
   },
   "CHDRAUI": {
-    "actualizado": "2026-11-05T03:18:36",
+    "actualizado": "2026-11-05T10:19:21",
     "creado": "2026-09-30T21:51:23",
-    "n_operaciones": 8584,
+    "n_operaciones": 8665,
     "nombre": "CHDRAUI",
     "ultima_fecha": "2026-07-08"
   },
@@ -147,9 +147,9 @@
     "ultima_fecha": "2026-06-10"
   },
   "CMOCTEZ": {
-    "actualizado": "2026-11-05T03:18:36",
+    "actualizado": "2026-11-05T10:19:21",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 454,
+    "n_operaciones": 455,
     "nombre": "CMOCTEZ",
     "ultima_fecha": "2026-10-14"
   },
@@ -161,9 +161,9 @@
     "ultima_fecha": "2023-12-29"
   },
   "CULTIBA": {
-    "actualizado": "2026-11-05T03:07:18",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T20:24:38",
-    "n_operaciones": 407,
+    "n_operaciones": 442,
     "nombre": "CULTIBA",
     "ultima_fecha": "2026-06-15"
   },
@@ -196,9 +196,9 @@
     "ultima_fecha": "2022-06-27"
   },
   "FEMSA": {
-    "actualizado": "2026-11-05T01:49:35",
+    "actualizado": "2026-11-05T10:14:11",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 14191,
+    "n_operaciones": 16626,
     "nombre": "FEMSA",
     "ultima_fecha": "2026-09-11"
   },
@@ -210,11 +210,11 @@
     "ultima_fecha": "2024-05-22"
   },
   "FINDEP": {
-    "actualizado": "2026-11-05T01:29:39",
+    "actualizado": "2026-11-05T09:56:45",
     "creado": "2026-11-04T16:05:41",
-    "n_operaciones": 103,
+    "n_operaciones": 105,
     "nombre": "FINDEP",
-    "ultima_fecha": "2025-05-29"
+    "ultima_fecha": "2025-10-31"
   },
   "FORTALE": {
     "actualizado": "2026-11-04T17:20:24",
@@ -238,23 +238,23 @@
     "ultima_fecha": "2022-09-01"
   },
   "GBM": {
-    "actualizado": "2026-11-05T03:18:36",
+    "actualizado": "2026-11-05T10:05:32",
     "creado": "2026-09-30T20:24:38",
-    "n_operaciones": 1180,
+    "n_operaciones": 1181,
     "nombre": "GBM",
     "ultima_fecha": "2026-08-20"
   },
   "GCARSO": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 3055,
+    "n_operaciones": 3268,
     "nombre": "GCARSO",
     "ultima_fecha": "2026-10-28"
   },
   "GCC": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:19:21",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 78512,
+    "n_operaciones": 80800,
     "nombre": "GCC",
     "ultima_fecha": "2026-11-03"
   },
@@ -266,9 +266,9 @@
     "ultima_fecha": "2023-07-10"
   },
   "GFINBUR": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 6510,
+    "n_operaciones": 6815,
     "nombre": "GFINBUR",
     "ultima_fecha": "2026-10-09"
   },
@@ -280,9 +280,9 @@
     "ultima_fecha": "2024-11-27"
   },
   "GISSA": {
-    "actualizado": "2026-11-05T01:43:37",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 6434,
+    "n_operaciones": 6512,
     "nombre": "GISSA",
     "ultima_fecha": "2026-09-15"
   },
@@ -301,9 +301,9 @@
     "ultima_fecha": "2024-03-15"
   },
   "GRUMA": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 70918,
+    "n_operaciones": 72355,
     "nombre": "GRUMA",
     "ultima_fecha": "2026-10-29"
   },
@@ -336,16 +336,16 @@
     "ultima_fecha": "2024-05-23"
   },
   "ICH": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-05-15T16:39:50",
     "n_operaciones": 6739,
     "nombre": "ICH",
     "ultima_fecha": "2026-10-19"
   },
   "IDEAL": {
-    "actualizado": "2026-11-05T03:12:03",
+    "actualizado": "2026-11-05T10:09:44",
     "creado": "2026-09-30T20:49:44",
-    "n_operaciones": 49,
+    "n_operaciones": 52,
     "nombre": "IDEAL",
     "ultima_fecha": "2026-02-18"
   },
@@ -357,58 +357,58 @@
     "ultima_fecha": "2026-09-04"
   },
   "KIMBER": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 172,
+    "n_operaciones": 192,
     "nombre": "KIMBER",
     "ultima_fecha": "2026-10-21"
   },
   "KUO": {
-    "actualizado": "2026-11-05T03:12:03",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T22:50:43",
-    "n_operaciones": 520,
+    "n_operaciones": 523,
     "nombre": "KUO",
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 51774,
+    "n_operaciones": 53555,
     "nombre": "LAB",
     "ultima_fecha": "2026-11-04"
   },
   "LACOMER": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T20:24:37",
-    "n_operaciones": 5511,
+    "n_operaciones": 5807,
     "nombre": "LACOMER",
     "ultima_fecha": "2026-10-29"
   },
   "LAMOSA": {
-    "actualizado": "2026-11-05T03:18:36",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 604,
+    "n_operaciones": 613,
     "nombre": "LAMOSA",
     "ultima_fecha": "2026-10-07"
   },
   "LIVEPOL": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 44462,
+    "n_operaciones": 45133,
     "nombre": "LIVEPOL",
     "ultima_fecha": "2026-10-28"
   },
   "MEDICA": {
-    "actualizado": "2026-11-05T01:52:05",
+    "actualizado": "2026-11-05T10:19:21",
     "creado": "2026-11-04T15:52:44",
-    "n_operaciones": 286,
+    "n_operaciones": 290,
     "nombre": "MEDICA",
-    "ultima_fecha": "2025-07-29"
+    "ultima_fecha": "2025-12-19"
   },
   "MEGA": {
-    "actualizado": "2026-11-05T03:12:03",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 7281,
+    "n_operaciones": 8173,
     "nombre": "MEGA",
     "ultima_fecha": "2026-10-05"
   },
@@ -420,16 +420,16 @@
     "ultima_fecha": "2022-07-29"
   },
   "NEMAK": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:19:21",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 460,
+    "n_operaciones": 497,
     "nombre": "NEMAK",
     "ultima_fecha": "2026-11-04"
   },
   "ORBIA": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:19:20",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 20391,
+    "n_operaciones": 21995,
     "nombre": "ORBIA",
     "ultima_fecha": "2026-11-04"
   },
@@ -441,9 +441,9 @@
     "ultima_fecha": "2023-05-15"
   },
   "PINFRA": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 49935,
+    "n_operaciones": 50849,
     "nombre": "PINFRA",
     "ultima_fecha": "2026-11-03"
   },
@@ -455,9 +455,9 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 120659,
+    "n_operaciones": 125920,
     "nombre": "Q",
     "ultima_fecha": "2026-10-29"
   },
@@ -476,7 +476,7 @@
     "ultima_fecha": "2026-06-12"
   },
   "SIMEC": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-05-15T17:12:53",
     "n_operaciones": 2851,
     "nombre": "SIMEC",
@@ -490,9 +490,9 @@
     "ultima_fecha": "2022-03-09"
   },
   "SITES1": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T19:02:25",
-    "n_operaciones": 4857,
+    "n_operaciones": 5106,
     "nombre": "SITES1",
     "ultima_fecha": "2026-09-29"
   },
@@ -504,9 +504,9 @@
     "ultima_fecha": "2023-10-02"
   },
   "SPORT": {
-    "actualizado": "2026-11-05T03:18:36",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 2086,
+    "n_operaciones": 2378,
     "nombre": "SPORT",
     "ultima_fecha": "2026-11-04"
   },
@@ -518,7 +518,7 @@
     "ultima_fecha": "2023-12-11"
   },
   "TRAXION": {
-    "actualizado": "2026-11-05T03:24:29",
+    "actualizado": "2026-11-05T10:14:11",
     "creado": "2026-09-29T19:57:32",
     "n_operaciones": 26256,
     "nombre": "TRAXION",
@@ -546,7 +546,7 @@
     "ultima_fecha": "2025-03-31"
   },
   "VINTE": {
-    "actualizado": "2026-11-05T03:12:03",
+    "actualizado": "2026-11-05T10:26:04",
     "creado": "2026-09-29T18:48:18",
     "n_operaciones": 252,
     "nombre": "VINTE",
@@ -560,9 +560,9 @@
     "ultima_fecha": "2026-08-14"
   },
   "WALMEX": {
-    "actualizado": "2026-11-05T03:07:18",
+    "actualizado": "2026-11-05T10:14:11",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 10066,
+    "n_operaciones": 12365,
     "nombre": "WALMEX",
     "ultima_fecha": "2026-11-04"
   }
