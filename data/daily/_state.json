@@ -1,8 +1,34 @@
 {
-  "last_hit_id": 1601934,
+  "last_hit_id": 1602023,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-11-05T21:33:55+00:00",
+  "last_run_utc": "2026-11-06T09:46:48+00:00",
   "runs": [
+    {
+      "utc": "2026-11-06T09:46:48+00:00",
+      "inicio_id": 1601135,
+      "fin_id": 1603534,
+      "ids_revisados": 2382,
+      "pdfs_encontrados": 11,
+      "docs_nuevos": 11,
+      "ops_nuevas": 873,
+      "errores_red": 0,
+      "sin_tabla": 0,
+      "emisoras": [
+        "AC",
+        "ACTINVR",
+        "ALSEA",
+        "AMX",
+        "BIMBO",
+        "GCC",
+        "GMEXICO",
+        "HERDEZ",
+        "SPORT",
+        "VINTE",
+        "WALMEX"
+      ],
+      "abortado": null,
+      "duracion_s": 120.5
+    },
     {
       "utc": "2026-11-05T21:33:55+00:00",
       "inicio_id": 1600794,
