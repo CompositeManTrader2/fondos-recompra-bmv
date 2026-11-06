@@ -1,8 +1,26 @@
 {
-  "last_hit_id": 1602023,
+  "last_hit_id": 1602258,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-11-06T09:46:48+00:00",
+  "last_run_utc": "2026-11-06T21:03:46+00:00",
   "runs": [
+    {
+      "utc": "2026-11-06T21:03:46+00:00",
+      "inicio_id": 1601224,
+      "fin_id": 1603823,
+      "ids_revisados": 2574,
+      "pdfs_encontrados": 3,
+      "docs_nuevos": 3,
+      "ops_nuevas": 124,
+      "errores_red": 0,
+      "sin_tabla": 0,
+      "emisoras": [
+        "NEMAK",
+        "ORBIA",
+        "SPORT"
+      ],
+      "abortado": null,
+      "duracion_s": 161.8
+    },
     {
       "utc": "2026-11-06T09:46:48+00:00",
       "inicio_id": 1601135,
