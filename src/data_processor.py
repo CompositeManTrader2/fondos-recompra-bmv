@@ -13,6 +13,8 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
+from src import depuracion
+
 DIAS_SEMANA = {
     0: "Lunes", 1: "Martes", 2: "Miércoles", 3: "Jueves",
     4: "Viernes", 5: "Sábado", 6: "Domingo",
@@ -31,8 +33,15 @@ def limpiar_casa_bolsa(serie: pd.Series) -> pd.Series:
     return s
 
 
-def consolidar_operaciones(df: pd.DataFrame) -> pd.DataFrame:
-    """Garantiza tipos, quita filas inválidas y enriquece con campos calculados."""
+def consolidar_operaciones(df: pd.DataFrame, depurar: bool = True) -> pd.DataFrame:
+    """
+    Garantiza tipos, quita filas inválidas y enriquece con campos calculados.
+
+    depurar=True (análisis): aplica cancelaciones/correcciones por folio y
+    quita las filas en cero. depurar=False (almacenamiento): conserva las
+    filas de cancelación (folio con 0 acciones y precio 0) para que sigan
+    anulando a la operación original en cualquier lectura posterior.
+    """
     if df is None or df.empty:
         return pd.DataFrame()
 
@@ -56,7 +65,11 @@ def consolidar_operaciones(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     df = df.dropna(subset=["FECHA_OPERACION", "PRECIO_UNITARIO"])
-    df = df[df["PRECIO_UNITARIO"] > 0]
+    if depurar:
+        df = depuracion.depurar_por_folio(df)
+    else:
+        cancelacion = (df["PRECIO_UNITARIO"] == 0) & (df["NUMERO_DE_ACCIONES"].fillna(0) == 0) & df["FOLIO"].notna()
+        df = df[(df["PRECIO_UNITARIO"] > 0) | cancelacion]
 
     df["CASA_BOLSA"] = limpiar_casa_bolsa(df["CASA_BOLSA"])
     df["DIA_SEMANA"] = df["FECHA_OPERACION"].dt.weekday.map(DIAS_SEMANA)
@@ -78,7 +91,8 @@ def consolidar_operaciones(df: pd.DataFrame) -> pd.DataFrame:
     # Quitar duplicados exactos (mismo folio + fecha + casa + emisora)
     if "FOLIO" in df.columns:
         df = df.drop_duplicates(
-            subset=[c for c in ["EMISORA", "FECHA_OPERACION", "FOLIO", "CASA_BOLSA"] if c in df.columns],
+            subset=[c for c in ["EMISORA", "FECHA_OPERACION", "FOLIO", "CASA_BOLSA", "PRECIO_UNITARIO"]
+                    if c in df.columns],
             keep="first",
         )
 

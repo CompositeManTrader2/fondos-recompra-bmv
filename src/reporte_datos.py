@@ -88,6 +88,11 @@ def cobertura(docs: pd.DataFrame) -> date | None:
     """Fecha desde la que el registro del scanner cubre todo el mercado."""
     if docs is None or docs.empty:
         return None
+    # La cobertura la define el barrido por ID de los avisos de emisoras; los
+    # avisos de FIBRAs se descubren por emisora y pueden ser más antiguos.
+    if "ARCHIVO" in docs:
+        emisoras = docs[~docs["ARCHIVO"].astype(str).str.startswith("recofib")]
+        docs = emisoras if not emisoras.empty else docs
     col = "FECHA_REPORTE" if "FECHA_REPORTE" in docs and docs["FECHA_REPORTE"].notna().any() else "FECHA_OPERACION"
     return pd.to_datetime(docs[col]).min().date()
 

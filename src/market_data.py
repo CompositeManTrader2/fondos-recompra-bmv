@@ -70,6 +70,7 @@ MAPEO_MANUAL: dict[str, str] = {
     "BIMBO": "BIMBOA.MX",
     "GFNORTE": "GFNORTEO.MX",
     "CEMEX": "CEMEXCPO.MX",
+    "LACOMER": "LACOMERUBC.MX",
     "ICH": "ICHB.MX",
     "WALMEX": "WALMEX.MX",
     "ALFA": "ALFAA.MX",

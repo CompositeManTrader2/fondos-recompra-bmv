@@ -40,7 +40,12 @@ DIAS_SEMANA_ES = {
 
 # Sube cuando cambie lo que el parser extrae: el scanner re-procesa los
 # documentos registrados con una versión menor.
-PARSER_VERSION = 2
+# v3: conserva las filas en cero (cancelaciones: la emisora vuelve a publicar
+#     los mismos folios con 0 acciones para anular operaciones ya reportadas).
+PARSER_VERSION = 3
+# Versión mínima que se considera válida para documentos con operaciones; los
+# documentos 'sin_tabla' leídos con una versión menor se re-procesan siempre.
+PARSER_VERSION_MINIMA = 2
 
 
 @dataclass
@@ -58,6 +63,7 @@ class ResultadoPDF:
     fecha_reporte: Optional[datetime] = None    # "FECHA:" del encabezado (publicación)
     acciones_tesoreria: Optional[int] = None    # saldo "al último reporte"
     acciones_circulacion: Optional[int] = None  # saldo "al último reporte"
+    modificacion: bool = False                  # el aviso corrige/sustituye uno anterior
 
 
 # ---------------------------------------------------------------------------
@@ -178,6 +184,16 @@ def _extraer_remanente(texto: str) -> tuple[Optional[float], Optional[float]]:
                     presente = valor
             break
     return ultimo, presente
+
+
+_PATRON_MODIFICACION = re.compile(
+    r"MODIFICACI[OÓ]N|SUSTITUYE|COMO\s+DEFINITIVO|FE\s+DE\s+ERRATAS|REENV[IÍ]O", re.IGNORECASE)
+
+
+def _es_modificacion(texto: str) -> bool:
+    """True si la sección COMENTARIOS indica que el aviso corrige uno anterior."""
+    partes = re.split(r"COMENTARIOS", texto, maxsplit=1, flags=re.IGNORECASE)
+    return len(partes) == 2 and bool(_PATRON_MODIFICACION.search(partes[1]))
 
 
 _PATRON_SERIE = re.compile(r"^\s*SERIE\s+([A-Z0-9\*\-]{1,6})\s*$", re.IGNORECASE | re.MULTILINE)
@@ -301,9 +317,14 @@ def _extraer_tablas(pdf: pdfplumber.PDF) -> pd.DataFrame:
             .str.replace(r"\s+", " ", regex=True)
         )
 
-    # Eliminar filas basura (sin precio o sin acciones)
+    # Eliminar filas basura (sin precio). Se conservan las filas en cero con
+    # folio: son cancelaciones de operaciones reportadas antes con ese folio.
     df = df.dropna(subset=["PRECIO_UNITARIO"])
-    df = df[df.get("PRECIO_UNITARIO", pd.Series(dtype=float)) > 0]
+    precio = df["PRECIO_UNITARIO"]
+    acciones = df["NUMERO_DE_ACCIONES"] if "NUMERO_DE_ACCIONES" in df else pd.Series(pd.NA, index=df.index)
+    folio = df["FOLIO"] if "FOLIO" in df else pd.Series(pd.NA, index=df.index)
+    cancelacion = (precio == 0) & (acciones.fillna(0) == 0) & folio.notna()
+    df = df[(precio > 0) | cancelacion]
     return df.reset_index(drop=True)
 
 
@@ -340,6 +361,7 @@ def parsear_pdf(file_or_bytes, nombre_archivo: str = "documento.pdf") -> Resulta
             serie = _extraer_serie(texto_total)
             fecha_rep = _extraer_fecha_reporte(texto_total)
             tesoreria, circulacion = _extraer_saldos(texto_total)
+            modificacion = _es_modificacion(texto_total)
             ops = _extraer_tablas(pdf)
 
         if not ops.empty:
@@ -366,6 +388,7 @@ def parsear_pdf(file_or_bytes, nombre_archivo: str = "documento.pdf") -> Resulta
             fecha_reporte=fecha_rep,
             acciones_tesoreria=tesoreria,
             acciones_circulacion=circulacion,
+            modificacion=modificacion,
         )
     except Exception as e:
         return ResultadoPDF(

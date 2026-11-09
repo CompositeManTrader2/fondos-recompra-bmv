@@ -318,12 +318,12 @@ def _extraer_hits(data: dict) -> tuple[list[dict], int]:
 def _es_recompra(doc_source: dict, clave: str) -> bool:
     cve_tipo = (doc_source.get("cve_tipo_documento") or "").lower()
     cve_emp = (doc_source.get("cve_empresa") or "").upper()
-    if cve_tipo != "recompra":
+    if cve_tipo not in ("recompra", "recofib"):   # recofib = recompra de CBFIs (FIBRAs)
         return False
     if clave and cve_emp != clave.upper():
         return False
     url = ((doc_source.get("documento_html") or {}).get("url_documento") or "").lower()
-    return "recompra" in url and url.endswith(".pdf")
+    return ("recompra" in url or "recofib" in url) and url.endswith(".pdf")
 
 
 # ---------------------------------------------------------------------------

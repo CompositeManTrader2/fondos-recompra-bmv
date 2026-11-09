@@ -60,8 +60,22 @@ if st.session_state.get("reporte_pdf"):
     st.download_button("Descargar PDF", data, file_name=f"Buybacks_{r_corte:%Y-%m-%d}_{r_idioma}.pdf",
                        mime="application/pdf", type="primary", icon=":material/download:")
 
-T.seccion("Vista previa · recompra neta por sector", "millones de pesos")
 d = rd.preparar(act, docs, merc, corte)
+
+
+@st.cache_data(show_spinner=False, max_entries=8)
+def _hallazgos(corte_iso: str, version_datos: str) -> list[str]:
+    from src import reporte_analisis as ra
+    an = ra.analizar(market_store.actividad(), market_store.documentos(), market_store.mercado(),
+                     pd.Timestamp(corte_iso).date())
+    return an.hallazgos["es"]
+
+
+T.seccion("Hallazgos principales", "lo que dirá el resumen ejecutivo del PDF")
+for h in _hallazgos(corte.isoformat(), version):
+    st.markdown("- " + h.replace("<b>", "**").replace("</b>", "**").replace("$", "\\$"))
+
+T.seccion("Vista previa · recompra neta por sector", "millones de pesos")
 vista = d.sectores[["SECTOR", "YTD_MONTO", "YTD_YIELD", "YTD_EMIS", "LTM_MONTO", "Y1_MONTO"]]
 st.dataframe(
     vista, hide_index=True, width="stretch",

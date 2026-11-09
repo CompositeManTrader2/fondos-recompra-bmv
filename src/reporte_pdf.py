@@ -4,12 +4,16 @@ identidad de Punto Casa de Bolsa.
 
 Páginas
   1. Portada (morada; usa assets/portada.jpg si existe)
-  2. Recompra neta por sector: 12M de los dos años previos, últimos 12M, YTD previo y YTD
-  3. Gráficas: top 20 buyback yield LTM, top 20 compradores netos LTM, recompra neta mensual
-  4. Ranking YTD (monto y buyback yield)
-  5. Ranking 5 años
-  6+ Detalle por emisora ordenado por buyback yield a 5 años
-  último. Metodología y aviso legal (assets/aviso_legal.txt si existe)
+  2. Resumen ejecutivo: KPIs, hallazgos automáticos y acumulado del año vs años previos
+  3. Recompra neta por sector: 12M de los dos años previos, últimos 12M, YTD previo y YTD
+  4. Dinámica del mercado: flujo mensual 36M, amplitud (compradoras/vendedoras) y estadísticos
+  5. Top 20 buyback yield y compradores netos 12M, recompra neta mensual con top 3
+  6. Concentración y amplitud: Pareto, HHI y comparativo por año
+  7. Ejecución de los programas: intensidad, precio de compra vs cierre y rango 52s, fondo remanente
+  8. Momentum y señales: aceleran / desaceleran / en pausa / vendedoras netas / nuevas
+  9. Intermediarios: participación de casas de bolsa
+  10. Ranking YTD · 11. Ranking 5 años · 12+ Detalle por emisora
+  último. Metodología, calidad de datos y aviso legal (assets/aviso_legal.txt si existe)
 
 Uso:
     pdf_bytes = generar_pdf(actividad, documentos, mercado, corte=date(2026, 11, 3))
@@ -71,6 +75,106 @@ L = {
         g_precio="Price per Share {y} YTD", compra="Buy Avg.", venta="Sell Avg.", g_rem="Remaining\nfund", rem2="(MXN Million)",
         tot="Total", ytd="YTD", cobertura_parcial="*Data coverage starts {cob}; earlier periods shown as n.d.",
         metodo="Methodology & Disclosures", pendiente="Pending data", nd="n.d.",
+        resumen='Executive summary',
+        resumen_sub='Key figures and findings · data as of {corte}',
+        k_ytd='{y} YTD net buybacks',
+        k_yoy='vs {y1} YTD',
+        k_ltm='Last 12M net buybacks',
+        k_yield='LTM buyback yield',
+        k_emis='Issuers buying YTD',
+        k_top5='Top-5 share (LTM)',
+        k_rem='Remaining buyback funds',
+        k_rem_sub='{p} of market value',
+        k_mxn='MXN million',
+        hallazgos='Key findings',
+        acum='Cumulative net buybacks by year',
+        acum_sub='MXN Million · by calendar day',
+        dinamica='Market dynamics',
+        dinamica_sub='Monthly flows, breadth and statistics · last 36 months',
+        g_men='Net buybacks per month',
+        g_men_sub='MXN Million · line: 12-month moving average',
+        g_amp='Breadth: net buyers vs net sellers per month',
+        g_amp_sub='Number of issuers',
+        compradoras='Net buyers',
+        vendedoras='Net sellers',
+        prom12='12M average',
+        st_tit='Monthly statistics (last 12M)',
+        st_ult='Last month ({m})',
+        st_prom='Average',
+        st_med='Median',
+        st_desv='Std. deviation',
+        st_z='Last month z-score',
+        st_max='Highest month',
+        st_min='Lowest month',
+        st_3m='3M average',
+        st_comp='Buyers last month / 12M avg.',
+        conc='Concentration & breadth',
+        conc_sub='Who drives the flow · last 12 months',
+        g_pareto='Share of LTM net buybacks',
+        g_pareto_sub='% of total · bars: issuer share · line: cumulative share',
+        acumulada='Cumulative',
+        c_hhi='HHI (0–10,000)',
+        c_neq='Equivalent # of issuers',
+        c_med='Median buyback yield',
+        c_1pct='Issuers with yield ≥ 1%',
+        c_top10='Top-10 share',
+        c_top5='Top-5 share',
+        anual='Breadth and concentration by year',
+        a_anio='Year',
+        a_neto='Net amount',
+        a_comp='Buyers',
+        a_vend='Sellers',
+        a_top5='Top-5 %',
+        a_hhi='HHI',
+        ejec='Program execution',
+        ejec_sub='Top 25 net buyers, last 12 months · how often, at what price and how much fund is left',
+        e_neto='Net LTM\n(MXN M)',
+        e_yield='Yield\nLTM',
+        e_int='Intensity\n(% days)',
+        e_px='Avg. buy\nprice',
+        e_cierre='Last\nclose',
+        e_rend='Close vs\navg. buy',
+        e_pos='Buy price in\n52w range',
+        e_rem='Remaining\nfund (M)',
+        e_remcap='Fund /\nmkt cap',
+        e_meses='Months\nof fund*',
+        ejec_nota='Intensity = days with purchases / trading days. Buy price in 52-week range: 0% = bought at the low, 100% = at the high. Months of fund* = remaining fund / average monthly purchases of the last 3 months. Close vs avg. buy = gain/loss on the shares repurchased at the current price. Remaining fund: last filing in the past 12 months.',
+        momentum='Momentum & signals',
+        momentum_sub='Changes in behavior · MXN Million per month',
+        m_acel='Accelerating (3M vs 12M avg.)',
+        m_desacel='Decelerating (3M vs 12M avg.)',
+        m_pausa='Regular buyers on pause (45+ days without buying)',
+        m_vend='Net sellers, last 12M (treasury resales)',
+        m_inic='New buyers (first purchases in 15 months)',
+        m_3m='3M avg.',
+        m_12m='12M avg.',
+        m_dif='Change',
+        m_yld='Yield LTM',
+        m_meses='Active months',
+        m_ult='Last buy',
+        m_dias='Days idle',
+        m_rem='Fund (M)',
+        m_neto='Net LTM',
+        m_venta='Sold',
+        m_pxv='Avg. sell',
+        m_comp90='Bought 90d',
+        m_prim='First buy',
+        ninguna='None in the period',
+        casas='Intermediaries',
+        casas_sub='Broker-dealers executing buyback purchases · last 12 months (gross purchases)',
+        g_casas='Share of gross buyback purchases',
+        g_casas_sub='% of MXN amount · top 12 brokers',
+        cb_casa='Broker',
+        cb_monto='Purchases\n(MXN M)',
+        cb_cuota='Share',
+        cb_emis='Issuers',
+        calidad='Data quality',
+        q_avisos='Filings processed',
+        q_corr='Filings superseded by a later correction',
+        q_fibras='REIT (FIBRA) filings',
+        q_emis='Issuers with activity',
+        q_cob='Full-market coverage from',
+        q_ult='Last trade date',
     ),
     "es": dict(
         portada="Recompras", sub_portada="Bolsa Mexicana de Valores · todas las emisoras",
@@ -88,6 +192,106 @@ L = {
         g_precio="Precio por acción {y} YTD", compra="Compra prom.", venta="Venta prom.", g_rem="Remanente\nfondo", rem2="(millones)",
         tot="Total", ytd="YTD", cobertura_parcial="*La cobertura de datos inicia el {cob}; periodos anteriores aparecen como n.d.",
         metodo="Metodología y aviso legal", pendiente="Sin datos", nd="n.d.",
+        resumen='Resumen ejecutivo',
+        resumen_sub='Cifras clave y hallazgos · datos al {corte}',
+        k_ytd='Recompra neta {y} YTD',
+        k_yoy='vs {y1} YTD',
+        k_ltm='Recompra neta 12M',
+        k_yield='Buyback yield 12M',
+        k_emis='Emisoras comprando YTD',
+        k_top5='Peso top 5 (12M)',
+        k_rem='Fondos de recompra remanentes',
+        k_rem_sub='{p} del valor de mercado',
+        k_mxn='millones de pesos',
+        hallazgos='Hallazgos principales',
+        acum='Recompra neta acumulada por año',
+        acum_sub='Millones de pesos · por día natural',
+        dinamica='Dinámica del mercado',
+        dinamica_sub='Flujos mensuales, amplitud y estadísticos · últimos 36 meses',
+        g_men='Recompra neta por mes',
+        g_men_sub='Millones de pesos · línea: promedio móvil de 12 meses',
+        g_amp='Amplitud: compradoras vs vendedoras netas por mes',
+        g_amp_sub='Número de emisoras',
+        compradoras='Compradoras netas',
+        vendedoras='Vendedoras netas',
+        prom12='Promedio 12M',
+        st_tit='Estadísticos mensuales (últimos 12M)',
+        st_ult='Último mes ({m})',
+        st_prom='Promedio',
+        st_med='Mediana',
+        st_desv='Desviación estándar',
+        st_z='Z-score del último mes',
+        st_max='Mes más alto',
+        st_min='Mes más bajo',
+        st_3m='Promedio 3M',
+        st_comp='Compradoras último mes / prom. 12M',
+        conc='Concentración y amplitud',
+        conc_sub='Quién mueve el flujo · últimos 12 meses',
+        g_pareto='Participación en la recompra neta 12M',
+        g_pareto_sub='% del total · barras: peso de la emisora · línea: acumulado',
+        acumulada='Acumulado',
+        c_hhi='HHI (0–10,000)',
+        c_neq='No. equivalente de emisoras',
+        c_med='Buyback yield mediano',
+        c_1pct='Emisoras con yield ≥ 1%',
+        c_top10='Peso top 10',
+        c_top5='Peso top 5',
+        anual='Amplitud y concentración por año',
+        a_anio='Año',
+        a_neto='Monto neto',
+        a_comp='Compradoras',
+        a_vend='Vendedoras',
+        a_top5='Top 5 %',
+        a_hhi='HHI',
+        ejec='Ejecución de los programas',
+        ejec_sub='Top 25 compradores netos, últimos 12 meses · con qué frecuencia, a qué precio y cuánto fondo les queda',
+        e_neto='Neto 12M\n(millones)',
+        e_yield='Yield\n12M',
+        e_int='Intensidad\n(% días)',
+        e_px='Precio prom.\ncompra',
+        e_cierre='Último\ncierre',
+        e_rend='Cierre vs\nprom. compra',
+        e_pos='Compra en\nrango 52s',
+        e_rem='Fondo\nremanente (M)',
+        e_remcap='Fondo /\nvalor merc.',
+        e_meses='Meses\nde fondo*',
+        ejec_nota='Intensidad = días con compra / días hábiles. Compra en rango de 52 semanas: 0% = compró en el mínimo, 100% = en el máximo. Meses de fondo* = fondo remanente / compras mensuales promedio de los últimos 3 meses. Cierre vs prom. compra = ganancia/pérdida de las acciones recompradas al precio actual. Fondo remanente: último aviso de los últimos 12 meses.',
+        momentum='Momentum y señales',
+        momentum_sub='Cambios de comportamiento · millones de pesos por mes',
+        m_acel='Aceleran (promedio 3M vs 12M)',
+        m_desacel='Desaceleran (promedio 3M vs 12M)',
+        m_pausa='Recompradores habituales en pausa (45+ días sin comprar)',
+        m_vend='Vendedoras netas 12M (recolocación de tesorería)',
+        m_inic='Nuevas compradoras (primeras compras en 15 meses)',
+        m_3m='Prom. 3M',
+        m_12m='Prom. 12M',
+        m_dif='Cambio',
+        m_yld='Yield 12M',
+        m_meses='Meses activos',
+        m_ult='Última compra',
+        m_dias='Días sin',
+        m_rem='Fondo (M)',
+        m_neto='Neto 12M',
+        m_venta='Vendido',
+        m_pxv='Precio venta',
+        m_comp90='Compra 90d',
+        m_prim='Primera compra',
+        ninguna='Ninguna en el periodo',
+        casas='Intermediarios',
+        casas_sub='Casas de bolsa que ejecutan las recompras · últimos 12 meses (compras brutas)',
+        g_casas='Participación en las compras de recompra',
+        g_casas_sub='% del monto en pesos · top 12 casas',
+        cb_casa='Casa de bolsa',
+        cb_monto='Compras\n(millones)',
+        cb_cuota='Participación',
+        cb_emis='Emisoras',
+        calidad='Calidad de datos',
+        q_avisos='Avisos procesados',
+        q_corr='Avisos sustituidos por una corrección posterior',
+        q_fibras='Avisos de FIBRAs',
+        q_emis='Emisoras con actividad',
+        q_cob='Cobertura de todo el mercado desde',
+        q_ult='Última operación',
     ),
 }
 
@@ -100,6 +304,13 @@ METODOLOGIA = {
         "Sector yield = sector net buybacks / sector market value (outstanding shares × close at the cut-off date).",
         "Sector classification: data/sectores.csv (editable). Periods that start before the full-market data coverage "
         "are shown as n.d. rather than as partial figures.",
+        "Includes REIT (FIBRA) CBFI buybacks, which the exchange publishes under a separate filing type.",
+        "Corrections: when an issuer files again for the same trade date starting from the same remaining-fund balance "
+        "(broker change, typing error, resend), the later filing replaces the earlier one; operations re-filed with the "
+        "same folio and zero shares are treated as cancellations. Former tickers are merged into the current one "
+        "(e.g. ALFA → SIGMAF).",
+        "Momentum compares the average monthly net amount of the last 3 complete months with the last 12. "
+        "Concentration uses the Herfindahl-Hirschman index over net buyers.",
     ],
     "es": [
         "Fuente: avisos públicos de recompra (\"Información de recompra\") que publica la Bolsa Mexicana de Valores para cada "
@@ -109,6 +320,13 @@ METODOLOGIA = {
         "Yield sectorial = recompra neta del sector / valor de mercado del sector (circulación × cierre a la fecha de corte).",
         "Clasificación sectorial: data/sectores.csv (editable). Los periodos que inician antes de la cobertura de todo el "
         "mercado aparecen como n.d. en lugar de cifras parciales.",
+        "Incluye las recompras de CBFIs de FIBRAs, que la Bolsa publica como un tipo de aviso distinto.",
+        "Correcciones: cuando una emisora vuelve a publicar para la misma fecha de operación partiendo del mismo remanente "
+        "(cambio de casa de bolsa, error de captura, reenvío), el aviso posterior sustituye al anterior; las operaciones "
+        "republicadas con el mismo folio y 0 acciones se tratan como cancelaciones. Las claves anteriores se unen a la "
+        "vigente (p. ej. ALFA → SIGMAF).",
+        "El momentum compara el monto neto mensual promedio de los últimos 3 meses completos contra el de 12 meses. "
+        "La concentración usa el índice Herfindahl-Hirschman sobre las compradoras netas.",
     ],
 }
 
@@ -585,9 +803,13 @@ def generar_pdf(actividad: pd.DataFrame, documentos: pd.DataFrame, mercado: pd.D
     from reportlab.platypus import (BaseDocTemplate, Frame, Image, NextPageTemplate, PageBreak, PageTemplate,
                                     Paragraph, Spacer, Table)
 
+    from src import reporte_analisis as ra
+    from src import reporte_pdf_secciones as sec
+
     _registrar_fuentes()
     t = L[idioma]
     d = rd.preparar(actividad, documentos, mercado, corte)
+    an = ra.analizar(actividad, documentos, mercado, corte, d=d)
     fecha_pub = _fecha_larga(fecha_publicacion or corte, idioma)
     edicion_txt = _mes_anio(edicion or (fecha_publicacion or corte), idioma)
     cob_txt = d.cobertura.strftime("%d/%m/%Y") if d.cobertura else "—"
@@ -613,12 +835,18 @@ def generar_pdf(actividad: pd.DataFrame, documentos: pd.DataFrame, mercado: pd.D
 
     s = [NextPageTemplate("normal"), PageBreak()]
 
-    # 2. Sectores
+    # 2. Resumen ejecutivo
+    s += sec.pagina_resumen(an, d, idioma, ancho)
+
+    # 3. Sectores
     s += [Paragraph(t["net"], est_tit), Spacer(1, 2), Paragraph(t["cifras"], est_sub), Spacer(1, 8),
           _tabla_sectores(d, idioma), Spacer(1, 6),
           Paragraph(t["nota_sec"].format(corte=d.corte.strftime("%d/%m/%Y"), cob=cob_txt), est_nota), PageBreak()]
 
-    # 3. Gráficas
+    # 4. Dinámica del mercado
+    s += sec.pagina_dinamica(an, d, idioma, ancho)
+
+    # 5. Gráficas top 20
     y = d.corte.year
     ltm_nota = "" if rd.cubierto(d.periodos["LTM"].ini, d.cobertura) else f"  ·  {t['cobertura_parcial'].format(cob=cob_txt)}"
     h1, h2 = 190, 262
@@ -631,7 +859,13 @@ def generar_pdf(actividad: pd.DataFrame, documentos: pd.DataFrame, mercado: pd.D
                        ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0)]),
           PageBreak()]
 
-    # 4. Ranking YTD
+    # 6–9. Concentración, ejecución, momentum, intermediarios
+    s += sec.pagina_concentracion(an, d, idioma, ancho)
+    s += sec.pagina_ejecucion(an, d, idioma, ancho)
+    s += sec.pagina_momentum(an, d, idioma, ancho)
+    s += sec.pagina_casas(an, d, idioma, ancho)
+
+    # 10. Ranking YTD
     fmt_f = lambda f: f"{MES_CORTO[idioma][f.month - 1]} {f.year}"
     s += [Paragraph(t["rk_ytd"], est_tit), Spacer(1, 2), Paragraph(t["cifras"], est_sub),
           Paragraph(t["periodo"].format(ini=fmt_f(d.periodos["YTD"].ini), fin=d.corte.strftime("%d/%m/%Y")), est_sub),
@@ -654,7 +888,8 @@ def generar_pdf(actividad: pd.DataFrame, documentos: pd.DataFrame, mercado: pd.D
     aviso = archivo_aviso.read_text(encoding="utf-8").strip() if archivo_aviso.exists() else AVISO_GENERICO[idioma]
     s += [Paragraph(t["metodo"], est_tit), Spacer(1, 14)]
     for p in METODOLOGIA[idioma]:
-        s += [Paragraph("•  " + p, est_txt), Spacer(1, 7)]
+        s += [Paragraph("•  " + p, est_txt), Spacer(1, 5)]
+    s += [Spacer(1, 6)] + sec.bloque_calidad(an, idioma, ancho)
     s += [Spacer(1, 10), Paragraph("Aviso legal" if idioma == "es" else "Disclosures", est_h2), Spacer(1, 4)]
     for parrafo in aviso.split("\n\n"):
         s += [Paragraph(parrafo.replace("\n", " "), est_txt), Spacer(1, 6)]

@@ -6,12 +6,14 @@ Cómo descubre los documentos
 Cada PDF de recompra vive en una URL pública con un ID global y secuencial
 de BMV (compartido con todos los tipos de documento):
 
-    https://www.bmv.com.mx/docs-pub/recompra/recompra_{ID}_1.pdf
+    https://www.bmv.com.mx/docs-pub/recompra/recompra_{ID}_1.pdf   (emisoras)
+    https://www.bmv.com.mx/docs-pub/recofib/recofib_{ID}_1.pdf     (FIBRAs: CBFIs)
 
 Hay ~320 IDs por día hábil y ~10 % son recompras. En lugar de consultar
 emisora por emisora, el scanner recorre los IDs hacia adelante desde el
 último documento conocido: si la URL responde un PDF, es una recompra
-(de la emisora que sea); si responde 404, era otro tipo de documento.
+(de la emisora que sea); si responde 404 se prueba la ruta de FIBRAs, y si
+también responde 404, era otro tipo de documento.
 El PDF trae la *Clave de cotización*, así que la emisora sale del parser.
 
 Estado y archivos (todo bajo data/daily/):
@@ -42,7 +44,7 @@ from requests.adapters import HTTPAdapter
 # El scanner siempre escribe al filesystem (el workflow hace un solo commit).
 os.environ.setdefault("STORAGE_BACKEND", "local")
 
-from src import data_processor, pdf_parser, storage  # noqa: E402
+from src import data_processor, depuracion, pdf_parser, storage  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DAILY_ROOT = REPO_ROOT / "data" / "daily"
@@ -51,6 +53,12 @@ DOCS_FILE = DAILY_ROOT / "documentos.parquet"
 RESUMEN_FILE = DAILY_ROOT / "resumen_diario.parquet"
 
 URL_TEMPLATE = "https://www.bmv.com.mx/docs-pub/recompra/recompra_{id}_1.pdf"
+# Recompras de CBFIs de FIBRAs: mismo formato de aviso, otra ruta, mismo ID global.
+URL_TEMPLATES = {
+    "recompra": URL_TEMPLATE,
+    "recofib": "https://www.bmv.com.mx/docs-pub/recofib/recofib_{id}_1.pdf",
+}
+ALIAS_FILE = REPO_ROOT / "data" / "alias_emisoras.csv"
 UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -96,12 +104,12 @@ def leer_documentos() -> pd.DataFrame:
     return pd.DataFrame(columns=[
         "ID", "URL", "ARCHIVO", "EMISORA", "SERIE", "FECHA_REPORTE", "FECHA_OPERACION", "CASA_BOLSA",
         "N_OPS", "ACCIONES", "IMPORTE", "REMANENTE_PRESENTE", "TESORERIA", "CIRCULACION",
-        "ESTADO", "ERROR", "PARSER_VERSION", "PROCESADO_EN",
+        "ESTADO", "ERROR", "PARSER_VERSION", "PROCESADO_EN", "REMANENTE_ULTIMO", "MODIFICACION",
     ])
 
 
 def _id_de_archivo(nombre) -> Optional[int]:
-    m = re.search(r"recompra_(\d+)_", str(nombre))
+    m = re.search(r"(?:recompra|recofib)_(\d+)_", str(nombre))
     return int(m.group(1)) if m else None
 
 
@@ -129,42 +137,101 @@ def _session(workers: int) -> requests.Session:
     return s
 
 
-def _fetch(sess: requests.Session, doc_id: int, timeout: int = 25) -> tuple[int, str, Optional[bytes]]:
-    """Devuelve (id, estado, bytes). estado ∈ {'pdf','miss','error'}."""
-    url = URL_TEMPLATE.format(id=doc_id)
+def _fetch_url(sess: requests.Session, url: str, timeout: int) -> tuple[str, Optional[bytes]]:
     try:
         r = sess.get(url, timeout=timeout)
     except requests.RequestException:
-        return doc_id, "error", None
+        return "error", None
     if r.status_code == 404:
-        return doc_id, "miss", None
+        return "miss", None
     if r.status_code == 200:
         # Algunos CDNs responden 200 con HTML de error: validar firma PDF.
-        return (doc_id, "pdf", r.content) if r.content[:5] == b"%PDF-" else (doc_id, "miss", None)
+        return ("pdf", r.content) if r.content[:5] == b"%PDF-" else ("miss", None)
     if r.status_code in (403, 429) or r.status_code >= 500:
-        return doc_id, "error", None
-    return doc_id, "miss", None
+        return "error", None
+    return "miss", None
 
 
-def _parse_worker(item: tuple[int, bytes]) -> tuple[int, pdf_parser.ResultadoPDF]:
-    doc_id, contenido = item
-    return doc_id, pdf_parser.parsear_pdf(contenido, nombre_archivo=f"recompra_{doc_id}_1.pdf")
+def _fetch(sess: requests.Session, doc_id: int, timeout: int = 25) -> tuple[int, str, Optional[tuple[bytes, str]]]:
+    """
+    Devuelve (id, estado, (bytes, tipo)). estado ∈ {'pdf','miss','error'};
+    tipo ∈ URL_TEMPLATES ('recompra' o 'recofib').
+    """
+    hubo_error = False
+    for tipo, plantilla in URL_TEMPLATES.items():
+        estado, contenido = _fetch_url(sess, plantilla.format(id=doc_id), timeout)
+        if estado == "pdf":
+            return doc_id, "pdf", (contenido, tipo)
+        hubo_error |= estado == "error"
+    return doc_id, ("error" if hubo_error else "miss"), None
+
+
+def nombre_archivo(doc_id: int, tipo: str = "recompra") -> str:
+    return f"{tipo}_{doc_id}_1.pdf"
+
+
+def _parse_worker(item: tuple[int, tuple[bytes, str]]) -> tuple[int, str, pdf_parser.ResultadoPDF]:
+    doc_id, (contenido, tipo) = item
+    return doc_id, tipo, pdf_parser.parsear_pdf(contenido, nombre_archivo=nombre_archivo(doc_id, tipo))
 
 
 # ---------------------------------------------------------------------------
 # Resumen de mercado
 # ---------------------------------------------------------------------------
 
+def alias_emisoras() -> dict[str, str]:
+    """Clave anterior → clave vigente (cambios de nombre o de serie), de data/alias_emisoras.csv."""
+    if not ALIAS_FILE.exists():
+        return {}
+    try:
+        a = pd.read_csv(ALIAS_FILE, comment="#", dtype=str).dropna()
+        return {r.ANTERIOR.strip().upper(): r.VIGENTE.strip().upper() for r in a.itertuples()}
+    except Exception:
+        return {}
+
+
 def _operaciones_todas() -> list[tuple[str, pd.DataFrame]]:
-    out = []
+    """Operaciones depuradas por emisora, con las claves anteriores unidas a la vigente."""
+    alias = alias_emisoras()
+    por_emisora: dict[str, list[pd.DataFrame]] = {}
     for p in sorted((REPO_ROOT / "data" / "activos").glob("*/operations.parquet")):
         try:
             df = data_processor.consolidar_operaciones(pd.read_parquet(p))
         except Exception:
             continue
         if not df.empty:
-            out.append((p.parent.name, df))
-    return out
+            clave = alias.get(p.parent.name.upper(), p.parent.name)
+            if clave != p.parent.name:
+                df = df.assign(EMISORA=clave)
+            por_emisora.setdefault(clave, []).append(df)
+    return [(e, pd.concat(dfs, ignore_index=True) if len(dfs) > 1 else dfs[0])
+            for e, dfs in sorted(por_emisora.items())]
+
+
+def aplicar_reemplazos(docs: pd.DataFrame, log=print) -> pd.DataFrame:
+    """
+    Marca como 'reemplazado' cada aviso sustituido por uno posterior y quita sus
+    operaciones del parquet de la emisora (ver src/depuracion.py). Idempotente.
+    """
+    if docs is None or docs.empty:
+        return docs
+    fuera = depuracion.avisos_reemplazados(docs)
+    if not fuera:
+        return docs
+    for emisora in sorted(set(docs.loc[docs["ARCHIVO"].isin(fuera), "EMISORA"].dropna())):
+        ops = storage.cargar_operaciones(emisora)
+        if ops.empty or "ARCHIVO_ORIGEN" not in ops:
+            continue
+        quedan = ops[~ops["ARCHIVO_ORIGEN"].isin(fuera)]
+        if len(quedan) < len(ops):
+            storage.guardar_operaciones(emisora, quedan, modo="replace")
+    marcar = docs["ARCHIVO"].isin(fuera) & (docs["ESTADO"] != "reemplazado")
+    if marcar.any():
+        docs = docs.copy()
+        docs.loc[marcar, "ESTADO"] = "reemplazado"
+        docs.to_parquet(DOCS_FILE, index=False)
+        log(f"  · Avisos sustituidos por una corrección posterior: {int(marcar.sum())}")
+    return docs
 
 
 def _serie_por_emisora(docs: pd.DataFrame) -> dict[str, str]:
@@ -178,9 +245,13 @@ def _serie_por_emisora(docs: pd.DataFrame) -> dict[str, str]:
 def simbolo_yahoo(emisora: str, serie: Optional[str]) -> str:
     """AMX+B → AMXB.MX · WALMEX+* → WALMEX.MX · GCARSO+A1 → GCARSOA1.MX · FEXI+21 → FEXI21.MX"""
     from src import market_data
+    # El mapeo manual manda: hay emisoras que recompran una serie distinta de la
+    # que cotiza (CEMEX recompra serie A y cotiza el CPO; LACOMER UB → UBC).
+    if emisora in market_data.MAPEO_MANUAL:
+        return market_data.MAPEO_MANUAL[emisora]
     if serie:
         return f"{emisora}{str(serie).replace('*', '')}.MX"
-    return market_data.MAPEO_MANUAL.get(emisora, f"{emisora}.MX")
+    return f"{emisora}.MX"
 
 
 def actualizar_mercado(docs: pd.DataFrame, emisoras: list[str], log=print) -> pd.DataFrame:
@@ -321,6 +392,7 @@ def reconstruir_actividad(docs: pd.DataFrame, ops_todas: list) -> pd.DataFrame:
 def reconstruir_todo(docs: Optional[pd.DataFrame] = None, con_mercado: bool = True, log=print) -> dict:
     """Recalcula mercado, resumen, actividad e índice. Devuelve conteos."""
     docs = leer_documentos() if docs is None else docs
+    docs = aplicar_reemplazos(docs, log=log)
     ops_todas = _operaciones_todas()
     emisoras = [e for e, _ in ops_todas]
     destino_m = DAILY_ROOT / MERCADO_FILE_NAME
@@ -368,7 +440,7 @@ def _flush(pendientes_ops: dict[str, list[pd.DataFrame]], docs_nuevos: list[dict
         pendientes_ops.clear(); docs_nuevos.clear()
         return
     for emisora, dfs in pendientes_ops.items():
-        df = data_processor.consolidar_operaciones(pd.concat(dfs, ignore_index=True))
+        df = data_processor.consolidar_operaciones(pd.concat(dfs, ignore_index=True), depurar=False)
         if not df.empty:
             df["EMISORA"] = emisora
             storage.guardar_operaciones(emisora, df, modo="append")
@@ -422,10 +494,19 @@ def escanear(
     if not docs.empty:
         pv = pd.to_numeric(docs["PARSER_VERSION"] if "PARSER_VERSION" in docs else pd.Series(1, index=docs.index),
                            errors="coerce").fillna(1)
-        viejos = pd.to_numeric(docs.loc[pv < pdf_parser.PARSER_VERSION, "ID"], errors="coerce").dropna().astype(int)
+        estado_docs = docs["ESTADO"] if "ESTADO" in docs else pd.Series("", index=docs.index)
+        # Re-proceso: parser por debajo de la versión mínima, o avisos sin
+        # operaciones leídos antes de que el parser reconociera cancelaciones.
+        viejo = (pv < pdf_parser.PARSER_VERSION_MINIMA) | ((estado_docs == "sin_tabla") & (pv < pdf_parser.PARSER_VERSION))
+        viejos = pd.to_numeric(docs.loc[viejo, "ID"], errors="coerce").dropna().astype(int)
         if len(viejos):
-            log(f"  ↻ {len(viejos):,} documentos con parser v<{pdf_parser.PARSER_VERSION}; se re-procesan hasta {MAX_REPARSE:,}")
+            log(f"  ↻ {len(viejos):,} documentos por re-procesar con el parser v{pdf_parser.PARSER_VERSION} (hasta {MAX_REPARSE:,})")
         reintentar |= set(viejos.tolist()[:MAX_REPARSE])
+    # IDs pedidos explícitamente (p. ej. avisos de FIBRAs descubiertos con la API de BMV).
+    pedidos = {int(i) for i in estado.get("reprocesar_ids", [])}
+    if pedidos:
+        log(f"  ↻ {len(pedidos):,} documentos pedidos explícitamente")
+    reintentar |= pedidos
     reintentar = sorted(reintentar)
     errores_run: set[int] = set()
 
@@ -452,7 +533,7 @@ def escanear(
             pdfs = [(i, c) for i, est, c in resultados if est == "pdf"]
             res.pdfs_encontrados += len(pdfs)
             emisoras_chunk: set[str] = set()
-            for doc_id, parsed in ppool.map(_parse_worker, pdfs):
+            for doc_id, tipo, parsed in ppool.map(_parse_worker, pdfs):
                 emisora = (parsed.emisora or "DESCONOCIDA").upper().strip()
                 emisoras_chunk.add(emisora)
                 ops = parsed.operaciones
@@ -469,8 +550,8 @@ def escanear(
                 imp = pd.to_numeric(ops.get("IMPORTE_OPERACION"), errors="coerce").sum() if not ops.empty else 0
                 docs_nuevos.append({
                     "ID": doc_id,
-                    "URL": URL_TEMPLATE.format(id=doc_id),
-                    "ARCHIVO": f"recompra_{doc_id}_1.pdf",
+                    "URL": URL_TEMPLATES[tipo].format(id=doc_id),
+                    "ARCHIVO": nombre_archivo(doc_id, tipo),
                     "EMISORA": emisora,
                     "SERIE": parsed.serie,
                     "FECHA_REPORTE": parsed.fecha_reporte,
@@ -480,6 +561,8 @@ def escanear(
                     "ACCIONES": float(acc or 0),
                     "IMPORTE": float(imp or 0),
                     "REMANENTE_PRESENTE": parsed.remanente_presente,
+                    "REMANENTE_ULTIMO": parsed.remanente_ultimo,
+                    "MODIFICACION": bool(parsed.modificacion),
                     "TESORERIA": parsed.acciones_tesoreria,
                     "CIRCULACION": parsed.acciones_circulacion,
                     "ESTADO": estado_doc,
@@ -553,6 +636,8 @@ def escanear(
     estado["last_hit_id"] = ultimo_hit_corrida
     # IDs que siguen fallando (y no son ya documentos conocidos) → siguiente corrida
     estado["ids_error"] = sorted(errores_run - conocidos)[-5000:]
+    # Los pedidos explícitos ya procesados (o que siguen fallando: van a ids_error) se retiran.
+    estado.pop("reprocesar_ids", None)
     res.duracion_s = round(time.time() - t0, 1)
 
     if not dry_run:
