@@ -1,7 +1,7 @@
 """Resumen de recompras del mercado: qué pasó hoy, qué cambió y dónde actuar."""
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import date, timedelta
 
 import numpy as np
 import pandas as pd
@@ -141,6 +141,121 @@ with st.expander("Cómo leer el tablero"):
         "desaparecer pronto (o viene una ampliación del fondo en asamblea).\n"
         "- Los precios y volúmenes de mercado vienen de Yahoo Finance; si Yahoo no responde, esas columnas quedan vacías."
     )
+
+# ---- Emisoras × casas de bolsa ----
+PERIODOS_CASAS = {"3M": 92, "6M": 183, "YTD": None, "1 año": 365, "2 años": 730, "Personalizado": 0}
+
+
+@st.cache_data(show_spinner=False, max_entries=16)
+def _casas_periodo(ini, fin, medida: str, version: str):
+    from src import emisoras_casas as ec
+    act = market_store.actividad()
+    tab, cols = ec.matriz(act, ini, fin, medida)
+    return tab, cols, ec.resumen_casas(act, ini, fin), ec.detalle(act, ini, fin)
+
+
+@st.cache_data(show_spinner=False, max_entries=8)
+def _casas_descargas(ini, fin, medida: str, version: str):
+    from src import emisoras_casas as ec
+    tab, cols, casas, det = _casas_periodo(ini, fin, medida, version)
+    return ec.pdf_bytes(tab, cols, casas, ini, fin, medida), ec.excel_bytes(tab, cols, det, casas, ini, fin, medida)
+
+
+@st.fragment
+def seccion_casas():
+    from src import emisoras_casas as ec
+    T.seccion("Emisoras y casas de bolsa", "con quién opera cada fondo de recompra y qué peso tiene cada casa")
+    if actividad.empty:
+        st.info("Aún no hay tabla de actividad.")
+        return
+    ult = actividad["FECHA_OPERACION"].max().date()
+    c1, c2, c3 = st.columns([2.2, 1.6, 1.4])
+    per = c1.segmented_control("Periodo", list(PERIODOS_CASAS), default="1 año", key="casas_periodo") or "1 año"
+    if per == "Personalizado":
+        rango = c3.date_input("Rango", (ult - timedelta(days=365), ult), max_value=ult, format="DD/MM/YYYY",
+                              key="casas_rango")
+        if not isinstance(rango, (list, tuple)) or len(rango) != 2:
+            st.caption("Elige la fecha final del rango.")
+            return
+        ini, fin = rango
+    else:
+        fin = ult
+        ini = date(ult.year, 1, 1) if per == "YTD" else ult - timedelta(days=PERIODOS_CASAS[per])
+    medida = c2.segmented_control("Ponderar por", list(ec.MEDIDAS), default="IMPORTE", key="casas_medida",
+                                  format_func=lambda m: {"IMPORTE": "Importe", "N_OPS": "Operaciones"}[m]) or "IMPORTE"
+    version = f"{len(actividad)}-{ult:%Y%m%d}"
+    tab, cols, casas, det = _casas_periodo(ini, fin, medida, version)
+    if tab.empty:
+        st.info("Sin operaciones en el periodo elegido.")
+        return
+
+    compartidas = int((tab["N_CASAS"] > 1).sum())
+    T.tiles([
+        {"label": "Emisoras con recompras", "value": f"{len(tab)}", "sub": f"{ini:%d/%m/%Y} – {fin:%d/%m/%Y}"},
+        {"label": "Casas de bolsa activas", "value": f"{len(casas)}",
+         "sub": ", ".join(casas["CASA_BOLSA"].head(3))},
+        {"label": "Emisoras con más de una casa", "value": f"{compartidas}",
+         "sub": f"{100 * compartidas / len(tab):.0f}% de las emisoras"},
+        {"label": "Casa líder", "value": casas["CASA_BOLSA"].iat[0],
+         "sub": f"{casas['PART_IMPORTE'].iat[0]:.1f}% del importe · {casas['EMISORAS'].iat[0]} emisoras"},
+    ])
+
+    vista = tab[["EMISORA", "IMPORTE", "N_OPS", "N_CASAS", "CASA_VIGENTE", "DESDE", "REPARTO_4S"] + cols]
+    # Celdas de casas como texto ("62%") y color proporcional a la ponderación (lavanda → morado Punto).
+    disp = vista.copy()
+    disp[cols] = vista[cols].map(lambda v: "" if pd.isna(v) or v <= 0 else ("<1%" if v < 1 else f"{v:.0f}%"))
+    css = pd.DataFrame("", index=vista.index, columns=vista.columns)
+    css[cols] = vista[cols].map(_css_celda)
+    estilo = disp.style.apply(lambda _: css, axis=None)
+    st.dataframe(
+        estilo, hide_index=True, width="stretch", height=min(640, 40 + 35 * len(vista)),
+        column_config={
+            "EMISORA": st.column_config.TextColumn("Emisora", pinned=True),
+            "IMPORTE": st.column_config.NumberColumn("Importe operado (MXN M)", format="$%,.1f",
+                                                     help="Compras + ventas del fondo en el periodo"),
+            "N_OPS": st.column_config.NumberColumn("Operaciones", format="%,d"),
+            "N_CASAS": st.column_config.NumberColumn("Casas", format="%d"),
+            "CASA_VIGENTE": st.column_config.TextColumn("Casa vigente", help="Casa del aviso más reciente de la emisora"),
+            "DESDE": st.column_config.DateColumn("Opera con ella desde", format="DD/MM/YYYY",
+                                                 help="Desde cuándo usa ininterrumpidamente la casa vigente"),
+            "REPARTO_4S": st.column_config.TextColumn("Reparto últimas 4 semanas", width="medium"),
+            **{c: st.column_config.Column(c, help=ec.nombre(c), width="small") for c in cols},
+        },
+    )
+    st.caption(f"Celdas = % del {ec.MEDIDAS[medida].lower()} de cada emisora ejecutado con cada casa. "
+               "Casas fuera de las 12 principales del periodo se agrupan en OTRAS.")
+
+    pdf, xlsx = _casas_descargas(ini, fin, medida, version)
+    d1, d2, _ = st.columns([1, 1, 2])
+    d1.download_button("Descargar PDF", pdf, file_name=f"Emisoras_casas_{ini:%Y%m%d}_{fin:%Y%m%d}.pdf",
+                       mime="application/pdf", icon=":material/picture_as_pdf:", type="primary", width="stretch")
+    d2.download_button("Descargar Excel", xlsx, file_name=f"Emisoras_casas_{ini:%Y%m%d}_{fin:%Y%m%d}.xlsx",
+                       mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                       icon=":material/table_view:", width="stretch")
+
+    with st.expander("¿Se puede saber con quién tiene contrato cada fondo de recompra?"):
+        st.markdown(
+            "No hay un registro público de los contratos entre emisoras y casas de bolsa para operar el fondo de "
+            "recompra. Lo que sí es público es la **casa que ejecuta cada operación**, porque la emisora la debe "
+            "reportar en cada aviso a la BMV. Por eso esta tabla muestra:\n"
+            "- **Casa vigente**: la del aviso más reciente, que en la práctica es la que tiene el mandato hoy.\n"
+            "- **Opera con ella desde**: cuándo empezó a usarla sin interrupción. Un cambio reciente suele indicar "
+            "un mandato nuevo.\n"
+            "- **Reparto últimas 4 semanas**: si la emisora reparte entre varias casas, el mandato es compartido.")
+
+
+def _css_celda(v) -> str:
+    """Fondo interpolado entre lavanda (#F7F2FB) y morado Punto (#7030A0) según el % (0–100)."""
+    if pd.isna(v) or v <= 0:
+        return ""
+    k = min(float(v), 100) / 100
+    a, b = (0xF7, 0xF2, 0xFB), (0x70, 0x30, 0xA0)
+    r, g, bl = (round(x + (y - x) * k) for x, y in zip(a, b))
+    texto = "#FFFFFF" if k > 0.55 else "#1F1A26"
+    return f"background-color: #{r:02X}{g:02X}{bl:02X}; color: {texto}"
+
+
+seccion_casas()
 
 # ---- Gráficas ----
 izq, der = st.columns([1, 1.35])
