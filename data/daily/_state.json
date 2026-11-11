@@ -1,8 +1,38 @@
 {
-  "last_hit_id": 1603075,
+  "last_hit_id": 1603191,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-11-10T21:31:27+00:00",
+  "last_run_utc": "2026-11-11T09:51:59+00:00",
   "runs": [
+    {
+      "utc": "2026-11-11T09:51:59+00:00",
+      "inicio_id": 1602276,
+      "fin_id": 1604875,
+      "ids_revisados": 2576,
+      "pdfs_encontrados": 15,
+      "docs_nuevos": 15,
+      "ops_nuevas": 1078,
+      "errores_red": 0,
+      "sin_tabla": 0,
+      "emisoras": [
+        "AC",
+        "ACTINVR",
+        "ALSEA",
+        "AMX",
+        "BIMBO",
+        "CMOCTEZ",
+        "FEXI",
+        "GCC",
+        "GMEXICO",
+        "HERDEZ",
+        "ORBIA",
+        "Q",
+        "SPORT",
+        "VISTA",
+        "WALMEX"
+      ],
+      "abortado": null,
+      "duracion_s": 278.0
+    },
     {
       "utc": "2026-11-10T21:31:27+00:00",
       "inicio_id": 1601758,
@@ -1450,35 +1480,9 @@
       ],
       "abortado": null,
       "duracion_s": 269.0
-    },
-    {
-      "utc": "2026-10-01T09:23:55+00:00",
-      "inicio_id": 1591582,
-      "fin_id": 1593981,
-      "ids_revisados": 2364,
-      "pdfs_encontrados": 4,
-      "docs_nuevos": 4,
-      "ops_nuevas": 193,
-      "errores_red": 11,
-      "sin_tabla": 0,
-      "emisoras": [
-        "AMX",
-        "CMOCTEZ",
-        "PINFRA",
-        "Q"
-      ],
-      "abortado": null,
-      "duracion_s": 262.9
     }
   ],
-  "ids_error": [
-    1604209,
-    1604211,
-    1604212,
-    1604213,
-    1604216,
-    1604217
-  ],
+  "ids_error": [],
   "ultimo_reporte_mensual": "2026-11",
   "backfill": null,
   "backfill_completo_utc": "2026-11-05T10:26:04+00:00"
