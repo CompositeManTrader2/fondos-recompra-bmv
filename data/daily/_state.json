@@ -1,8 +1,30 @@
 {
-  "last_hit_id": 1603191,
+  "last_hit_id": 1604101,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-11-11T09:51:59+00:00",
+  "last_run_utc": "2026-11-11T22:15:33+00:00",
   "runs": [
+    {
+      "utc": "2026-11-11T22:15:33+00:00",
+      "inicio_id": 1602392,
+      "fin_id": 1605791,
+      "ids_revisados": 3366,
+      "pdfs_encontrados": 8,
+      "docs_nuevos": 8,
+      "ops_nuevas": 175,
+      "errores_red": 6,
+      "sin_tabla": 0,
+      "emisoras": [
+        "ALSEA",
+        "LAB",
+        "NEMAK",
+        "NEXT",
+        "ORBIA",
+        "R",
+        "VINTE"
+      ],
+      "abortado": null,
+      "duracion_s": 355.3
+    },
     {
       "utc": "2026-11-11T09:51:59+00:00",
       "inicio_id": 1602276,
@@ -1463,26 +1485,16 @@
       ],
       "abortado": null,
       "duracion_s": 311.8
-    },
-    {
-      "utc": "2026-10-01T13:52:00+00:00",
-      "inicio_id": 1591603,
-      "fin_id": 1594002,
-      "ids_revisados": 2359,
-      "pdfs_encontrados": 2,
-      "docs_nuevos": 2,
-      "ops_nuevas": 11,
-      "errores_red": 15,
-      "sin_tabla": 0,
-      "emisoras": [
-        "GFINBUR",
-        "VINTE"
-      ],
-      "abortado": null,
-      "duracion_s": 269.0
     }
   ],
-  "ids_error": [],
+  "ids_error": [
+    1604960,
+    1604961,
+    1604962,
+    1604963,
+    1604965,
+    1604966
+  ],
   "ultimo_reporte_mensual": "2026-11",
   "backfill": null,
   "backfill_completo_utc": "2026-11-05T10:26:04+00:00"

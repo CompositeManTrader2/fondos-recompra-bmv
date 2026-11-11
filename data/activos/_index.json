@@ -35,11 +35,11 @@
     "ultima_fecha": "2026-07-24"
   },
   "ALSEA": {
-    "actualizado": "2026-11-11T09:50:44",
+    "actualizado": "2026-11-11T22:14:14",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 19625,
+    "n_operaciones": 19671,
     "nombre": "ALSEA",
-    "ultima_fecha": "2026-11-10"
+    "ultima_fecha": "2026-11-11"
   },
   "ALTERNA": {
     "actualizado": "2026-11-06T10:51:03",
@@ -434,11 +434,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-11-10T21:30:31",
+    "actualizado": "2026-11-11T22:14:14",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 53667,
+    "n_operaciones": 53703,
     "nombre": "LAB",
-    "ultima_fecha": "2026-11-10"
+    "ultima_fecha": "2026-11-11"
   },
   "LACOMER": {
     "actualizado": "2026-11-06T10:17:52",
@@ -483,25 +483,25 @@
     "ultima_fecha": "2022-07-29"
   },
   "NEMAK": {
-    "actualizado": "2026-11-10T21:30:31",
+    "actualizado": "2026-11-11T22:14:14",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 500,
+    "n_operaciones": 501,
     "nombre": "NEMAK",
-    "ultima_fecha": "2026-11-09"
+    "ultima_fecha": "2026-11-10"
   },
   "NEXT": {
-    "actualizado": "2026-11-09T23:55:27",
+    "actualizado": "2026-11-11T22:14:14",
     "creado": "2026-11-06T10:32:00",
-    "n_operaciones": 36,
+    "n_operaciones": 39,
     "nombre": "NEXT",
-    "ultima_fecha": "2026-11-09"
+    "ultima_fecha": "2026-11-11"
   },
   "ORBIA": {
-    "actualizado": "2026-11-11T09:50:44",
+    "actualizado": "2026-11-11T22:14:14",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 22100,
+    "n_operaciones": 22159,
     "nombre": "ORBIA",
-    "ultima_fecha": "2026-11-10"
+    "ultima_fecha": "2026-11-11"
   },
   "PASA": {
     "actualizado": "2026-11-04T19:56:57",
@@ -532,11 +532,11 @@
     "ultima_fecha": "2026-11-09"
   },
   "R": {
-    "actualizado": "2026-11-06T10:51:11",
+    "actualizado": "2026-11-11T22:14:14",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 15378,
+    "n_operaciones": 15407,
     "nombre": "R",
-    "ultima_fecha": "2026-10-21"
+    "ultima_fecha": "2026-11-11"
   },
   "SIGMAF": {
     "actualizado": "2026-09-30T22:00:15",
@@ -623,11 +623,11 @@
     "ultima_fecha": "2025-03-31"
   },
   "VINTE": {
-    "actualizado": "2026-11-09T23:55:26",
+    "actualizado": "2026-11-11T22:14:14",
     "creado": "2026-09-29T18:48:18",
-    "n_operaciones": 254,
+    "n_operaciones": 255,
     "nombre": "VINTE",
-    "ultima_fecha": "2026-11-06"
+    "ultima_fecha": "2026-11-10"
   },
   "VISTA": {
     "actualizado": "2026-11-11T09:50:44",
