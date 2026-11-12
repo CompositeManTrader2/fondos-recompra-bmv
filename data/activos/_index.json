@@ -1,17 +1,17 @@
 {
   "AC": {
-    "actualizado": "2026-11-11T09:50:44",
+    "actualizado": "2026-11-12T10:13:25",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 37947,
+    "n_operaciones": 38051,
     "nombre": "AC",
-    "ultima_fecha": "2026-11-10"
+    "ultima_fecha": "2026-11-11"
   },
   "ACTINVR": {
-    "actualizado": "2026-11-11T09:50:44",
+    "actualizado": "2026-11-12T10:13:25",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1198,
+    "n_operaciones": 1199,
     "nombre": "ACTINVR",
-    "ultima_fecha": "2026-11-10"
+    "ultima_fecha": "2026-11-11"
   },
   "AGUA": {
     "actualizado": "2026-11-06T10:51:03",
@@ -49,11 +49,11 @@
     "ultima_fecha": "2026-11-04"
   },
   "AMX": {
-    "actualizado": "2026-11-11T09:50:44",
+    "actualizado": "2026-11-12T10:13:25",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 24492,
+    "n_operaciones": 24494,
     "nombre": "AMX",
-    "ultima_fecha": "2026-11-10"
+    "ultima_fecha": "2026-11-11"
   },
   "ARA": {
     "actualizado": "2026-11-06T10:51:03",
@@ -147,11 +147,11 @@
     "ultima_fecha": "2026-06-10"
   },
   "CMOCTEZ": {
-    "actualizado": "2026-11-11T09:50:44",
+    "actualizado": "2026-11-12T10:13:25",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 458,
+    "n_operaciones": 459,
     "nombre": "CMOCTEZ",
-    "ultima_fecha": "2026-11-10"
+    "ultima_fecha": "2026-11-11"
   },
   "CMR": {
     "actualizado": "2026-11-06T10:51:04",
@@ -203,11 +203,11 @@
     "ultima_fecha": "2026-09-11"
   },
   "FEXI": {
-    "actualizado": "2026-11-11T09:50:44",
+    "actualizado": "2026-11-12T10:13:26",
     "creado": "2026-11-06T10:01:24",
-    "n_operaciones": 3950,
+    "n_operaciones": 3960,
     "nombre": "FEXI",
-    "ultima_fecha": "2026-11-10"
+    "ultima_fecha": "2026-11-11"
   },
   "FIBRAHD": {
     "actualizado": "2026-11-06T10:12:22",
@@ -525,11 +525,11 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-11-11T09:50:44",
+    "actualizado": "2026-11-12T10:13:25",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 125578,
+    "n_operaciones": 125786,
     "nombre": "Q",
-    "ultima_fecha": "2026-11-09"
+    "ultima_fecha": "2026-11-10"
   },
   "R": {
     "actualizado": "2026-11-11T22:14:14",
@@ -637,10 +637,10 @@
     "ultima_fecha": "2026-11-10"
   },
   "WALMEX": {
-    "actualizado": "2026-11-11T09:50:45",
+    "actualizado": "2026-11-12T10:13:25",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 12693,
+    "n_operaciones": 12824,
     "nombre": "WALMEX",
-    "ultima_fecha": "2026-11-10"
+    "ultima_fecha": "2026-11-11"
   }
 }

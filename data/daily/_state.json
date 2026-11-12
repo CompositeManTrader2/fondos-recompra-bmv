@@ -1,8 +1,30 @@
 {
-  "last_hit_id": 1604101,
+  "last_hit_id": 1604315,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-11-11T22:15:33+00:00",
+  "last_run_utc": "2026-11-12T10:15:21+00:00",
   "runs": [
+    {
+      "utc": "2026-11-12T10:15:21+00:00",
+      "inicio_id": 1603302,
+      "fin_id": 1605901,
+      "ids_revisados": 2599,
+      "pdfs_encontrados": 9,
+      "docs_nuevos": 9,
+      "ops_nuevas": 477,
+      "errores_red": 6,
+      "sin_tabla": 0,
+      "emisoras": [
+        "AC",
+        "ACTINVR",
+        "AMX",
+        "CMOCTEZ",
+        "FEXI",
+        "Q",
+        "WALMEX"
+      ],
+      "abortado": null,
+      "duracion_s": 288.5
+    },
     {
       "utc": "2026-11-11T22:15:33+00:00",
       "inicio_id": 1602392,
@@ -1468,32 +1490,15 @@
       ],
       "abortado": null,
       "duracion_s": 264.9
-    },
-    {
-      "utc": "2026-10-01T20:31:41+00:00",
-      "inicio_id": 1591630,
-      "fin_id": 1594229,
-      "ids_revisados": 2563,
-      "pdfs_encontrados": 2,
-      "docs_nuevos": 2,
-      "ops_nuevas": 37,
-      "errores_red": 16,
-      "sin_tabla": 0,
-      "emisoras": [
-        "GRUMA",
-        "ICH"
-      ],
-      "abortado": null,
-      "duracion_s": 311.8
     }
   ],
   "ids_error": [
-    1604960,
-    1604961,
-    1604962,
-    1604963,
-    1604965,
-    1604966
+    1605702,
+    1605704,
+    1605705,
+    1605706,
+    1605707,
+    1605708
   ],
   "ultimo_reporte_mensual": "2026-11",
   "backfill": null,
