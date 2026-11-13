@@ -1,8 +1,29 @@
 {
-  "last_hit_id": 1605042,
+  "last_hit_id": 1605090,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-11-12T22:04:26+00:00",
+  "last_run_utc": "2026-11-13T10:00:44+00:00",
   "runs": [
+    {
+      "utc": "2026-11-13T10:00:44+00:00",
+      "inicio_id": 1604243,
+      "fin_id": 1606642,
+      "ids_revisados": 2388,
+      "pdfs_encontrados": 6,
+      "docs_nuevos": 6,
+      "ops_nuevas": 632,
+      "errores_red": 0,
+      "sin_tabla": 0,
+      "emisoras": [
+        "AC",
+        "AMX",
+        "GCC",
+        "NEMAK",
+        "Q",
+        "WALMEX"
+      ],
+      "abortado": null,
+      "duracion_s": 329.9
+    },
     {
       "utc": "2026-11-12T22:04:26+00:00",
       "inicio_id": 1603516,
@@ -1464,27 +1485,6 @@
       ],
       "abortado": null,
       "duracion_s": 277.2
-    },
-    {
-      "utc": "2026-10-02T20:11:09+00:00",
-      "inicio_id": 1591939,
-      "fin_id": 1594738,
-      "ids_revisados": 2762,
-      "pdfs_encontrados": 6,
-      "docs_nuevos": 6,
-      "ops_nuevas": 326,
-      "errores_red": 11,
-      "sin_tabla": 0,
-      "emisoras": [
-        "ALSEA",
-        "GMEXICO",
-        "GRUMA",
-        "ICH",
-        "KIMBER",
-        "ORBIA"
-      ],
-      "abortado": null,
-      "duracion_s": 300.6
     }
   ],
   "ids_error": [],
