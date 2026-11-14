@@ -1,8 +1,30 @@
 {
-  "last_hit_id": 1605329,
+  "last_hit_id": 1605385,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-11-13T21:39:04+00:00",
+  "last_run_utc": "2026-11-14T09:24:48+00:00",
   "runs": [
+    {
+      "utc": "2026-11-14T09:24:48+00:00",
+      "inicio_id": 1604530,
+      "fin_id": 1606929,
+      "ids_revisados": 2372,
+      "pdfs_encontrados": 7,
+      "docs_nuevos": 7,
+      "ops_nuevas": 632,
+      "errores_red": 0,
+      "sin_tabla": 0,
+      "emisoras": [
+        "AC",
+        "ACTINVR",
+        "AMX",
+        "NEMAK",
+        "Q",
+        "SPORT",
+        "WALMEX"
+      ],
+      "abortado": null,
+      "duracion_s": 301.9
+    },
     {
       "utc": "2026-11-13T21:39:04+00:00",
       "inicio_id": 1604291,
@@ -1468,29 +1490,6 @@
       ],
       "abortado": null,
       "duracion_s": 281.4
-    },
-    {
-      "utc": "2026-10-05T22:14:48+00:00",
-      "inicio_id": 1592352,
-      "fin_id": 1594951,
-      "ids_revisados": 2583,
-      "pdfs_encontrados": 8,
-      "docs_nuevos": 8,
-      "ops_nuevas": 125,
-      "errores_red": 3,
-      "sin_tabla": 0,
-      "emisoras": [
-        "ACTINVR",
-        "ALTERNA",
-        "GFINBUR",
-        "GRUMA",
-        "ICH",
-        "LAB",
-        "ORBIA",
-        "SIMEC"
-      ],
-      "abortado": null,
-      "duracion_s": 371.2
     }
   ],
   "ids_error": [],

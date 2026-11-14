@@ -1,17 +1,17 @@
 {
   "AC": {
-    "actualizado": "2026-11-13T09:58:53",
+    "actualizado": "2026-11-14T09:22:56",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 38156,
+    "n_operaciones": 38307,
     "nombre": "AC",
-    "ultima_fecha": "2026-11-12"
+    "ultima_fecha": "2026-11-13"
   },
   "ACTINVR": {
-    "actualizado": "2026-11-13T21:37:49",
+    "actualizado": "2026-11-14T09:22:57",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1201,
+    "n_operaciones": 1202,
     "nombre": "ACTINVR",
-    "ultima_fecha": "2026-11-12"
+    "ultima_fecha": "2026-11-13"
   },
   "AGUA": {
     "actualizado": "2026-11-12T22:03:33",
@@ -49,11 +49,11 @@
     "ultima_fecha": "2026-11-04"
   },
   "AMX": {
-    "actualizado": "2026-11-13T09:58:52",
+    "actualizado": "2026-11-14T09:22:56",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 24510,
+    "n_operaciones": 24536,
     "nombre": "AMX",
-    "ultima_fecha": "2026-11-12"
+    "ultima_fecha": "2026-11-13"
   },
   "ARA": {
     "actualizado": "2026-11-06T10:51:03",
@@ -483,11 +483,11 @@
     "ultima_fecha": "2022-07-29"
   },
   "NEMAK": {
-    "actualizado": "2026-11-13T09:58:53",
+    "actualizado": "2026-11-14T09:22:56",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 503,
+    "n_operaciones": 504,
     "nombre": "NEMAK",
-    "ultima_fecha": "2026-11-12"
+    "ultima_fecha": "2026-11-13"
   },
   "NEXT": {
     "actualizado": "2026-11-12T22:03:33",
@@ -525,11 +525,11 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-11-13T09:58:52",
+    "actualizado": "2026-11-14T09:22:56",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 126011,
+    "n_operaciones": 126280,
     "nombre": "Q",
-    "ultima_fecha": "2026-11-11"
+    "ultima_fecha": "2026-11-12"
   },
   "R": {
     "actualizado": "2026-11-11T22:14:14",
@@ -574,11 +574,11 @@
     "ultima_fecha": "2023-10-02"
   },
   "SPORT": {
-    "actualizado": "2026-11-12T22:03:33",
+    "actualizado": "2026-11-14T09:22:56",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 2587,
+    "n_operaciones": 2677,
     "nombre": "SPORT",
-    "ultima_fecha": "2026-11-11"
+    "ultima_fecha": "2026-11-13"
   },
   "STORAGE": {
     "actualizado": "2026-11-13T21:37:50",
@@ -637,10 +637,10 @@
     "ultima_fecha": "2026-11-12"
   },
   "WALMEX": {
-    "actualizado": "2026-11-13T09:58:52",
+    "actualizado": "2026-11-14T09:22:56",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 12886,
+    "n_operaciones": 12980,
     "nombre": "WALMEX",
-    "ultima_fecha": "2026-11-12"
+    "ultima_fecha": "2026-11-13"
   }
 }
