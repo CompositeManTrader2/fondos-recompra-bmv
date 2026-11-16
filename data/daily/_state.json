@@ -1,8 +1,22 @@
 {
   "last_hit_id": 1605385,
-  "frontier_gap": 1500,
-  "last_run_utc": "2026-11-14T09:24:48+00:00",
+  "frontier_gap": 3000,
+  "last_run_utc": "2026-11-16T23:53:11+00:00",
   "runs": [
+    {
+      "utc": "2026-11-16T23:53:11+00:00",
+      "inicio_id": 1604586,
+      "fin_id": 1606985,
+      "ids_revisados": 2366,
+      "pdfs_encontrados": 0,
+      "docs_nuevos": 0,
+      "ops_nuevas": 0,
+      "errores_red": 0,
+      "sin_tabla": 0,
+      "emisoras": [],
+      "abortado": null,
+      "duracion_s": 230.7
+    },
     {
       "utc": "2026-11-14T09:24:48+00:00",
       "inicio_id": 1604530,
@@ -1469,27 +1483,6 @@
       ],
       "abortado": null,
       "duracion_s": 279.0
-    },
-    {
-      "utc": "2026-10-06T09:22:49+00:00",
-      "inicio_id": 1592607,
-      "fin_id": 1595006,
-      "ids_revisados": 2370,
-      "pdfs_encontrados": 6,
-      "docs_nuevos": 6,
-      "ops_nuevas": 466,
-      "errores_red": 16,
-      "sin_tabla": 0,
-      "emisoras": [
-        "AC",
-        "ALSEA",
-        "AMX",
-        "GMEXICO",
-        "Q",
-        "VINTE"
-      ],
-      "abortado": null,
-      "duracion_s": 281.4
     }
   ],
   "ids_error": [],
