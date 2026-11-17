@@ -1,8 +1,41 @@
 {
-  "last_hit_id": 1605385,
-  "frontier_gap": 6000,
-  "last_run_utc": "2026-11-17T11:15:09+00:00",
+  "last_hit_id": 1605646,
+  "frontier_gap": 1500,
+  "last_run_utc": "2026-11-17T23:19:10+00:00",
   "runs": [
+    {
+      "utc": "2026-11-17T23:19:10+00:00",
+      "inicio_id": 1604586,
+      "fin_id": 1611785,
+      "ids_revisados": 7178,
+      "pdfs_encontrados": 19,
+      "docs_nuevos": 19,
+      "ops_nuevas": 1021,
+      "errores_red": 0,
+      "sin_tabla": 0,
+      "emisoras": [
+        "AC",
+        "ACTINVR",
+        "AGUA",
+        "ALTERNA",
+        "CMOCTEZ",
+        "FEXI",
+        "FPLUS",
+        "GCC",
+        "GMEXICO",
+        "HERDEZ",
+        "LAB",
+        "LIVEPOL",
+        "MEGA",
+        "ORBIA",
+        "Q",
+        "SPORT",
+        "STORAGE",
+        "VISTA"
+      ],
+      "abortado": null,
+      "duracion_s": 823.8
+    },
     {
       "utc": "2026-11-17T11:15:09+00:00",
       "inicio_id": 1604586,
@@ -1455,44 +1488,9 @@
       ],
       "abortado": null,
       "duracion_s": 285.4
-    },
-    {
-      "utc": "2026-10-07T09:13:36+00:00",
-      "inicio_id": 1592837,
-      "fin_id": 1595436,
-      "ids_revisados": 2589,
-      "pdfs_encontrados": 7,
-      "docs_nuevos": 7,
-      "ops_nuevas": 148,
-      "errores_red": 15,
-      "sin_tabla": 0,
-      "emisoras": [
-        "ACTINVR",
-        "ALSEA",
-        "ALTERNA",
-        "AMX",
-        "CMOCTEZ",
-        "Q",
-        "VINTE"
-      ],
-      "abortado": null,
-      "duracion_s": 311.2
     }
   ],
-  "ids_error": [
-    1605681,
-    1605682,
-    1605688,
-    1605689,
-    1605690,
-    1605692,
-    1605693,
-    1605694,
-    1605695,
-    1606721,
-    1606736,
-    1606751
-  ],
+  "ids_error": [],
   "ultimo_reporte_mensual": "2026-11",
   "backfill": null,
   "backfill_completo_utc": "2026-11-05T10:26:04+00:00"
