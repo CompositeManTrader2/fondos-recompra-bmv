@@ -1,8 +1,22 @@
 {
   "last_hit_id": 1605385,
-  "frontier_gap": 3000,
-  "last_run_utc": "2026-11-16T23:53:11+00:00",
+  "frontier_gap": 6000,
+  "last_run_utc": "2026-11-17T11:15:09+00:00",
   "runs": [
+    {
+      "utc": "2026-11-17T11:15:09+00:00",
+      "inicio_id": 1604586,
+      "fin_id": 1608385,
+      "ids_revisados": 3766,
+      "pdfs_encontrados": 0,
+      "docs_nuevos": 0,
+      "ops_nuevas": 0,
+      "errores_red": 12,
+      "sin_tabla": 0,
+      "emisoras": [],
+      "abortado": null,
+      "duracion_s": 837.3
+    },
     {
       "utc": "2026-11-16T23:53:11+00:00",
       "inicio_id": 1604586,
@@ -1463,29 +1477,22 @@
       ],
       "abortado": null,
       "duracion_s": 311.2
-    },
-    {
-      "utc": "2026-10-06T20:34:04+00:00",
-      "inicio_id": 1592692,
-      "fin_id": 1595291,
-      "ids_revisados": 2581,
-      "pdfs_encontrados": 5,
-      "docs_nuevos": 5,
-      "ops_nuevas": 243,
-      "errores_red": 18,
-      "sin_tabla": 0,
-      "emisoras": [
-        "ICH",
-        "LAB",
-        "MEGA",
-        "ORBIA",
-        "PINFRA"
-      ],
-      "abortado": null,
-      "duracion_s": 279.0
     }
   ],
-  "ids_error": [],
+  "ids_error": [
+    1605681,
+    1605682,
+    1605688,
+    1605689,
+    1605690,
+    1605692,
+    1605693,
+    1605694,
+    1605695,
+    1606721,
+    1606736,
+    1606751
+  ],
   "ultimo_reporte_mensual": "2026-11",
   "backfill": null,
   "backfill_completo_utc": "2026-11-05T10:26:04+00:00"
