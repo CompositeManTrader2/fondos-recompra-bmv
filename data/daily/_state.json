@@ -1,8 +1,25 @@
 {
-  "last_hit_id": 1605646,
+  "last_hit_id": 1605655,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-11-17T23:19:10+00:00",
+  "last_run_utc": "2026-11-18T10:41:28+00:00",
   "runs": [
+    {
+      "utc": "2026-11-18T10:41:28+00:00",
+      "inicio_id": 1604847,
+      "fin_id": 1607246,
+      "ids_revisados": 2350,
+      "pdfs_encontrados": 3,
+      "docs_nuevos": 3,
+      "ops_nuevas": 7,
+      "errores_red": 0,
+      "sin_tabla": 0,
+      "emisoras": [
+        "AMX",
+        "NEXT"
+      ],
+      "abortado": null,
+      "duracion_s": 326.7
+    },
     {
       "utc": "2026-11-17T23:19:10+00:00",
       "inicio_id": 1604586,
@@ -1468,26 +1485,6 @@
       ],
       "abortado": null,
       "duracion_s": 275.3
-    },
-    {
-      "utc": "2026-10-07T20:48:08+00:00",
-      "inicio_id": 1592943,
-      "fin_id": 1595542,
-      "ids_revisados": 2580,
-      "pdfs_encontrados": 5,
-      "docs_nuevos": 5,
-      "ops_nuevas": 141,
-      "errores_red": 12,
-      "sin_tabla": 0,
-      "emisoras": [
-        "GMEXICO",
-        "GRUMA",
-        "ICH",
-        "LAB",
-        "SIMEC"
-      ],
-      "abortado": null,
-      "duracion_s": 285.4
     }
   ],
   "ids_error": [],
