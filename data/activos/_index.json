@@ -14,11 +14,11 @@
     "ultima_fecha": "2026-11-18"
   },
   "AGUA": {
-    "actualizado": "2026-11-17T23:17:54",
+    "actualizado": "2026-11-19T22:48:58",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 28228,
+    "n_operaciones": 28233,
     "nombre": "AGUA",
-    "ultima_fecha": "2026-11-17"
+    "ultima_fecha": "2026-11-18"
   },
   "ALFA": {
     "actualizado": "2026-11-04T18:02:50",
@@ -35,18 +35,18 @@
     "ultima_fecha": "2026-07-24"
   },
   "ALSEA": {
-    "actualizado": "2026-11-13T21:37:49",
+    "actualizado": "2026-11-19T22:48:57",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 19712,
+    "n_operaciones": 19799,
     "nombre": "ALSEA",
-    "ultima_fecha": "2026-11-13"
+    "ultima_fecha": "2026-11-19"
   },
   "ALTERNA": {
-    "actualizado": "2026-11-18T23:03:42",
+    "actualizado": "2026-11-19T22:48:58",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 617,
+    "n_operaciones": 620,
     "nombre": "ALTERNA",
-    "ultima_fecha": "2026-11-18"
+    "ultima_fecha": "2026-11-19"
   },
   "AMX": {
     "actualizado": "2026-11-19T10:44:54",
@@ -385,11 +385,11 @@
     "ultima_fecha": "2025-03-12"
   },
   "HERDEZ": {
-    "actualizado": "2026-11-18T23:03:42",
+    "actualizado": "2026-11-19T22:48:58",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 2204,
+    "n_operaciones": 2206,
     "nombre": "HERDEZ",
-    "ultima_fecha": "2026-11-18"
+    "ultima_fecha": "2026-11-19"
   },
   "HOTEL": {
     "actualizado": "2026-11-04T22:58:27",
@@ -434,18 +434,18 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-11-19T10:44:54",
+    "actualizado": "2026-11-19T22:48:58",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 53839,
+    "n_operaciones": 53854,
     "nombre": "LAB",
-    "ultima_fecha": "2026-11-18"
+    "ultima_fecha": "2026-11-19"
   },
   "LACOMER": {
-    "actualizado": "2026-11-06T10:17:52",
+    "actualizado": "2026-11-19T22:48:58",
     "creado": "2026-09-30T20:24:37",
-    "n_operaciones": 5807,
+    "n_operaciones": 5849,
     "nombre": "LACOMER",
-    "ultima_fecha": "2026-10-29"
+    "ultima_fecha": "2026-11-19"
   },
   "LAMOSA": {
     "actualizado": "2026-11-05T10:26:04",
@@ -483,25 +483,25 @@
     "ultima_fecha": "2022-07-29"
   },
   "NEMAK": {
-    "actualizado": "2026-11-18T23:03:42",
+    "actualizado": "2026-11-19T22:48:58",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 505,
+    "n_operaciones": 507,
     "nombre": "NEMAK",
-    "ultima_fecha": "2026-11-17"
+    "ultima_fecha": "2026-11-19"
   },
   "NEXT": {
-    "actualizado": "2026-11-19T10:44:54",
+    "actualizado": "2026-11-19T22:48:58",
     "creado": "2026-11-06T10:32:00",
-    "n_operaciones": 43,
+    "n_operaciones": 44,
     "nombre": "NEXT",
-    "ultima_fecha": "2026-11-18"
+    "ultima_fecha": "2026-11-19"
   },
   "ORBIA": {
-    "actualizado": "2026-11-17T23:17:55",
+    "actualizado": "2026-11-19T22:48:57",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 22272,
+    "n_operaciones": 22361,
     "nombre": "ORBIA",
-    "ultima_fecha": "2026-11-17"
+    "ultima_fecha": "2026-11-18"
   },
   "PASA": {
     "actualizado": "2026-11-04T19:56:57",
@@ -574,18 +574,18 @@
     "ultima_fecha": "2023-10-02"
   },
   "SPORT": {
-    "actualizado": "2026-11-18T23:03:42",
+    "actualizado": "2026-11-19T22:48:58",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 2697,
+    "n_operaciones": 2704,
     "nombre": "SPORT",
-    "ultima_fecha": "2026-11-18"
+    "ultima_fecha": "2026-11-19"
   },
   "STORAGE": {
-    "actualizado": "2026-11-17T23:17:54",
+    "actualizado": "2026-11-19T22:48:57",
     "creado": "2026-11-06T09:58:28",
-    "n_operaciones": 395,
+    "n_operaciones": 396,
     "nombre": "STORAGE",
-    "ultima_fecha": "2026-11-13"
+    "ultima_fecha": "2026-11-18"
   },
   "TLEVISA": {
     "actualizado": "2026-11-06T10:51:13",
@@ -630,11 +630,11 @@
     "ultima_fecha": "2026-11-12"
   },
   "VISTA": {
-    "actualizado": "2026-11-18T23:03:42",
+    "actualizado": "2026-11-19T22:48:57",
     "creado": "2026-09-30T22:20:11",
-    "n_operaciones": 110,
+    "n_operaciones": 111,
     "nombre": "VISTA",
-    "ultima_fecha": "2026-11-17"
+    "ultima_fecha": "2026-11-18"
   },
   "WALMEX": {
     "actualizado": "2026-11-14T09:22:56",
