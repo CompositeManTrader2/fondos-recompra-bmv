@@ -7,11 +7,11 @@
     "ultima_fecha": "2026-11-18"
   },
   "ACTINVR": {
-    "actualizado": "2026-11-17T23:17:55",
+    "actualizado": "2026-11-19T10:44:54",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1203,
+    "n_operaciones": 1205,
     "nombre": "ACTINVR",
-    "ultima_fecha": "2026-11-17"
+    "ultima_fecha": "2026-11-18"
   },
   "AGUA": {
     "actualizado": "2026-11-17T23:17:54",
@@ -49,11 +49,11 @@
     "ultima_fecha": "2026-11-18"
   },
   "AMX": {
-    "actualizado": "2026-11-18T10:40:18",
+    "actualizado": "2026-11-19T10:44:54",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 24541,
+    "n_operaciones": 24569,
     "nombre": "AMX",
-    "ultima_fecha": "2026-11-17"
+    "ultima_fecha": "2026-11-18"
   },
   "ARA": {
     "actualizado": "2026-11-06T10:51:03",
@@ -203,11 +203,11 @@
     "ultima_fecha": "2026-09-11"
   },
   "FEXI": {
-    "actualizado": "2026-11-18T23:03:42",
+    "actualizado": "2026-11-19T10:44:54",
     "creado": "2026-11-06T10:01:24",
-    "n_operaciones": 4035,
+    "n_operaciones": 4055,
     "nombre": "FEXI",
-    "ultima_fecha": "2026-11-17"
+    "ultima_fecha": "2026-11-18"
   },
   "FIBRAHD": {
     "actualizado": "2026-11-06T10:12:22",
@@ -315,11 +315,11 @@
     "ultima_fecha": "2026-10-28"
   },
   "GCC": {
-    "actualizado": "2026-11-18T23:03:42",
+    "actualizado": "2026-11-19T10:44:54",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 82765,
+    "n_operaciones": 82994,
     "nombre": "GCC",
-    "ultima_fecha": "2026-11-17"
+    "ultima_fecha": "2026-11-18"
   },
   "GENTERA": {
     "actualizado": "2026-11-04T20:22:35",
@@ -434,11 +434,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-11-17T23:17:54",
+    "actualizado": "2026-11-19T10:44:54",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 53808,
+    "n_operaciones": 53839,
     "nombre": "LAB",
-    "ultima_fecha": "2026-11-17"
+    "ultima_fecha": "2026-11-18"
   },
   "LACOMER": {
     "actualizado": "2026-11-06T10:17:52",
@@ -490,11 +490,11 @@
     "ultima_fecha": "2026-11-17"
   },
   "NEXT": {
-    "actualizado": "2026-11-18T10:40:18",
+    "actualizado": "2026-11-19T10:44:54",
     "creado": "2026-11-06T10:32:00",
-    "n_operaciones": 42,
+    "n_operaciones": 43,
     "nombre": "NEXT",
-    "ultima_fecha": "2026-11-17"
+    "ultima_fecha": "2026-11-18"
   },
   "ORBIA": {
     "actualizado": "2026-11-17T23:17:55",
