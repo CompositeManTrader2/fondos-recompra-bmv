@@ -1,8 +1,27 @@
 {
-  "last_hit_id": 1606299,
+  "last_hit_id": 1606314,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-11-19T22:50:51+00:00",
+  "last_run_utc": "2026-11-20T10:26:47+00:00",
   "runs": [
+    {
+      "utc": "2026-11-20T10:26:47+00:00",
+      "inicio_id": 1605500,
+      "fin_id": 1607899,
+      "ids_revisados": 2364,
+      "pdfs_encontrados": 4,
+      "docs_nuevos": 4,
+      "ops_nuevas": 177,
+      "errores_red": 0,
+      "sin_tabla": 0,
+      "emisoras": [
+        "ACTINVR",
+        "AMX",
+        "Q",
+        "WALMEX"
+      ],
+      "abortado": null,
+      "duracion_s": 223.5
+    },
     {
       "utc": "2026-11-19T22:50:51+00:00",
       "inicio_id": 1605253,
@@ -1478,40 +1497,9 @@
       ],
       "abortado": null,
       "duracion_s": 507.2
-    },
-    {
-      "utc": "2026-10-09T20:18:25+00:00",
-      "inicio_id": 1593490,
-      "fin_id": 1596089,
-      "ids_revisados": 2580,
-      "pdfs_encontrados": 7,
-      "docs_nuevos": 7,
-      "ops_nuevas": 345,
-      "errores_red": 2,
-      "sin_tabla": 0,
-      "emisoras": [
-        "ALSEA",
-        "GMEXICO",
-        "GRUMA",
-        "ICH",
-        "LAB",
-        "SIMEC",
-        "SPORT"
-      ],
-      "abortado": null,
-      "duracion_s": 194.9
     }
   ],
-  "ids_error": [
-    1607672,
-    1607674,
-    1607676,
-    1607677,
-    1607678,
-    1607679,
-    1607680,
-    1607681
-  ],
+  "ids_error": [],
   "ultimo_reporte_mensual": "2026-11",
   "backfill": null,
   "backfill_completo_utc": "2026-11-05T10:26:04+00:00"

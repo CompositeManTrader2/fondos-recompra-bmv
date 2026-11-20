@@ -7,11 +7,11 @@
     "ultima_fecha": "2026-11-18"
   },
   "ACTINVR": {
-    "actualizado": "2026-11-19T10:44:54",
+    "actualizado": "2026-11-20T10:24:54",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1205,
+    "n_operaciones": 1207,
     "nombre": "ACTINVR",
-    "ultima_fecha": "2026-11-18"
+    "ultima_fecha": "2026-11-19"
   },
   "AGUA": {
     "actualizado": "2026-11-19T22:48:58",
@@ -49,11 +49,11 @@
     "ultima_fecha": "2026-11-19"
   },
   "AMX": {
-    "actualizado": "2026-11-19T10:44:54",
+    "actualizado": "2026-11-20T10:24:54",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 24569,
+    "n_operaciones": 24582,
     "nombre": "AMX",
-    "ultima_fecha": "2026-11-18"
+    "ultima_fecha": "2026-11-19"
   },
   "ARA": {
     "actualizado": "2026-11-06T10:51:03",
@@ -525,11 +525,11 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-11-18T23:03:42",
+    "actualizado": "2026-11-20T10:24:54",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 126737,
+    "n_operaciones": 126825,
     "nombre": "Q",
-    "ultima_fecha": "2026-11-17"
+    "ultima_fecha": "2026-11-18"
   },
   "R": {
     "actualizado": "2026-11-11T22:14:14",
@@ -637,10 +637,10 @@
     "ultima_fecha": "2026-11-18"
   },
   "WALMEX": {
-    "actualizado": "2026-11-14T09:22:56",
+    "actualizado": "2026-11-20T10:24:54",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 12980,
+    "n_operaciones": 13054,
     "nombre": "WALMEX",
-    "ultima_fecha": "2026-11-13"
+    "ultima_fecha": "2026-11-19"
   }
 }
