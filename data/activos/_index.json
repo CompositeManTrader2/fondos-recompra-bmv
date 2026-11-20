@@ -1,24 +1,24 @@
 {
   "AC": {
-    "actualizado": "2026-11-18T23:03:42",
+    "actualizado": "2026-11-20T22:24:13",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 38549,
+    "n_operaciones": 38569,
     "nombre": "AC",
-    "ultima_fecha": "2026-11-18"
+    "ultima_fecha": "2026-11-20"
   },
   "ACTINVR": {
-    "actualizado": "2026-11-20T10:24:54",
+    "actualizado": "2026-11-20T22:24:13",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1207,
+    "n_operaciones": 1208,
     "nombre": "ACTINVR",
-    "ultima_fecha": "2026-11-19"
+    "ultima_fecha": "2026-11-20"
   },
   "AGUA": {
-    "actualizado": "2026-11-19T22:48:58",
+    "actualizado": "2026-11-20T22:24:13",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 28233,
+    "n_operaciones": 28240,
     "nombre": "AGUA",
-    "ultima_fecha": "2026-11-18"
+    "ultima_fecha": "2026-11-19"
   },
   "ALFA": {
     "actualizado": "2026-11-04T18:02:50",
@@ -203,11 +203,11 @@
     "ultima_fecha": "2026-09-11"
   },
   "FEXI": {
-    "actualizado": "2026-11-19T10:44:54",
+    "actualizado": "2026-11-20T22:24:13",
     "creado": "2026-11-06T10:01:24",
-    "n_operaciones": 4055,
+    "n_operaciones": 4070,
     "nombre": "FEXI",
-    "ultima_fecha": "2026-11-18"
+    "ultima_fecha": "2026-11-19"
   },
   "FIBRAHD": {
     "actualizado": "2026-11-06T10:12:22",
@@ -266,11 +266,11 @@
     "ultima_fecha": "2022-06-27"
   },
   "FPLUS": {
-    "actualizado": "2026-11-17T23:17:54",
+    "actualizado": "2026-11-20T22:24:13",
     "creado": "2026-11-06T09:58:24",
-    "n_operaciones": 10015,
+    "n_operaciones": 10017,
     "nombre": "FPLUS",
-    "ultima_fecha": "2026-11-13"
+    "ultima_fecha": "2026-11-20"
   },
   "FRAGUA": {
     "actualizado": "2026-11-06T10:51:06",
@@ -315,11 +315,11 @@
     "ultima_fecha": "2026-10-28"
   },
   "GCC": {
-    "actualizado": "2026-11-19T10:44:54",
+    "actualizado": "2026-11-20T22:24:13",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 82994,
+    "n_operaciones": 83401,
     "nombre": "GCC",
-    "ultima_fecha": "2026-11-18"
+    "ultima_fecha": "2026-11-19"
   },
   "GENTERA": {
     "actualizado": "2026-11-04T20:22:35",
@@ -434,11 +434,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-11-19T22:48:58",
+    "actualizado": "2026-11-20T22:24:13",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 53854,
+    "n_operaciones": 53897,
     "nombre": "LAB",
-    "ultima_fecha": "2026-11-19"
+    "ultima_fecha": "2026-11-20"
   },
   "LACOMER": {
     "actualizado": "2026-11-19T22:48:58",
@@ -497,11 +497,11 @@
     "ultima_fecha": "2026-11-19"
   },
   "ORBIA": {
-    "actualizado": "2026-11-19T22:48:57",
+    "actualizado": "2026-11-20T22:24:13",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 22361,
+    "n_operaciones": 22431,
     "nombre": "ORBIA",
-    "ultima_fecha": "2026-11-18"
+    "ultima_fecha": "2026-11-20"
   },
   "PASA": {
     "actualizado": "2026-11-04T19:56:57",
@@ -574,11 +574,11 @@
     "ultima_fecha": "2023-10-02"
   },
   "SPORT": {
-    "actualizado": "2026-11-19T22:48:58",
+    "actualizado": "2026-11-20T22:24:13",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 2704,
+    "n_operaciones": 2712,
     "nombre": "SPORT",
-    "ultima_fecha": "2026-11-19"
+    "ultima_fecha": "2026-11-20"
   },
   "STORAGE": {
     "actualizado": "2026-11-19T22:48:57",
@@ -630,17 +630,17 @@
     "ultima_fecha": "2026-11-12"
   },
   "VISTA": {
-    "actualizado": "2026-11-19T22:48:57",
+    "actualizado": "2026-11-20T22:24:13",
     "creado": "2026-09-30T22:20:11",
-    "n_operaciones": 111,
+    "n_operaciones": 112,
     "nombre": "VISTA",
-    "ultima_fecha": "2026-11-18"
+    "ultima_fecha": "2026-11-19"
   },
   "WALMEX": {
-    "actualizado": "2026-11-20T10:24:54",
+    "actualizado": "2026-11-20T22:24:13",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 13054,
+    "n_operaciones": 13151,
     "nombre": "WALMEX",
-    "ultima_fecha": "2026-11-19"
+    "ultima_fecha": "2026-11-20"
   }
 }
