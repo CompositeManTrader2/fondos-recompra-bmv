@@ -49,11 +49,11 @@
     "ultima_fecha": "2026-11-19"
   },
   "AMX": {
-    "actualizado": "2026-11-20T10:24:54",
+    "actualizado": "2026-11-21T10:10:30",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 24582,
+    "n_operaciones": 24584,
     "nombre": "AMX",
-    "ultima_fecha": "2026-11-19"
+    "ultima_fecha": "2026-11-20"
   },
   "ARA": {
     "actualizado": "2026-11-06T10:51:03",
@@ -203,11 +203,11 @@
     "ultima_fecha": "2026-09-11"
   },
   "FEXI": {
-    "actualizado": "2026-11-20T22:24:13",
+    "actualizado": "2026-11-21T10:10:30",
     "creado": "2026-11-06T10:01:24",
-    "n_operaciones": 4070,
+    "n_operaciones": 4094,
     "nombre": "FEXI",
-    "ultima_fecha": "2026-11-19"
+    "ultima_fecha": "2026-11-20"
   },
   "FIBRAHD": {
     "actualizado": "2026-11-06T10:12:22",
@@ -385,11 +385,11 @@
     "ultima_fecha": "2025-03-12"
   },
   "HERDEZ": {
-    "actualizado": "2026-11-19T22:48:58",
+    "actualizado": "2026-11-21T10:10:30",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 2206,
+    "n_operaciones": 2221,
     "nombre": "HERDEZ",
-    "ultima_fecha": "2026-11-19"
+    "ultima_fecha": "2026-11-20"
   },
   "HOTEL": {
     "actualizado": "2026-11-04T22:58:27",
@@ -490,11 +490,11 @@
     "ultima_fecha": "2026-11-19"
   },
   "NEXT": {
-    "actualizado": "2026-11-19T22:48:58",
+    "actualizado": "2026-11-21T10:10:30",
     "creado": "2026-11-06T10:32:00",
-    "n_operaciones": 44,
+    "n_operaciones": 45,
     "nombre": "NEXT",
-    "ultima_fecha": "2026-11-19"
+    "ultima_fecha": "2026-11-20"
   },
   "ORBIA": {
     "actualizado": "2026-11-20T22:24:13",
@@ -525,11 +525,11 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-11-20T10:24:54",
+    "actualizado": "2026-11-21T10:10:30",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 126825,
+    "n_operaciones": 126947,
     "nombre": "Q",
-    "ultima_fecha": "2026-11-18"
+    "ultima_fecha": "2026-11-19"
   },
   "R": {
     "actualizado": "2026-11-11T22:14:14",

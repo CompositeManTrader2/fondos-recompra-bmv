@@ -1,8 +1,28 @@
 {
-  "last_hit_id": 1606556,
+  "last_hit_id": 1606628,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-11-20T22:25:27+00:00",
+  "last_run_utc": "2026-11-21T10:11:39+00:00",
   "runs": [
+    {
+      "utc": "2026-11-21T10:11:39+00:00",
+      "inicio_id": 1605757,
+      "fin_id": 1608156,
+      "ids_revisados": 2356,
+      "pdfs_encontrados": 5,
+      "docs_nuevos": 5,
+      "ops_nuevas": 164,
+      "errores_red": 0,
+      "sin_tabla": 0,
+      "emisoras": [
+        "AMX",
+        "FEXI",
+        "HERDEZ",
+        "NEXT",
+        "Q"
+      ],
+      "abortado": null,
+      "duracion_s": 252.9
+    },
     {
       "utc": "2026-11-20T22:25:27+00:00",
       "inicio_id": 1605515,
@@ -1482,28 +1502,6 @@
       ],
       "abortado": null,
       "duracion_s": 271.4
-    },
-    {
-      "utc": "2026-10-12T22:38:43+00:00",
-      "inicio_id": 1593736,
-      "fin_id": 1596335,
-      "ids_revisados": 2568,
-      "pdfs_encontrados": 7,
-      "docs_nuevos": 7,
-      "ops_nuevas": 66,
-      "errores_red": 9,
-      "sin_tabla": 0,
-      "emisoras": [
-        "ACTINVR",
-        "ALSEA",
-        "GRUMA",
-        "HERDEZ",
-        "ICH",
-        "LAB",
-        "SIMEC"
-      ],
-      "abortado": null,
-      "duracion_s": 298.2
     }
   ],
   "ids_error": [],
