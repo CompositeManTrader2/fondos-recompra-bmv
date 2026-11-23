@@ -73,7 +73,7 @@ def _registrar_template() -> None:
     eje = dict(
         gridcolor=GRID, gridwidth=1, zeroline=False,
         linecolor=BORDER, tickcolor=BORDER, ticks="outside", ticklen=4,
-        tickfont=dict(family=FONT_MONO, size=10, color=TEXT_2),
+        tickfont=dict(family=FONT_SANS, size=11, color=TEXT_2),
         title=dict(font=dict(family=FONT_SANS, size=11, color=MUTED)),
         showspikes=True, spikemode="across", spikesnap="cursor",
         spikecolor=GRAY_BRAND, spikethickness=1, spikedash="dot",
@@ -82,11 +82,11 @@ def _registrar_template() -> None:
         paper_bgcolor=PANEL, plot_bgcolor=PANEL,
         font=dict(family=FONT_SANS, size=12, color=TEXT_2),
         colorway=CATEGORICA,
-        title=dict(font=dict(family=FONT_SANS, size=13, color=PURPLE), x=0.01, xanchor="left", y=0.97),
+        title=dict(font=dict(family=FONT_SANS, size=14, color=PURPLE_DARK, weight=600), x=0.01, xanchor="left", y=0.97),
         xaxis=eje, yaxis=eje,
         legend=dict(orientation="h", yanchor="bottom", y=1.0, xanchor="left", x=0,
                     font=dict(family=FONT_SANS, size=11, color=TEXT_2), bgcolor="rgba(0,0,0,0)"),
-        hoverlabel=dict(bgcolor="#FFFFFF", bordercolor=PURPLE, font=dict(family=FONT_MONO, size=11, color=TEXT)),
+        hoverlabel=dict(bgcolor="#FFFFFF", bordercolor=BORDER, font=dict(family=FONT_SANS, size=12, color=TEXT)),
         hovermode="x unified",
         margin=dict(l=8, r=8, t=64, b=8),
         bargap=0.25, barcornerradius=3,
@@ -150,8 +150,14 @@ section[data-testid="stSidebar"] h3 {{ color: {PURPLE}; font-size: .78rem; lette
 [data-testid="stMetricLabel"] p {{ font-size: .7rem; color: {PURPLE}; text-transform: uppercase; letter-spacing: .07em; font-weight: 600; }}
 [data-testid="stMetricValue"] {{ font-family: {FONT_MONO}; font-size: 1.35rem; color: {TEXT}; }}
 
-[data-testid="stPlotlyChart"], [data-testid="stDataFrame"] {{ border: 1px solid {BORDER}; border-radius: 8px; background: {PANEL}; overflow: hidden; }}
-[data-testid="stExpander"] {{ border: 1px solid {BORDER}; border-radius: 8px; }}
+[data-testid="stPlotlyChart"] {{ border: 1px solid {BORDER}; border-radius: 12px; background: {PANEL}; overflow: hidden;
+  padding: 6px 8px 2px; box-shadow: 0 1px 2px rgba(31,26,38,.04), 0 4px 14px rgba(78,31,114,.05); }}
+[data-testid="stDataFrame"] {{ border: 1px solid {BORDER}; border-radius: 12px; background: {PANEL}; overflow: hidden;
+  box-shadow: 0 1px 2px rgba(31,26,38,.04), 0 4px 14px rgba(78,31,114,.05); }}
+.js-plotly-plot .modebar-container {{ display: none !important; }}
+[data-testid="stExpander"] {{ border: 1px solid {BORDER}; border-radius: 12px; }}
+[data-testid="stExpander"] summary p {{ font-weight: 600; color: {PURPLE_DARK}; }}
+[data-testid="stVerticalBlockBorderWrapper"] {{ border-radius: 12px; }}
 .stButton > button, .stDownloadButton > button {{ font-weight: 600; border-radius: 6px; cursor: pointer; transition: background-color .18s, border-color .18s; }}
 button:focus-visible, [role="tab"]:focus-visible, a:focus-visible {{ outline: 2px solid {PURPLE} !important; outline-offset: 2px; }}
 
@@ -169,7 +175,7 @@ button:focus-visible, [role="tab"]:focus-visible, a:focus-visible {{ outline: 2p
 .pt-logo .w {{ font-family: 'Nunito', {FONT_SANS}; font-weight: 700; font-size: 1.9rem; color: {GRAY_BRAND}; letter-spacing: -.01em; }}
 .pt-logo .w .o {{ color: {PURPLE}; }}
 .pt-logo .c {{ font-family: 'Nunito', {FONT_SANS}; font-weight: 600; font-size: .78rem; color: {GRAY_BRAND}; margin-top: 1px; }}
-.pt-logo img {{ height: 46px; }}
+.pt-logo img {{ height: 50px; }}
 
 .pt-tape {{ overflow: hidden; white-space: nowrap; background: {LAVENDER_SOFT}; border: 1px solid {BORDER};
   border-radius: 6px; padding: 6px 0; margin-bottom: 12px; font-family: {FONT_MONO}; font-size: .8rem; }}
@@ -183,19 +189,27 @@ button:focus-visible, [role="tab"]:focus-visible, a:focus-visible {{ outline: 2p
 @media (prefers-reduced-motion: reduce) {{ .pt-tape .track {{ animation: none; padding-left: 8px; }} }}
 
 .pt-tiles {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 4px 0 14px; }}
-.pt-tile {{ background: {PANEL}; border: 1px solid {BORDER}; border-top: 3px solid {PURPLE}; padding: 10px 12px 11px;
-  border-radius: 8px; min-width: 0; box-shadow: 0 1px 2px rgba(78,31,114,0.06); }}
-.pt-tile .lbl {{ font-size: .68rem; color: {PURPLE}; letter-spacing: .07em; text-transform: uppercase; font-weight: 600;
+.pt-tile {{ position: relative; background: {PANEL}; border: 1px solid {BORDER}; padding: 12px 14px 12px 18px;
+  border-radius: 12px; min-width: 0; box-shadow: 0 1px 2px rgba(31,26,38,.04), 0 4px 14px rgba(78,31,114,.06); overflow: hidden; }}
+.pt-tile::before {{ content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: linear-gradient(180deg, {PURPLE} 0%, {PURPLE_DARK} 100%); }}
+.pt-tile .lbl {{ font-size: .68rem; color: {MUTED}; letter-spacing: .06em; text-transform: uppercase; font-weight: 600;
+  line-height: 1.3; min-height: 1.75em; }}
+.pt-tile .val {{ font-family: {FONT_SANS}; font-variant-numeric: tabular-nums; font-size: 1.55rem; color: {PURPLE_DARK};
+  font-weight: 700; line-height: 1.2; margin-top: 4px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
-.pt-tile .val {{ font-family: {FONT_MONO}; font-size: 1.45rem; color: {TEXT}; font-weight: 500; line-height: 1.25; margin-top: 4px;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
-.pt-tile .dlt {{ font-family: {FONT_MONO}; font-size: .74rem; margin-top: 2px; color: {TEXT_2}; }}
+.pt-tile .dlt {{ font-family: {FONT_SANS}; font-weight: 600; font-size: .76rem; margin-top: 3px; color: {TEXT_2}; }}
 .pt-tile .dlt.up {{ color: {COMPRA}; }} .pt-tile .dlt.dn {{ color: {VENTA}; }}
 .pt-tile .sub {{ font-size: .72rem; color: {MUTED}; margin-top: 2px; }}
 
-.pt-section {{ display: flex; align-items: baseline; gap: 10px; margin: 18px 0 8px; border-bottom: 1px solid {LAVENDER}; padding-bottom: 5px; }}
-.pt-section .t {{ color: {PURPLE}; font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; }}
+.pt-section {{ display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 26px 0 12px; padding: 0 0 8px 14px;
+  border-bottom: 1px solid {LAVENDER}; position: relative; }}
+.pt-section::before {{ content: ""; position: absolute; left: 0; top: 2px; height: 1.1rem; width: 4px; border-radius: 2px; background: {PURPLE}; }}
+.pt-section .t {{ color: {PURPLE_DARK}; font-size: 1.02rem; letter-spacing: .01em; font-weight: 700; }}
 .pt-section .n {{ color: {MUTED}; font-size: .78rem; }}
+.pt-sub {{ display: flex; align-items: center; gap: 8px; margin: 14px 0 6px; color: {PURPLE_DARK}; font-size: .95rem; font-weight: 700; }}
+.pt-sub .n {{ color: {MUTED}; font-size: .78rem; font-weight: 400; }}
+.pt-sub::before {{ content: ""; width: 8px; height: 8px; border-radius: 2px; background: {PURPLE}; flex: none; }}
 
 .pt-pill {{ display: inline-block; font-size: .72rem; font-weight: 600; padding: 2px 9px; border-radius: 999px;
   border: 1px solid {BORDER}; background: {BG}; margin: 2px 4px 2px 0; }}

@@ -5,6 +5,10 @@ backgroundColor = "#FFFFFF"
 secondaryBackgroundColor = "#F7F2FB"
 textColor = "#1F1A26"
 font = "sans serif"
+borderColor = "#E3D9EC"
+dataframeBorderColor = "#EEE8F3"
+dataframeHeaderBackgroundColor = "#F3ECF9"
+baseRadius = "0.6rem"
 
 [server]
 maxUploadSize = 400
