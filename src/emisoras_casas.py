@@ -96,7 +96,7 @@ def casa_vigente(act: pd.DataFrame, fin: date) -> pd.DataFrame:
 
 
 def matriz(act: pd.DataFrame, ini: date, fin: date, medida: str = "IMPORTE",
-           max_casas: int = 12) -> tuple[pd.DataFrame, list[str]]:
+           max_casas: int = 12, incluir: tuple = ()) -> tuple[pd.DataFrame, list[str]]:
     """
     Una fila por emisora: totales del periodo, casa principal, casa vigente y la
     ponderación (%) de cada casa según `medida` ('IMPORTE' o 'N_OPS'). Las casas
@@ -109,6 +109,9 @@ def matriz(act: pd.DataFrame, ini: date, fin: date, medida: str = "IMPORTE",
     pct = "PCT_IMPORTE" if medida == "IMPORTE" else "PCT_OPS"
     orden = det.groupby("CASA_BOLSA")[medida].sum().sort_values(ascending=False)
     top = list(orden.index[:max_casas])
+    extra = [c for c in incluir if c in orden.index and c not in top]
+    if extra:
+        top = top[:max_casas - len(extra)] + extra
     d = det.assign(COL=np.where(det["CASA_BOLSA"].isin(top), det["CASA_BOLSA"], "OTRAS"))
     piv = d.pivot_table(index="EMISORA", columns="COL", values=pct, aggfunc="sum")
     cols = top + (["OTRAS"] if "OTRAS" in piv.columns else [])

@@ -121,16 +121,30 @@ a {{ color: {PURPLE}; }}
 section[data-testid="stSidebar"] {{ background: {LAVENDER_SOFT}; border-right: 1px solid {BORDER}; }}
 section[data-testid="stSidebar"] h3 {{ color: {PURPLE}; font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; }}
 
-/* Tabs → pastillas de marca */
-.stTabs [data-baseweb="tab-list"] {{ gap: 4px; border-bottom: 2px solid {LAVENDER}; }}
-.stTabs [data-baseweb="tab"] {{
-  font-family: {FONT_SANS}; font-size: .8rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;
-  background: {BG}; color: {TEXT_2}; padding: 7px 16px; border: 1px solid {BORDER}; border-bottom: none;
-  border-radius: 6px 6px 0 0; transition: background-color .18s, color .18s;
+/* Tabs → control segmentado de marca (Streamlit ≥1.50 pone estilos inline: se usan selectores ARIA + !important) */
+.stTabs [role="tablist"] {{
+  gap: 2px !important; width: fit-content; max-width: 100%; padding: 4px !important; margin-bottom: 2px;
+  flex-wrap: wrap !important; height: auto !important; overflow: visible !important;
+  background: #F3ECF9; border: 1px solid {BORDER}; border-radius: 12px; box-shadow: inset 0 1px 2px rgba(78,31,114,.06);
 }}
-.stTabs [data-baseweb="tab"]:hover {{ background: {LAVENDER_SOFT}; color: {PURPLE}; }}
-.stTabs [aria-selected="true"] {{ background: {PURPLE}; color: #FFFFFF; border-color: {PURPLE}; }}
-.stTabs [data-baseweb="tab-highlight"] {{ display: none; }}
+.stTabs [data-baseweb="tab-highlight"], .stTabs [data-baseweb="tab-border"],
+[data-testid="stTabsScrollLeft"], [data-testid="stTabsScrollRight"] {{ display: none !important; }}
+.stTabs [role="tab"] {{
+  height: auto !important; min-height: 34px; padding: 6px 12px !important; margin: 0 !important;
+  border: none !important; border-radius: 9px !important; background: transparent !important;
+  color: {TEXT_2} !important; transition: background-color .18s ease, color .18s ease, box-shadow .18s ease;
+}}
+.stTabs [role="tab"] p, .stTabs [role="tab"] span {{
+  font-family: {FONT_SANS}; font-size: .85rem !important; font-weight: 600 !important; letter-spacing: .01em;
+  color: inherit !important; margin: 0 !important;
+}}
+.stTabs [role="tab"] [role="img"] {{ font-size: 1.1rem !important; opacity: .7; margin-right: 3px; vertical-align: -0.22em !important; }}
+.stTabs [role="tab"]:hover {{ background: rgba(112,48,160,.08) !important; color: {PURPLE} !important; }}
+.stTabs [role="tab"][aria-selected="true"] {{
+  background: #FFFFFF !important; color: {PURPLE_DARK} !important;
+  box-shadow: 0 1px 2px rgba(31,26,38,.10), 0 3px 10px rgba(112,48,160,.16);
+}}
+.stTabs [role="tab"][aria-selected="true"] [role="img"], .stTabs [role="tab"]:hover [role="img"] {{ color: {PURPLE} !important; opacity: 1; }}
 
 [data-testid="stMetric"] {{ background: {PANEL}; border: 1px solid {BORDER}; border-top: 3px solid {PURPLE}; padding: 10px 12px; border-radius: 6px; }}
 [data-testid="stMetricLabel"] p {{ font-size: .7rem; color: {PURPLE}; text-transform: uppercase; letter-spacing: .07em; font-weight: 600; }}

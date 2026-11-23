@@ -24,7 +24,7 @@ st.markdown(
 )
 
 tab1, tab2, tab3 = st.tabs(
-    ["Auto-descarga BMV", "Subir PDFs", "Pegar URLs BMV"]
+    [":material/cloud_download: Auto-descarga BMV", ":material/upload_file: Subir PDFs", ":material/link: Pegar URLs BMV"]
 )
 
 

@@ -37,7 +37,7 @@ def _agregar(df: pd.DataFrame) -> pd.DataFrame:
 
 
 agg = _agregar(win)
-tab_rank, tab_hist = st.tabs(["Rankings", "Historial"])
+tab_rank, tab_hist = st.tabs([":material/leaderboard: Rankings", ":material/history: Historial"])
 
 with tab_rank:
     r1, r2 = st.columns([1, 1.1])

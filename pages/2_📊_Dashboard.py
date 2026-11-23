@@ -122,8 +122,10 @@ semanales = data_processor.estadisticos_por_periodo(df_f, "SEMANA_INICIO")
 mensuales = data_processor.estadisticos_por_periodo(df_f, "MES")
 
 tabs = st.tabs([
-    "VWAP", "Acumulados", "Distribución", "Dispersión", "Calendario",
-    "Casas", "Diario", "Semanal", "Mensual", "Operaciones",
+    ":material/show_chart: VWAP", ":material/stacked_line_chart: Acumulados", ":material/bar_chart: Distribución",
+    ":material/scatter_plot: Dispersión", ":material/calendar_month: Calendario", ":material/account_balance: Casas",
+    ":material/today: Diario", ":material/date_range: Semanal", ":material/calendar_view_month: Mensual",
+    ":material/receipt_long: Operaciones",
 ])
 
 # ----- VWAP -----
