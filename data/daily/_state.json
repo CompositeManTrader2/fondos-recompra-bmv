@@ -1,8 +1,42 @@
 {
-  "last_hit_id": 1606628,
+  "last_hit_id": 1606869,
   "frontier_gap": 1500,
-  "last_run_utc": "2026-11-21T10:11:39+00:00",
+  "last_run_utc": "2026-11-24T02:35:22+00:00",
   "runs": [
+    {
+      "utc": "2026-11-24T02:35:22+00:00",
+      "inicio_id": 1605829,
+      "fin_id": 1608428,
+      "ids_revisados": 2553,
+      "pdfs_encontrados": 21,
+      "docs_nuevos": 21,
+      "ops_nuevas": 922,
+      "errores_red": 0,
+      "sin_tabla": 0,
+      "emisoras": [
+        "AC",
+        "ACTINVR",
+        "AGUA",
+        "ALSEA",
+        "ALTERNA",
+        "AMX",
+        "FEMSA",
+        "FEXI",
+        "GCC",
+        "GMEXICO",
+        "HERDEZ",
+        "LAB",
+        "NEMAK",
+        "NEXT",
+        "Q",
+        "SPORT",
+        "STORAGE",
+        "VISTA",
+        "WALMEX"
+      ],
+      "abortado": null,
+      "duracion_s": 283.9
+    },
     {
       "utc": "2026-11-21T10:11:39+00:00",
       "inicio_id": 1605757,
@@ -1484,24 +1518,6 @@
       ],
       "abortado": null,
       "duracion_s": 322.6
-    },
-    {
-      "utc": "2026-10-13T09:45:57+00:00",
-      "inicio_id": 1593863,
-      "fin_id": 1596262,
-      "ids_revisados": 2374,
-      "pdfs_encontrados": 3,
-      "docs_nuevos": 3,
-      "ops_nuevas": 88,
-      "errores_red": 18,
-      "sin_tabla": 0,
-      "emisoras": [
-        "AMX",
-        "CMOCTEZ",
-        "Q"
-      ],
-      "abortado": null,
-      "duracion_s": 271.4
     }
   ],
   "ids_error": [],
