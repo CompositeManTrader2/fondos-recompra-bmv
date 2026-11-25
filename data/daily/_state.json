@@ -1,8 +1,40 @@
 {
-  "last_hit_id": 1606869,
-  "frontier_gap": 3000,
-  "last_run_utc": "2026-11-24T12:55:08+00:00",
+  "last_hit_id": 1607247,
+  "frontier_gap": 1500,
+  "last_run_utc": "2026-11-25T00:08:30+00:00",
   "runs": [
+    {
+      "utc": "2026-11-25T00:08:30+00:00",
+      "inicio_id": 1606070,
+      "fin_id": 1610269,
+      "ids_revisados": 4144,
+      "pdfs_encontrados": 17,
+      "docs_nuevos": 17,
+      "ops_nuevas": 747,
+      "errores_red": 0,
+      "sin_tabla": 0,
+      "emisoras": [
+        "AC",
+        "ACTINVR",
+        "AGUA",
+        "ALSEA",
+        "AMX",
+        "FEMSA",
+        "FEXI",
+        "FPLUS",
+        "HERDEZ",
+        "LAB",
+        "MEGA",
+        "NEMAK",
+        "NEXT",
+        "ORBIA",
+        "Q",
+        "SPORT",
+        "VISTA"
+      ],
+      "abortado": null,
+      "duracion_s": 379.7
+    },
     {
       "utc": "2026-11-24T12:55:08+00:00",
       "inicio_id": 1606070,
@@ -1492,24 +1524,6 @@
       ],
       "abortado": null,
       "duracion_s": 305.0
-    },
-    {
-      "utc": "2026-10-14T08:01:48+00:00",
-      "inicio_id": 1594100,
-      "fin_id": 1596499,
-      "ids_revisados": 2381,
-      "pdfs_encontrados": 3,
-      "docs_nuevos": 3,
-      "ops_nuevas": 177,
-      "errores_red": 12,
-      "sin_tabla": 0,
-      "emisoras": [
-        "ACTINVR",
-        "AMX",
-        "GMEXICO"
-      ],
-      "abortado": null,
-      "duracion_s": 276.7
     }
   ],
   "ids_error": [],
