@@ -7,18 +7,18 @@
     "ultima_fecha": "2026-11-24"
   },
   "ACTINVR": {
-    "actualizado": "2026-11-25T00:07:19",
+    "actualizado": "2026-11-25T23:52:50",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1212,
+    "n_operaciones": 1215,
     "nombre": "ACTINVR",
-    "ultima_fecha": "2026-11-24"
+    "ultima_fecha": "2026-11-25"
   },
   "AGUA": {
-    "actualizado": "2026-11-25T00:07:19",
+    "actualizado": "2026-11-25T23:52:50",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 28266,
+    "n_operaciones": 28272,
     "nombre": "AGUA",
-    "ultima_fecha": "2026-11-24"
+    "ultima_fecha": "2026-11-25"
   },
   "ALFA": {
     "actualizado": "2026-11-04T18:02:50",
@@ -35,18 +35,18 @@
     "ultima_fecha": "2026-07-24"
   },
   "ALSEA": {
-    "actualizado": "2026-11-25T00:07:19",
+    "actualizado": "2026-11-25T23:52:50",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 19912,
+    "n_operaciones": 19996,
     "nombre": "ALSEA",
-    "ultima_fecha": "2026-11-24"
+    "ultima_fecha": "2026-11-25"
   },
   "ALTERNA": {
-    "actualizado": "2026-11-24T02:33:46",
+    "actualizado": "2026-11-25T23:52:49",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 621,
+    "n_operaciones": 622,
     "nombre": "ALTERNA",
-    "ultima_fecha": "2026-11-23"
+    "ultima_fecha": "2026-11-25"
   },
   "AMX": {
     "actualizado": "2026-11-25T00:07:20",
@@ -203,11 +203,11 @@
     "ultima_fecha": "2026-11-23"
   },
   "FEXI": {
-    "actualizado": "2026-11-25T00:07:19",
+    "actualizado": "2026-11-25T23:52:50",
     "creado": "2026-11-06T10:01:24",
-    "n_operaciones": 4111,
+    "n_operaciones": 4123,
     "nombre": "FEXI",
-    "ultima_fecha": "2026-11-24"
+    "ultima_fecha": "2026-11-25"
   },
   "FIBRAHD": {
     "actualizado": "2026-11-06T10:12:22",
@@ -315,11 +315,11 @@
     "ultima_fecha": "2026-10-28"
   },
   "GCC": {
-    "actualizado": "2026-11-24T02:33:46",
+    "actualizado": "2026-11-25T23:52:49",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 83873,
+    "n_operaciones": 84087,
     "nombre": "GCC",
-    "ultima_fecha": "2026-11-23"
+    "ultima_fecha": "2026-11-25"
   },
   "GENTERA": {
     "actualizado": "2026-11-04T20:22:35",
@@ -385,11 +385,11 @@
     "ultima_fecha": "2025-03-12"
   },
   "HERDEZ": {
-    "actualizado": "2026-11-25T00:07:19",
+    "actualizado": "2026-11-25T23:52:49",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 2230,
+    "n_operaciones": 2243,
     "nombre": "HERDEZ",
-    "ultima_fecha": "2026-11-24"
+    "ultima_fecha": "2026-11-25"
   },
   "HOTEL": {
     "actualizado": "2026-11-04T22:58:27",
@@ -434,11 +434,11 @@
     "ultima_fecha": "2026-09-04"
   },
   "LAB": {
-    "actualizado": "2026-11-25T00:07:19",
+    "actualizado": "2026-11-25T23:52:49",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 53978,
+    "n_operaciones": 54030,
     "nombre": "LAB",
-    "ultima_fecha": "2026-11-24"
+    "ultima_fecha": "2026-11-25"
   },
   "LACOMER": {
     "actualizado": "2026-11-19T22:48:58",
@@ -483,25 +483,25 @@
     "ultima_fecha": "2022-07-29"
   },
   "NEMAK": {
-    "actualizado": "2026-11-25T00:07:19",
+    "actualizado": "2026-11-25T23:52:49",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 509,
+    "n_operaciones": 511,
     "nombre": "NEMAK",
-    "ultima_fecha": "2026-11-23"
+    "ultima_fecha": "2026-11-25"
   },
   "NEXT": {
-    "actualizado": "2026-11-25T00:07:19",
+    "actualizado": "2026-11-25T23:52:50",
     "creado": "2026-11-06T10:32:00",
-    "n_operaciones": 47,
+    "n_operaciones": 48,
     "nombre": "NEXT",
-    "ultima_fecha": "2026-11-24"
+    "ultima_fecha": "2026-11-25"
   },
   "ORBIA": {
-    "actualizado": "2026-11-25T00:07:19",
+    "actualizado": "2026-11-25T23:52:50",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 22484,
+    "n_operaciones": 22559,
     "nombre": "ORBIA",
-    "ultima_fecha": "2026-11-24"
+    "ultima_fecha": "2026-11-25"
   },
   "PASA": {
     "actualizado": "2026-11-04T19:56:57",
@@ -525,11 +525,11 @@
     "ultima_fecha": "2026-06-18"
   },
   "Q": {
-    "actualizado": "2026-11-25T00:07:19",
+    "actualizado": "2026-11-25T23:52:50",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 127174,
+    "n_operaciones": 127361,
     "nombre": "Q",
-    "ultima_fecha": "2026-11-23"
+    "ultima_fecha": "2026-11-24"
   },
   "R": {
     "actualizado": "2026-11-11T22:14:14",
@@ -546,11 +546,11 @@
     "ultima_fecha": "2026-06-12"
   },
   "SIMEC": {
-    "actualizado": "2026-11-18T23:03:42",
+    "actualizado": "2026-11-25T23:52:49",
     "creado": "2026-05-15T17:12:53",
-    "n_operaciones": 2855,
+    "n_operaciones": 2856,
     "nombre": "SIMEC",
-    "ultima_fecha": "2026-11-17"
+    "ultima_fecha": "2026-11-24"
   },
   "SITES": {
     "actualizado": "2026-11-04T16:20:10",
@@ -574,18 +574,18 @@
     "ultima_fecha": "2023-10-02"
   },
   "SPORT": {
-    "actualizado": "2026-11-25T00:07:19",
+    "actualizado": "2026-11-25T23:52:49",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 2823,
+    "n_operaciones": 2908,
     "nombre": "SPORT",
-    "ultima_fecha": "2026-11-24"
+    "ultima_fecha": "2026-11-25"
   },
   "STORAGE": {
-    "actualizado": "2026-11-24T02:33:46",
+    "actualizado": "2026-11-25T23:52:50",
     "creado": "2026-11-06T09:58:28",
-    "n_operaciones": 397,
+    "n_operaciones": 398,
     "nombre": "STORAGE",
-    "ultima_fecha": "2026-11-20"
+    "ultima_fecha": "2026-11-25"
   },
   "TLEVISA": {
     "actualizado": "2026-11-06T10:51:13",
@@ -630,17 +630,17 @@
     "ultima_fecha": "2026-11-12"
   },
   "VISTA": {
-    "actualizado": "2026-11-25T00:07:19",
+    "actualizado": "2026-11-25T23:52:49",
     "creado": "2026-09-30T22:20:11",
-    "n_operaciones": 114,
+    "n_operaciones": 116,
     "nombre": "VISTA",
-    "ultima_fecha": "2026-11-23"
+    "ultima_fecha": "2026-11-25"
   },
   "WALMEX": {
-    "actualizado": "2026-11-24T02:33:46",
+    "actualizado": "2026-11-25T23:52:49",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 13205,
+    "n_operaciones": 13300,
     "nombre": "WALMEX",
-    "ultima_fecha": "2026-11-23"
+    "ultima_fecha": "2026-11-25"
   }
 }
