@@ -1,8 +1,22 @@
 {
   "last_hit_id": 1607590,
-  "frontier_gap": 1500,
-  "last_run_utc": "2026-11-25T23:54:03+00:00",
+  "frontier_gap": 3000,
+  "last_run_utc": "2026-11-26T11:33:51+00:00",
   "runs": [
+    {
+      "utc": "2026-11-26T11:33:51+00:00",
+      "inicio_id": 1606791,
+      "fin_id": 1609190,
+      "ids_revisados": 2346,
+      "pdfs_encontrados": 0,
+      "docs_nuevos": 0,
+      "ops_nuevas": 0,
+      "errores_red": 20,
+      "sin_tabla": 0,
+      "emisoras": [],
+      "abortado": null,
+      "duracion_s": 571.9
+    },
     {
       "utc": "2026-11-25T23:54:03+00:00",
       "inicio_id": 1606448,
@@ -1511,26 +1525,29 @@
       ],
       "abortado": null,
       "duracion_s": 284.2
-    },
-    {
-      "utc": "2026-10-15T19:23:59+00:00",
-      "inicio_id": 1594730,
-      "fin_id": 1597129,
-      "ids_revisados": 2392,
-      "pdfs_encontrados": 1,
-      "docs_nuevos": 1,
-      "ops_nuevas": 1,
-      "errores_red": 16,
-      "sin_tabla": 0,
-      "emisoras": [
-        "ICH"
-      ],
-      "abortado": null,
-      "duracion_s": 272.7
     }
   ],
   "ids_error": [
-    1608220
+    1607911,
+    1607912,
+    1607914,
+    1607916,
+    1607917,
+    1607918,
+    1607919,
+    1607923,
+    1607924,
+    1607925,
+    1607926,
+    1607927,
+    1607928,
+    1608899,
+    1608924,
+    1608932,
+    1608936,
+    1608939,
+    1608940,
+    1608941
   ],
   "ultimo_reporte_mensual": "2026-11",
   "backfill": null,
