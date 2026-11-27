@@ -1,8 +1,22 @@
 {
   "last_hit_id": 1607811,
-  "frontier_gap": 1500,
-  "last_run_utc": "2026-11-27T00:06:46+00:00",
+  "frontier_gap": 3000,
+  "last_run_utc": "2026-11-27T11:21:22+00:00",
   "runs": [
+    {
+      "utc": "2026-11-27T11:21:22+00:00",
+      "inicio_id": 1607012,
+      "fin_id": 1609411,
+      "ids_revisados": 2360,
+      "pdfs_encontrados": 0,
+      "docs_nuevos": 0,
+      "ops_nuevas": 0,
+      "errores_red": 0,
+      "sin_tabla": 0,
+      "emisoras": [],
+      "abortado": null,
+      "duracion_s": 197.2
+    },
     {
       "utc": "2026-11-27T00:06:46+00:00",
       "inicio_id": 1606791,
@@ -1516,35 +1530,9 @@
       ],
       "abortado": null,
       "duracion_s": 302.8
-    },
-    {
-      "utc": "2026-10-16T19:00:40+00:00",
-      "inicio_id": 1594969,
-      "fin_id": 1597568,
-      "ids_revisados": 2593,
-      "pdfs_encontrados": 2,
-      "docs_nuevos": 2,
-      "ops_nuevas": 135,
-      "errores_red": 17,
-      "sin_tabla": 0,
-      "emisoras": [
-        "GMEXICO",
-        "ICH"
-      ],
-      "abortado": null,
-      "duracion_s": 285.1
     }
   ],
-  "ids_error": [
-    1609177,
-    1609178,
-    1609179,
-    1609180,
-    1609181,
-    1609182,
-    1610940,
-    1610941
-  ],
+  "ids_error": [],
   "ultimo_reporte_mensual": "2026-11",
   "backfill": null,
   "backfill_completo_utc": "2026-11-05T10:26:04+00:00"
