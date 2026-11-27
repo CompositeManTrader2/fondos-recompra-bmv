@@ -7,18 +7,18 @@
     "ultima_fecha": "2026-11-24"
   },
   "ACTINVR": {
-    "actualizado": "2026-11-27T00:05:51",
+    "actualizado": "2026-11-27T23:46:21",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 1216,
+    "n_operaciones": 1217,
     "nombre": "ACTINVR",
-    "ultima_fecha": "2026-11-26"
+    "ultima_fecha": "2026-11-27"
   },
   "AGUA": {
-    "actualizado": "2026-11-25T23:52:50",
+    "actualizado": "2026-11-27T23:46:21",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 28272,
+    "n_operaciones": 28285,
     "nombre": "AGUA",
-    "ultima_fecha": "2026-11-25"
+    "ultima_fecha": "2026-11-26"
   },
   "ALFA": {
     "actualizado": "2026-11-04T18:02:50",
@@ -168,11 +168,11 @@
     "ultima_fecha": "2026-11-25"
   },
   "CYDSASA": {
-    "actualizado": "2026-11-09T23:55:26",
+    "actualizado": "2026-11-27T23:46:21",
     "creado": "2026-09-30T19:02:25",
-    "n_operaciones": 438,
+    "n_operaciones": 441,
     "nombre": "CYDSASA",
-    "ultima_fecha": "2026-11-09"
+    "ultima_fecha": "2026-11-27"
   },
   "DINE": {
     "actualizado": "2026-11-05T03:12:03",
@@ -203,11 +203,11 @@
     "ultima_fecha": "2026-11-23"
   },
   "FEXI": {
-    "actualizado": "2026-11-27T00:05:51",
+    "actualizado": "2026-11-27T23:46:21",
     "creado": "2026-11-06T10:01:24",
-    "n_operaciones": 4144,
+    "n_operaciones": 4146,
     "nombre": "FEXI",
-    "ultima_fecha": "2026-11-26"
+    "ultima_fecha": "2026-11-27"
   },
   "FIBRAHD": {
     "actualizado": "2026-11-06T10:12:22",
@@ -483,18 +483,18 @@
     "ultima_fecha": "2022-07-29"
   },
   "NEMAK": {
-    "actualizado": "2026-11-25T23:52:49",
+    "actualizado": "2026-11-27T23:46:21",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 511,
+    "n_operaciones": 512,
     "nombre": "NEMAK",
-    "ultima_fecha": "2026-11-25"
+    "ultima_fecha": "2026-11-26"
   },
   "NEXT": {
-    "actualizado": "2026-11-27T00:05:51",
+    "actualizado": "2026-11-27T23:46:21",
     "creado": "2026-11-06T10:32:00",
-    "n_operaciones": 49,
+    "n_operaciones": 50,
     "nombre": "NEXT",
-    "ultima_fecha": "2026-11-26"
+    "ultima_fecha": "2026-11-27"
   },
   "ORBIA": {
     "actualizado": "2026-11-27T00:05:51",
@@ -511,11 +511,11 @@
     "ultima_fecha": "2023-05-15"
   },
   "PINFRA": {
-    "actualizado": "2026-11-27T00:05:50",
+    "actualizado": "2026-11-27T23:46:21",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 51157,
+    "n_operaciones": 51314,
     "nombre": "PINFRA",
-    "ultima_fecha": "2026-11-25"
+    "ultima_fecha": "2026-11-26"
   },
   "PV": {
     "actualizado": "2026-09-30T22:00:15",
@@ -574,18 +574,18 @@
     "ultima_fecha": "2023-10-02"
   },
   "SPORT": {
-    "actualizado": "2026-11-27T00:05:50",
+    "actualizado": "2026-11-27T23:46:21",
     "creado": "2026-09-30T18:57:10",
-    "n_operaciones": 3008,
+    "n_operaciones": 3089,
     "nombre": "SPORT",
-    "ultima_fecha": "2026-11-26"
+    "ultima_fecha": "2026-11-27"
   },
   "STORAGE": {
-    "actualizado": "2026-11-25T23:52:50",
+    "actualizado": "2026-11-27T23:46:21",
     "creado": "2026-11-06T09:58:28",
-    "n_operaciones": 398,
+    "n_operaciones": 399,
     "nombre": "STORAGE",
-    "ultima_fecha": "2026-11-25"
+    "ultima_fecha": "2026-11-27"
   },
   "TLEVISA": {
     "actualizado": "2026-11-06T10:51:13",

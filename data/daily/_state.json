@@ -1,8 +1,32 @@
 {
-  "last_hit_id": 1607811,
-  "frontier_gap": 3000,
-  "last_run_utc": "2026-11-27T11:21:22+00:00",
+  "last_hit_id": 1607978,
+  "frontier_gap": 1500,
+  "last_run_utc": "2026-11-27T23:47:29+00:00",
   "runs": [
+    {
+      "utc": "2026-11-27T23:47:29+00:00",
+      "inicio_id": 1607012,
+      "fin_id": 1611011,
+      "ids_revisados": 3952,
+      "pdfs_encontrados": 9,
+      "docs_nuevos": 9,
+      "ops_nuevas": 260,
+      "errores_red": 0,
+      "sin_tabla": 0,
+      "emisoras": [
+        "ACTINVR",
+        "AGUA",
+        "CYDSASA",
+        "FEXI",
+        "NEMAK",
+        "NEXT",
+        "PINFRA",
+        "SPORT",
+        "STORAGE"
+      ],
+      "abortado": null,
+      "duracion_s": 416.2
+    },
     {
       "utc": "2026-11-27T11:21:22+00:00",
       "inicio_id": 1607012,
@@ -1511,25 +1535,6 @@
       ],
       "abortado": null,
       "duracion_s": 272.4
-    },
-    {
-      "utc": "2026-10-17T07:14:21+00:00",
-      "inicio_id": 1595084,
-      "fin_id": 1597683,
-      "ids_revisados": 2598,
-      "pdfs_encontrados": 4,
-      "docs_nuevos": 4,
-      "ops_nuevas": 303,
-      "errores_red": 24,
-      "sin_tabla": 0,
-      "emisoras": [
-        "ACTINVR",
-        "AMX",
-        "GMEXICO",
-        "LAB"
-      ],
-      "abortado": null,
-      "duracion_s": 302.8
     }
   ],
   "ids_error": [],
