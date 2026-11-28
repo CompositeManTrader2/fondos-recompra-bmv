@@ -1,8 +1,22 @@
 {
   "last_hit_id": 1607978,
-  "frontier_gap": 1500,
-  "last_run_utc": "2026-11-27T23:47:29+00:00",
+  "frontier_gap": 3000,
+  "last_run_utc": "2026-11-28T10:58:03+00:00",
   "runs": [
+    {
+      "utc": "2026-11-28T10:58:03+00:00",
+      "inicio_id": 1607179,
+      "fin_id": 1609578,
+      "ids_revisados": 2349,
+      "pdfs_encontrados": 0,
+      "docs_nuevos": 0,
+      "ops_nuevas": 0,
+      "errores_red": 6,
+      "sin_tabla": 0,
+      "emisoras": [],
+      "abortado": null,
+      "duracion_s": 581.8
+    },
     {
       "utc": "2026-11-27T23:47:29+00:00",
       "inicio_id": 1607012,
@@ -1518,26 +1532,16 @@
       ],
       "abortado": null,
       "duracion_s": 341.2
-    },
-    {
-      "utc": "2026-10-19T20:45:53+00:00",
-      "inicio_id": 1595209,
-      "fin_id": 1597608,
-      "ids_revisados": 2402,
-      "pdfs_encontrados": 2,
-      "docs_nuevos": 2,
-      "ops_nuevas": 7,
-      "errores_red": 17,
-      "sin_tabla": 0,
-      "emisoras": [
-        "ICH",
-        "SIMEC"
-      ],
-      "abortado": null,
-      "duracion_s": 272.4
     }
   ],
-  "ids_error": [],
+  "ids_error": [
+    1608366,
+    1608367,
+    1608369,
+    1608371,
+    1608372,
+    1609327
+  ],
   "ultimo_reporte_mensual": "2026-11",
   "backfill": null,
   "backfill_completo_utc": "2026-11-05T10:26:04+00:00"
